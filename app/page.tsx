@@ -3,15 +3,26 @@ import TopBar from '@/components/TopBar';
 import KpiCard from '@/components/KpiCard';
 import WorldMap from '@/components/WorldMap';
 import { getLatestObservationsByIndicator } from '@/lib/supabase';
+
 export const revalidate = 300;
 
-// Corrections de noms entre nos entités et les noms utilisés par world-atlas (Natural Earth)
 const NAME_OVERRIDES: Record<string, string> = {
   'United States': 'United States of America',
 };
 
-export default async function VueGlobalePage() {
-  const { indicator, rows } = await getLatestObservationsByIndicator('human-development-index');
+const INDICATOR_LABELS: Record<string, string> = {
+  'human-development-index': 'Indice de développement humain',
+  'gdp-nominal-usd': 'PIB nominal',
+  'fertility-rate': 'Taux de fécondité',
+};
+
+export default async function VueGlobalePage({
+  searchParams,
+}: {
+  searchParams: { indicator?: string };
+}) {
+  const indicatorSlug = searchParams.indicator ?? 'human-development-index';
+  const { indicator, rows } = await getLatestObservationsByIndicator(indicatorSlug);
 
   const mapData = rows
     .filter((r) => r.entity)
@@ -24,7 +35,7 @@ export default async function VueGlobalePage() {
       };
     });
 
-  const worldAverage =
+  const average =
     mapData.length > 0
       ? (mapData.reduce((sum, d) => sum + d.value, 0) / mapData.length).toFixed(3)
       : '—';
@@ -41,7 +52,7 @@ export default async function VueGlobalePage() {
             <div className="bg-panel border border-border rounded-[10px] p-4 relative mb-4">
               <div className="mb-2.5">
                 <div className="font-serif text-[17px]">
-                  {indicator?.name_default ?? 'Indice de développement humain'}
+                  {indicator?.name_default ?? INDICATOR_LABELS[indicatorSlug] ?? indicatorSlug}
                 </div>
                 <div className="text-textMuted text-xs mt-0.5">
                   Vision macro des indicateurs clés à travers le monde
@@ -51,12 +62,12 @@ export default async function VueGlobalePage() {
               </div>
               <WorldMap
                 data={mapData}
-                indicatorLabel={indicator?.name_default ?? 'IDH'}
+                indicatorLabel={indicator?.name_default ?? indicatorSlug}
               />
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              <KpiCard label="idh mondial" value={worldAverage} delta="+0.004" positive />
+              <KpiCard label="moyenne mondiale" value={average} delta="" positive />
               <KpiCard label="pib mondial (ppa)" value="190.4 t$" delta="+2.9%" positive />
               <KpiCard label="population" value="8.19 md" delta="+0.9%" positive />
               <KpiCard label="dette publique moy." value="78.4%" delta="+1.2 pt" positive={false} />
