@@ -7,22 +7,21 @@ import { getLatestObservationsByIndicator } from '@/lib/supabase';
 // Corrections de noms entre nos entités et les noms utilisés par world-atlas (Natural Earth)
 const NAME_OVERRIDES: Record<string, string> = {
   'United States': 'United States of America',
-  'South Korea': 'South Korea',
-  Russia: 'Russia',
-  Czechia: 'Czechia',
 };
 
 export default async function VueGlobalePage() {
   const { indicator, rows } = await getLatestObservationsByIndicator('human-development-index');
 
-  const mapData = rows.map((r: any) => {
-    const rawName = r.entities?.name_default ?? '';
-    return {
-      slug: r.entities?.slug ?? '',
-      name: NAME_OVERRIDES[rawName] ?? rawName,
-      value: r.value_number,
-    };
-  });
+  const mapData = rows
+    .filter((r) => r.entity)
+    .map((r) => {
+      const rawName = r.entity!.name_default;
+      return {
+        slug: r.entity!.slug,
+        name: NAME_OVERRIDES[rawName] ?? rawName,
+        value: r.value_number,
+      };
+    });
 
   const worldAverage =
     mapData.length > 0
@@ -45,6 +44,8 @@ export default async function VueGlobalePage() {
                 </div>
                 <div className="text-textMuted text-xs mt-0.5">
                   Vision macro des indicateurs clés à travers le monde
+                  {' — '}
+                  {mapData.length} pays avec données
                 </div>
               </div>
               <WorldMap
