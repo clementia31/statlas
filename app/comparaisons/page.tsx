@@ -1,6 +1,8 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 
+export const dynamic = 'force-dynamic';
+
 // NOTE : page encore statique (exemples fixes), pas branchée sur Supabase.
 // Prochaine étape possible : la connecter à de vraies sélections pays/indicateurs.
 
