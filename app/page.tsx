@@ -3,6 +3,7 @@ import TopBar from '@/components/TopBar';
 import KpiCard from '@/components/KpiCard';
 import WorldMap from '@/components/WorldMap';
 import { getLatestObservationsByIndicator } from '@/lib/supabase';
+export const revalidate = 300;
 
 // Corrections de noms entre nos entités et les noms utilisés par world-atlas (Natural Earth)
 const NAME_OVERRIDES: Record<string, string> = {
