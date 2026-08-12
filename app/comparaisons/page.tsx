@@ -1,12 +1,43 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
+import { getLatestObservationsByIndicator } from '@/lib/supabase';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
-// NOTE: still a static page (fixed sample data), not yet wired to Supabase.
-// Possible next step: connect it to real country/indicator selections.
+const COUNTRIES = ['united-states', 'germany', 'france', 'india', 'china', 'brazil'];
 
-export default function ComparisonsPage() {
+const INDICATORS = [
+  { slug: 'human-development-index', label: 'HDI' },
+  { slug: 'gdp-nominal-usd', label: 'Nominal GDP (USD M)' },
+  { slug: 'population-total', label: 'Population' },
+  { slug: 'life-expectancy-birth', label: 'Life expectancy' },
+];
+
+export default async function ComparisonsPage() {
+  const results = await Promise.all(
+    INDICATORS.map((i) => getLatestObservationsByIndicator(i.slug))
+  );
+
+  // valuesByIndicator[indicatorSlug] = Map(entitySlug -> value)
+  const valuesByIndicator: Record<string, Map<string, number>> = {};
+  INDICATORS.forEach((ind, idx) => {
+    const map = new Map<string, number>();
+    for (const row of results[idx].rows) {
+      if (row.entity) map.set(row.entity.slug, row.value_number);
+    }
+    valuesByIndicator[ind.slug] = map;
+  });
+
+  // Récupère un nom lisible par pays depuis n'importe quel indicateur qui l'a
+  const nameBySlug = new Map<string, string>();
+  for (const r of results) {
+    for (const row of r.rows) {
+      if (row.entity && !nameBySlug.has(row.entity.slug)) {
+        nameBySlug.set(row.entity.slug, row.entity.name_default);
+      }
+    }
+  }
+
   return (
     <div className="flex min-h-screen">
       <Sidebar active="Comparisons" />
@@ -17,44 +48,33 @@ export default function ComparisonsPage() {
         <div className="p-[22px]">
           <div className="font-serif text-2xl mb-1">Country comparison</div>
           <div className="text-textMuted text-xs mb-4">
-            Preview — page not yet connected to the database (fixed examples)
+            Live data from Statlas — {COUNTRIES.length} countries, {INDICATORS.length} indicators
           </div>
 
-          <div className="bg-panel border border-border rounded-[10px] overflow-hidden max-w-3xl">
+          <div className="bg-panel border border-border rounded-[10px] overflow-hidden max-w-4xl overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-textMuted text-[11px] border-b border-border">
                   <th className="text-left p-2 font-medium">Country</th>
-                  <th className="text-left p-2 font-medium">HDI</th>
-                  <th className="text-left p-2 font-medium">Nominal GDP</th>
-                  <th className="text-left p-2 font-medium">Population</th>
+                  {INDICATORS.map((i) => (
+                    <th key={i.slug} className="text-left p-2 font-medium">{i.label}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="font-mono">
-                <tr className="border-b border-border">
-                  <td className="p-2 font-sans font-medium">United States</td>
-                  <td className="p-2 text-green">0.938</td>
-                  <td className="p-2">27.4 t$</td>
-                  <td className="p-2">339 M</td>
-                </tr>
-                <tr className="border-b border-border">
-                  <td className="p-2 font-sans font-medium">Germany</td>
-                  <td className="p-2">0.950</td>
-                  <td className="p-2">4.7 t$</td>
-                  <td className="p-2">83 M</td>
-                </tr>
-                <tr className="border-b border-border">
-                  <td className="p-2 font-sans font-medium">France</td>
-                  <td className="p-2">0.910</td>
-                  <td className="p-2">3.1 t$</td>
-                  <td className="p-2">68 M</td>
-                </tr>
-                <tr>
-                  <td className="p-2 font-sans font-medium">India</td>
-                  <td className="p-2 text-red">0.644</td>
-                  <td className="p-2">3.9 t$</td>
-                  <td className="p-2">1.42 bn</td>
-                </tr>
+                {COUNTRIES.map((slug) => (
+                  <tr key={slug} className="border-b border-border last:border-b-0">
+                    <td className="p-2 font-sans font-medium">{nameBySlug.get(slug) ?? slug}</td>
+                    {INDICATORS.map((i) => {
+                      const v = valuesByIndicator[i.slug].get(slug);
+                      return (
+                        <td key={i.slug} className="p-2">
+                          {v !== undefined ? v.toLocaleString() : '—'}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
