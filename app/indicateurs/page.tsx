@@ -1,6 +1,7 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
-import { getLatestObservationsByIndicator } from '@/lib/supabase';
+import TrendChart from '@/components/TrendChart';
+import { getLatestObservationsByIndicator, getIndicatorTimeSeries } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +12,11 @@ export default async function IndicatorDetailPage({
 }) {
   const indicatorSlug = searchParams.indicator ?? 'human-development-index';
   const query = (searchParams.q ?? '').toLowerCase().trim();
-  const { indicator, rows } = await getLatestObservationsByIndicator(indicatorSlug);
+
+  const [{ indicator, rows }, { series }] = await Promise.all([
+    getLatestObservationsByIndicator(indicatorSlug),
+    getIndicatorTimeSeries(indicatorSlug),
+  ]);
 
   const ranked = rows
     .filter((r) => r.entity)
@@ -35,6 +40,14 @@ export default async function IndicatorDetailPage({
               {ranked.length} countries ranked — latest available values
               {query ? ` matching "${searchParams.q}"` : ''}
             </div>
+          </div>
+
+          <div className="bg-panel border border-border rounded-[10px] p-4 max-w-3xl mb-4">
+            <div className="text-textMuted text-[11px] mb-2">world average over time</div>
+            <TrendChart
+              labels={series.map((s) => s.year)}
+              values={series.map((s) => Number(s.average.toFixed(3)))}
+            />
           </div>
 
           <div className="bg-panel border border-border rounded-[10px] p-4 max-w-xl max-h-[70vh] overflow-auto">
