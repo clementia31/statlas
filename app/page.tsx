@@ -10,12 +10,6 @@ const NAME_OVERRIDES: Record<string, string> = {
   'United States': 'United States of America',
 };
 
-const INDICATOR_LABELS: Record<string, string> = {
-  'human-development-index': 'Indice de développement humain',
-  'gdp-nominal-usd': 'PIB nominal',
-  'fertility-rate': 'Taux de fécondité',
-};
-
 export default async function VueGlobalePage({
   searchParams,
 }: {
@@ -42,7 +36,7 @@ export default async function VueGlobalePage({
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar active="Vue globale" />
+      <Sidebar active="Overview" />
 
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
@@ -52,12 +46,12 @@ export default async function VueGlobalePage({
             <div className="bg-panel border border-border rounded-[10px] p-4 relative mb-4">
               <div className="mb-2.5">
                 <div className="font-serif text-[17px]">
-                  {indicator?.name_default ?? INDICATOR_LABELS[indicatorSlug] ?? indicatorSlug}
+                  {indicator?.name_default ?? indicatorSlug}
                 </div>
                 <div className="text-textMuted text-xs mt-0.5">
-                  Vision macro des indicateurs clés à travers le monde
+                  Global overview of key indicators worldwide
                   {' — '}
-                  {mapData.length} pays avec données
+                  {mapData.length} countries with data
                 </div>
               </div>
               <WorldMap
@@ -67,12 +61,23 @@ export default async function VueGlobalePage({
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              <KpiCard label="moyenne mondiale" value={average} delta="" positive />
-              <KpiCard label="pib mondial (ppa)" value="190.4 t$" delta="+2.9%" positive />
-              <KpiCard label="population" value="8.19 md" delta="+0.9%" positive />
-              <KpiCard label="dette publique moy." value="78.4%" delta="+1.2 pt" positive={false} />
-              <KpiCard label="espér. vie" value="73.1 ans" delta="+0.2" positive />
-              <KpiCard label="gini moyen" value="36.4" delta="-0.3" positive={false} />
+              <KpiCard label="world average" value={average} delta="" positive />
+              <KpiCard label="world gdp (ppp)" value="190.4 t$" delta="+2.9%" positive />
+              <KpiCard label="population" value="8.19 bn" delta="+0.9%" positive />
+              <KpiCard label="avg public debt" value="78.4%" delta="+1.2 pt" positive={false} />
+              <KpiCard label="life expectancy" value="73.1 yrs" delta="+0.2" positive />
+              <KpiCard label="avg gini" value="36.4" delta="-0.3" positive={false} />
+            </div>
+          </div>
+
+          <div className="w-[260px] border-l border-border bg-panel p-4 shrink-0 hidden lg:block">
+            <div className="text-xs text-textSecondary font-medium mb-2.5">Economic news</div>
+            <div className="text-textMuted text-[11px] italic py-2">
+              Coming in a later phase — reserved space for now.
+            </div>
+            <div className="text-xs text-textSecondary font-medium mt-5 mb-2.5">Active alerts</div>
+            <div className="text-textMuted text-[11px] italic py-2">
+              Coming in a later phase — reserved space for now.
             </div>
           </div>
         </div>
