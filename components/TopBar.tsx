@@ -3,9 +3,9 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const INDICATORS = [
-  { slug: 'human-development-index', label: 'IDH' },
-  { slug: 'gdp-nominal-usd', label: 'PIB nominal' },
-  { slug: 'fertility-rate', label: 'Fécondité' },
+  { slug: 'human-development-index', label: 'HDI' },
+  { slug: 'gdp-nominal-usd', label: 'Nominal GDP' },
+  { slug: 'fertility-rate', label: 'Fertility rate' },
 ];
 
 export default function TopBar() {
@@ -21,7 +21,7 @@ export default function TopBar() {
     <div className="h-[54px] border-b border-border flex items-center gap-3.5 px-[22px] shrink-0">
       <input
         type="text"
-        placeholder="Rechercher un indicateur, un pays..."
+        placeholder="Search an indicator, a country..."
         className="flex-1 max-w-[380px] bg-panel2 border border-border rounded-md px-3 py-1.5 text-[13px] text-textSecondary outline-none"
       />
       <select
