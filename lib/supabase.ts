@@ -202,3 +202,47 @@ export async function getIndicatorTimeSeries(indicatorSlug: string) {
 
   return { indicator, series };
 }
+
+// Série temporelle par pays (pour le graphique superposé multi-pays)
+export async function getCountryYearlySeries(indicatorSlug: string, entitySlugs: string[]) {
+  const { data: indicator } = await supabase
+    .from('indicators')
+    .select('id, name_default')
+    .eq('slug', indicatorSlug)
+    .single();
+
+  if (!indicator) return { indicator: null, seriesByEntity: {} as Record<string, { year: string; value: number }[]> };
+
+  const { data: entities } = await supabase
+    .from('entities')
+    .select('id, slug, name_default')
+    .in('slug', entitySlugs);
+
+  const entityIds = (entities ?? []).map((e) => e.id);
+  const idToSlug = new Map((entities ?? []).map((e) => [e.id, e.slug]));
+  const idToName = new Map((entities ?? []).map((e) => [e.id, e.name_default]));
+
+  const { data: obsRows, error } = await supabase
+    .from('observations')
+    .select('entity_id, value_number, period_start')
+    .eq('indicator_id', indicator.id)
+    .in('entity_id', entityIds)
+    .eq('status', 'validated')
+    .order('period_start', { ascending: true });
+
+  if (error || !obsRows) {
+    console.error('Erreur getCountryYearlySeries:', error?.message);
+    return { indicator, seriesByEntity: {} as Record<string, { year: string; value: number }[]> };
+  }
+
+  const seriesByEntity: Record<string, { year: string; value: number }[]> = {};
+  for (const slug of entitySlugs) seriesByEntity[slug] = [];
+
+  for (const row of obsRows) {
+    const slug = idToSlug.get(row.entity_id);
+    if (!slug) continue;
+    seriesByEntity[slug].push({ year: row.period_start.slice(0, 4), value: row.value_number });
+  }
+
+  return { indicator, seriesByEntity, namesBySlug: Object.fromEntries(Array.from(idToName.entries()).map(([id, name]) => [idToSlug.get(id), name])) };
+}
