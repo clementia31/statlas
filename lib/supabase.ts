@@ -21,8 +21,6 @@ export type ObservationRow = {
 };
 
 // Récupère la dernière observation validée par pays pour un indicateur donné.
-// Fait deux requêtes séparées (observations, puis entités) plutôt qu'une
-// jointure imbriquée — plus simple à déboguer et plus fiable.
 export async function getLatestObservationsByIndicator(indicatorSlug: string) {
   const { data: indicator } = await supabase
     .from('indicators')
@@ -44,7 +42,6 @@ export async function getLatestObservationsByIndicator(indicatorSlug: string) {
     return { indicator, rows: [] as ObservationRow[] };
   }
 
-  // Garde uniquement la ligne la plus récente par pays
   const latestByEntity = new Map<string, { entity_id: string; value_number: number; period_start: string }>();
   for (const row of obsRows ?? []) {
     if (!latestByEntity.has(row.entity_id)) {
@@ -72,4 +69,70 @@ export async function getLatestObservationsByIndicator(indicatorSlug: string) {
   }));
 
   return { indicator, rows };
+}
+
+// Liste tous les pays (id, slug, name) pour la page /pays
+export async function getAllCountries() {
+  const { data, error } = await supabase
+    .from('entities')
+    .select('id, slug, name_default, entity_type')
+    .eq('entity_type', 'country')
+    .order('name_default', { ascending: true });
+
+  if (error) {
+    console.error('Erreur getAllCountries:', error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
+// Fiche complète d'un pays : toutes les dernières valeurs disponibles,
+// tous indicateurs confondus.
+export async function getCountryProfile(entitySlug: string) {
+  const { data: entity } = await supabase
+    .from('entities')
+    .select('id, slug, name_default, entity_type, iso_code')
+    .eq('slug', entitySlug)
+    .single();
+
+  if (!entity) return { entity: null, indicators: [] as any[] };
+
+  const { data: obsRows, error: obsError } = await supabase
+    .from('observations')
+    .select('indicator_id, value_number, period_start, unit, is_projection')
+    .eq('entity_id', entity.id)
+    .eq('status', 'validated')
+    .order('period_start', { ascending: false });
+
+  if (obsError || !obsRows) {
+    console.error('Erreur getCountryProfile observations:', obsError?.message);
+    return { entity, indicators: [] as any[] };
+  }
+
+  const latestByIndicator = new Map<string, { indicator_id: string; value_number: number; period_start: string; unit: string }>();
+  for (const row of obsRows) {
+    if (!latestByIndicator.has(row.indicator_id)) {
+      latestByIndicator.set(row.indicator_id, row);
+    }
+  }
+
+  const indicatorIds = Array.from(latestByIndicator.keys());
+  if (indicatorIds.length === 0) return { entity, indicators: [] as any[] };
+
+  const { data: indicatorsData } = await supabase
+    .from('indicators')
+    .select('id, slug, name_default, unit')
+    .in('id', indicatorIds);
+
+  const indicatorById = new Map((indicatorsData ?? []).map((i) => [i.id, i]));
+
+  const indicators = Array.from(latestByIndicator.values())
+    .map((r) => ({
+      ...r,
+      indicator: indicatorById.get(r.indicator_id),
+    }))
+    .filter((r) => r.indicator)
+    .sort((a, b) => (a.indicator!.name_default).localeCompare(b.indicator!.name_default));
+
+  return { entity, indicators };
 }
