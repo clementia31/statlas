@@ -11,7 +11,11 @@ const INDICATORS = [
   { slug: 'life-expectancy-birth', label: 'Life expectancy' },
 ];
 
-export default async function ComparisonsPage() {
+export default async function ComparisonsPage({
+  searchParams,
+}: {
+  searchParams: { q?: string };
+}) {
   const results = await Promise.all(
     INDICATORS.map((i) => getLatestObservationsByIndicator(i.slug))
   );
@@ -34,9 +38,11 @@ export default async function ComparisonsPage() {
     valuesByIndicator[ind.slug] = map;
   });
 
-  const sortedSlugs = Array.from(allSlugs).sort((a, b) =>
-    (nameBySlug.get(a) ?? a).localeCompare(nameBySlug.get(b) ?? b)
-  );
+  const query = (searchParams.q ?? '').toLowerCase().trim();
+
+  const sortedSlugs = Array.from(allSlugs)
+    .filter((slug) => (nameBySlug.get(slug) ?? slug).toLowerCase().includes(query))
+    .sort((a, b) => (nameBySlug.get(a) ?? a).localeCompare(nameBySlug.get(b) ?? b));
 
   return (
     <div className="flex min-h-screen">
@@ -51,7 +57,7 @@ export default async function ComparisonsPage() {
             Live data from Statlas — {sortedSlugs.length} countries, {INDICATORS.length} indicators
           </div>
 
-          <div className="bg-panel border border-border rounded-[10px] overflow-hidden max-w-4xl overflow-x-auto max-h-[70vh]">
+          <div className="bg-panel border border-border rounded-[10px] overflow-auto max-w-4xl max-h-[70vh]">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-panel">
                 <tr className="text-textMuted text-[11px] border-b border-border">
@@ -75,6 +81,13 @@ export default async function ComparisonsPage() {
                     })}
                   </tr>
                 ))}
+                {sortedSlugs.length === 0 && (
+                  <tr>
+                    <td colSpan={INDICATORS.length + 1} className="p-4 text-textMuted font-sans text-center">
+                      No country matches your search.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
