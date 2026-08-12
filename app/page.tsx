@@ -4,7 +4,7 @@ import KpiCard from '@/components/KpiCard';
 import WorldMap from '@/components/WorldMap';
 import { getLatestObservationsByIndicator } from '@/lib/supabase';
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 const NAME_OVERRIDES: Record<string, string> = {
   'United States': 'United States of America',
@@ -13,12 +13,13 @@ const NAME_OVERRIDES: Record<string, string> = {
 export default async function VueGlobalePage({
   searchParams,
 }: {
-  searchParams: { indicator?: string };
+  searchParams: { indicator?: string; q?: string };
 }) {
   const indicatorSlug = searchParams.indicator ?? 'human-development-index';
+  const query = (searchParams.q ?? '').toLowerCase().trim();
   const { indicator, rows } = await getLatestObservationsByIndicator(indicatorSlug);
 
-  const mapData = rows
+  const allMapData = rows
     .filter((r) => r.entity)
     .map((r) => {
       const rawName = r.entity!.name_default;
@@ -28,6 +29,10 @@ export default async function VueGlobalePage({
         value: r.value_number,
       };
     });
+
+  const mapData = query
+    ? allMapData.filter((d) => d.name.toLowerCase().includes(query))
+    : allMapData;
 
   const average =
     mapData.length > 0
@@ -52,6 +57,7 @@ export default async function VueGlobalePage({
                   Global overview of key indicators worldwide
                   {' — '}
                   {mapData.length} countries with data
+                  {query ? ` matching "${searchParams.q}"` : ''}
                 </div>
               </div>
               <WorldMap
