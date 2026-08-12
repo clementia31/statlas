@@ -164,3 +164,41 @@ export async function getAllSources() {
     documents: docsBySource.get(s.id) ?? [],
   }));
 }
+
+// Série temporelle (moyenne mondiale par année) pour un indicateur donné
+export async function getIndicatorTimeSeries(indicatorSlug: string) {
+  const { data: indicator } = await supabase
+    .from('indicators')
+    .select('id, name_default, unit')
+    .eq('slug', indicatorSlug)
+    .single();
+
+  if (!indicator) return { indicator: null, series: [] as { year: string; average: number }[] };
+
+  const { data: obsRows, error } = await supabase
+    .from('observations')
+    .select('value_number, period_start')
+    .eq('indicator_id', indicator.id)
+    .eq('status', 'validated')
+    .order('period_start', { ascending: true });
+
+  if (error || !obsRows) {
+    console.error('Erreur getIndicatorTimeSeries:', error?.message);
+    return { indicator, series: [] as { year: string; average: number }[] };
+  }
+
+  const sums = new Map<string, { sum: number; count: number }>();
+  for (const row of obsRows) {
+    const year = row.period_start.slice(0, 4);
+    const entry = sums.get(year) ?? { sum: 0, count: 0 };
+    entry.sum += row.value_number;
+    entry.count += 1;
+    sums.set(year, entry);
+  }
+
+  const series = Array.from(sums.entries())
+    .map(([year, { sum, count }]) => ({ year, average: sum / count }))
+    .sort((a, b) => a.year.localeCompare(b.year));
+
+  return { indicator, series };
+}
