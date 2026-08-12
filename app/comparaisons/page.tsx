@@ -1,6 +1,7 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
-import { getLatestObservationsByIndicator } from '@/lib/supabase';
+import MultiTrendChart from '@/components/MultiTrendChart';
+import { getLatestObservationsByIndicator, getCountryYearlySeries } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,14 +12,17 @@ const INDICATORS = [
   { slug: 'life-expectancy-birth', label: 'Life expectancy' },
 ];
 
+const CHART_COUNTRIES = ['united-states', 'germany', 'france', 'india', 'china'];
+
 export default async function ComparisonsPage({
   searchParams,
 }: {
   searchParams: { q?: string };
 }) {
-  const results = await Promise.all(
-    INDICATORS.map((i) => getLatestObservationsByIndicator(i.slug))
-  );
+  const [results, chartData] = await Promise.all([
+    Promise.all(INDICATORS.map((i) => getLatestObservationsByIndicator(i.slug))),
+    getCountryYearlySeries('human-development-index', CHART_COUNTRIES),
+  ]);
 
   const valuesByIndicator: Record<string, Map<string, number>> = {};
   const nameBySlug = new Map<string, string>();
@@ -39,10 +43,25 @@ export default async function ComparisonsPage({
   });
 
   const query = (searchParams.q ?? '').toLowerCase().trim();
-
   const sortedSlugs = Array.from(allSlugs)
     .filter((slug) => (nameBySlug.get(slug) ?? slug).toLowerCase().includes(query))
     .sort((a, b) => (nameBySlug.get(a) ?? a).localeCompare(nameBySlug.get(b) ?? b));
+
+  // Construit les labels d'années (union de toutes les années présentes)
+  const allYears = new Set<string>();
+  for (const slug of CHART_COUNTRIES) {
+    for (const point of chartData.seriesByEntity?.[slug] ?? []) allYears.add(point.year);
+  }
+  const years = Array.from(allYears).sort();
+
+  const datasets = CHART_COUNTRIES.map((slug) => {
+    const points = chartData.seriesByEntity?.[slug] ?? [];
+    const byYear = new Map(points.map((p) => [p.year, p.value]));
+    return {
+      label: chartData.namesBySlug?.[slug] ?? slug,
+      data: years.map((y) => byYear.get(y) ?? null),
+    };
+  });
 
   return (
     <div className="flex min-h-screen">
@@ -55,6 +74,11 @@ export default async function ComparisonsPage({
           <div className="font-serif text-2xl mb-1">Country comparison</div>
           <div className="text-textMuted text-xs mb-4">
             Live data from Statlas — {sortedSlugs.length} countries, {INDICATORS.length} indicators
+          </div>
+
+          <div className="bg-panel border border-border rounded-[10px] p-4 max-w-4xl mb-4">
+            <div className="text-textMuted text-[11px] mb-2">HDI trend — selected countries</div>
+            <MultiTrendChart labels={years} datasets={datasets} />
           </div>
 
           <div className="bg-panel border border-border rounded-[10px] overflow-auto max-w-4xl max-h-[70vh]">
