@@ -1,11 +1,11 @@
 const NAV_ITEMS = [
-  { label: 'Vue globale', href: '/' },
-  { label: 'Indicateurs', href: '/indicateurs' },
-  { label: 'Carte', href: '/carte' },
-  { label: 'Pays', href: '/pays' },
-  { label: 'Comparaisons', href: '/comparaisons' },
-  { label: 'Bibliographie', href: '/bibliographie' },
-  { label: 'API et export', href: '/api-export' },
+  { label: 'Overview', href: '/' },
+  { label: 'Indicators', href: '/indicateurs' },
+  { label: 'Map', href: '/carte' },
+  { label: 'Countries', href: '/pays' },
+  { label: 'Comparisons', href: '/comparaisons' },
+  { label: 'Bibliography', href: '/bibliographie' },
+  { label: 'API & Export', href: '/api-export' },
 ];
 
 export default function Sidebar({ active }: { active: string }) {
