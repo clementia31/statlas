@@ -4,7 +4,7 @@ import { getLatestObservationsByIndicator } from '@/lib/supabase';
 
 export const revalidate = 300;
 
-export default async function IndicateurDetailPage({
+export default async function IndicatorDetailPage({
   searchParams,
 }: {
   searchParams: { indicator?: string };
@@ -19,7 +19,7 @@ export default async function IndicateurDetailPage({
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar active="Indicateurs" />
+      <Sidebar active="Indicators" />
 
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
@@ -30,12 +30,12 @@ export default async function IndicateurDetailPage({
               {indicator?.name_default ?? indicatorSlug}
             </div>
             <div className="text-textMuted text-xs mt-1">
-              {ranked.length} pays classés — dernières valeurs disponibles
+              {ranked.length} countries ranked — latest available values
             </div>
           </div>
 
           <div className="bg-panel border border-border rounded-[10px] p-4 max-w-xl">
-            <div className="text-textMuted text-[11px] mb-2">classement</div>
+            <div className="text-textMuted text-[11px] mb-2">ranking</div>
             {ranked.map((r, i) => (
               <div
                 key={r.entity_id}
@@ -49,7 +49,7 @@ export default async function IndicateurDetailPage({
               </div>
             ))}
             {ranked.length === 0 && (
-              <div className="text-textMuted text-sm py-4">Aucune donnée pour cet indicateur.</div>
+              <div className="text-textMuted text-sm py-4">No data for this indicator.</div>
             )}
           </div>
         </div>
