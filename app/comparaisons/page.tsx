@@ -2,7 +2,7 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { getLatestObservationsByIndicator } from '@/lib/supabase';
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 const INDICATORS = [
   { slug: 'human-development-index', label: 'HDI' },
