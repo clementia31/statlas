@@ -136,3 +136,31 @@ export async function getCountryProfile(entitySlug: string) {
 
   return { entity, indicators };
 }
+
+// Liste toutes les sources avec leurs documents, pour la page Bibliographie
+export async function getAllSources() {
+  const { data: sources, error } = await supabase
+    .from('sources')
+    .select('id, slug, name, source_type, url')
+    .order('name', { ascending: true });
+
+  if (error) {
+    console.error('Erreur getAllSources:', error.message);
+    return [];
+  }
+
+  const { data: documents } = await supabase
+    .from('source_documents')
+    .select('id, source_id, title, url, published_at');
+
+  const docsBySource = new Map<string, any[]>();
+  for (const doc of documents ?? []) {
+    if (!docsBySource.has(doc.source_id)) docsBySource.set(doc.source_id, []);
+    docsBySource.get(doc.source_id)!.push(doc);
+  }
+
+  return (sources ?? []).map((s) => ({
+    ...s,
+    documents: docsBySource.get(s.id) ?? [],
+  }));
+}
