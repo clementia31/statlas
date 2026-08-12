@@ -2,20 +2,22 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { getLatestObservationsByIndicator } from '@/lib/supabase';
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 export default async function IndicatorDetailPage({
   searchParams,
 }: {
-  searchParams: { indicator?: string };
+  searchParams: { indicator?: string; q?: string };
 }) {
   const indicatorSlug = searchParams.indicator ?? 'human-development-index';
+  const query = (searchParams.q ?? '').toLowerCase().trim();
   const { indicator, rows } = await getLatestObservationsByIndicator(indicatorSlug);
 
   const ranked = rows
     .filter((r) => r.entity)
+    .filter((r) => r.entity!.name_default.toLowerCase().includes(query))
     .sort((a, b) => b.value_number - a.value_number)
-    .slice(0, 15);
+    .slice(0, 50);
 
   return (
     <div className="flex min-h-screen">
@@ -31,11 +33,11 @@ export default async function IndicatorDetailPage({
             </div>
             <div className="text-textMuted text-xs mt-1">
               {ranked.length} countries ranked — latest available values
+              {query ? ` matching "${searchParams.q}"` : ''}
             </div>
           </div>
 
-          <div className="bg-panel border border-border rounded-[10px] p-4 max-w-xl">
-            <div className="text-textMuted text-[11px] mb-2">ranking</div>
+          <div className="bg-panel border border-border rounded-[10px] p-4 max-w-xl max-h-[70vh] overflow-auto">
             {ranked.map((r, i) => (
               <div
                 key={r.entity_id}
@@ -49,7 +51,7 @@ export default async function IndicatorDetailPage({
               </div>
             ))}
             {ranked.length === 0 && (
-              <div className="text-textMuted text-sm py-4">No data for this indicator.</div>
+              <div className="text-textMuted text-sm py-4">No data matches this search.</div>
             )}
           </div>
         </div>
