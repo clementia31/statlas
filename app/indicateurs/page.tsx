@@ -1,7 +1,8 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import TrendChart from '@/components/TrendChart';
-import { getLatestObservationsByIndicator, getIndicatorTimeSeries } from '@/lib/supabase';
+import AnimatedWorldMap from '@/components/AnimatedWorldMap';
+import { getLatestObservationsByIndicator, getIndicatorTimeSeries, getIndicatorAllYears } from '@/lib/supabase';
 import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -21,6 +22,10 @@ export default async function IndicatorDetailPage({
     getLatestObservationsByIndicator(indicatorSlug),
     getIndicatorTimeSeries(indicatorSlug),
   ]);
+
+  // Ne charge l'historique complet (plus lourd) que si l'onglet Map est actif
+  const mapAnimationData =
+    activeTab === 'Map' ? await getIndicatorAllYears(indicatorSlug) : null;
 
   const ranked = rows
     .filter((r) => r.entity)
@@ -70,7 +75,7 @@ export default async function IndicatorDetailPage({
             ))}
           </div>
 
-          {activeTab === 'Overview' ? (
+          {activeTab === 'Overview' && (
             <>
               <div className="bg-panel border border-border rounded-[10px] p-4 max-w-3xl mb-4">
                 <div className="text-textMuted text-[11px] mb-2">world average over time</div>
@@ -98,7 +103,23 @@ export default async function IndicatorDetailPage({
                 )}
               </div>
             </>
-          ) : (
+          )}
+
+          {activeTab === 'Map' && mapAnimationData && (
+            <div className="bg-panel border border-border rounded-[10px] p-4 max-w-4xl">
+              <div className="text-textMuted text-[11px] mb-2">
+                animated over {mapAnimationData.years.length} years — press play
+              </div>
+              <AnimatedWorldMap
+                years={mapAnimationData.years}
+                yearsData={mapAnimationData.yearsData}
+                indicatorLabel={indicator?.name_default ?? indicatorSlug}
+                indicatorUnit={indicator?.unit}
+              />
+            </div>
+          )}
+
+          {activeTab !== 'Overview' && activeTab !== 'Map' && (
             <div className="bg-panel border border-border rounded-[10px] p-8 max-w-3xl text-center">
               <div className="text-textMuted text-sm italic">
                 {activeTab} — coming in a later phase.
