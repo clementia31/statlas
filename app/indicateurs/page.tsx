@@ -2,6 +2,7 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import TrendChart from '@/components/TrendChart';
 import { getLatestObservationsByIndicator, getIndicatorTimeSeries } from '@/lib/supabase';
+import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,7 +90,7 @@ export default async function IndicatorDetailPage({
                       <span className="text-textMuted font-mono mr-2 inline-block w-5">{i + 1}</span>
                       {r.entity!.name_default}
                     </span>
-                    <span className="font-mono font-medium">{r.value_number}</span>
+                    <span className="font-mono font-medium">{formatValue(r.value_number, indicator?.unit)}</span>
                   </div>
                 ))}
                 {ranked.length === 0 && (
