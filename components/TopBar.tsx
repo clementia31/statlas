@@ -3,10 +3,22 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
 
-const INDICATORS = [
-  { slug: 'human-development-index', label: 'HDI' },
+const GDP_INDICATORS = [
   { slug: 'gdp-nominal-usd', label: 'Nominal GDP' },
+  { slug: 'gdp-nominal-per-capita-usd', label: 'GDP per capita (nominal)' },
+  { slug: 'gdp-ppp-intl-dollar', label: 'GDP (PPP)' },
+  { slug: 'gdp-ppp-per-capita-intl-dollar', label: 'GDP (PPP) per capita' },
+];
+
+const OTHER_INDICATORS = [
   { slug: 'fertility-rate', label: 'Fertility rate' },
+  { slug: 'gini-index', label: 'Gini index' },
+  { slug: 'gni-per-capita-ppp-2017', label: 'GNI per capita (PPP 2017)' },
+  { slug: 'human-development-index', label: 'HDI' },
+  { slug: 'fdi-inward-stock', label: 'Inward FDI (stock)' },
+  { slug: 'life-expectancy-birth', label: 'Life expectancy' },
+  { slug: 'net-debt-gdp-percent', label: 'Net debt (% of GDP)' },
+  { slug: 'population-total', label: 'Population' },
 ];
 
 export default function TopBar() {
@@ -50,15 +62,34 @@ export default function TopBar() {
         onChange={handleIndicatorChange}
         className="bg-panel2 border border-border rounded-md px-3 py-1.5 text-xs font-mono text-textSecondary"
       >
-        {INDICATORS.map((i) => (
-          <option key={i.slug} value={i.slug}>{i.label}</option>
-        ))}
+        <optgroup label="GDP">
+          {GDP_INDICATORS.map((i) => (
+            <option key={i.slug} value={i.slug}>{i.label}</option>
+          ))}
+        </optgroup>
+        <optgroup label="Other indicators">
+          {OTHER_INDICATORS.map((i) => (
+            <option key={i.slug} value={i.slug}>{i.label}</option>
+          ))}
+        </optgroup>
       </select>
       <select className="bg-panel2 border border-border rounded-md px-3 py-1.5 text-xs font-mono text-textSecondary">
         <option>2024</option>
         <option>2023</option>
         <option>2020</option>
       </select>
+
+      <div className="flex items-center gap-1.5 ml-2">
+        <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-textSecondary hover:text-white text-sm" aria-label="Notifications" title="Notifications (coming soon)">
+          🔔
+        </button>
+        <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-textSecondary hover:text-white text-sm" aria-label="Help" title="Help (coming soon)">
+          ?
+        </button>
+        <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-textSecondary hover:text-white text-sm" aria-label="Grid view" title="Grid view (coming soon)">
+          ▦
+        </button>
+      </div>
     </div>
   );
 }
