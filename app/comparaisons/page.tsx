@@ -2,14 +2,15 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import MultiTrendChart from '@/components/MultiTrendChart';
 import { getLatestObservationsByIndicator, getCountryYearlySeries } from '@/lib/supabase';
+import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
 const INDICATORS = [
-  { slug: 'human-development-index', label: 'HDI' },
-  { slug: 'gdp-nominal-usd', label: 'Nominal GDP (USD M)' },
-  { slug: 'population-total', label: 'Population' },
-  { slug: 'life-expectancy-birth', label: 'Life expectancy' },
+  { slug: 'human-development-index', label: 'HDI', unit: 'index (0-1)' },
+  { slug: 'gdp-nominal-usd', label: 'Nominal GDP', unit: 'usd million' },
+  { slug: 'population-total', label: 'Population', unit: 'people' },
+  { slug: 'life-expectancy-birth', label: 'Life expectancy', unit: 'years' },
 ];
 
 const CHART_COUNTRIES = ['united-states', 'germany', 'france', 'india', 'china'];
@@ -47,7 +48,6 @@ export default async function ComparisonsPage({
     .filter((slug) => (nameBySlug.get(slug) ?? slug).toLowerCase().includes(query))
     .sort((a, b) => (nameBySlug.get(a) ?? a).localeCompare(nameBySlug.get(b) ?? b));
 
-  // Construit les labels d'années (union de toutes les années présentes)
   const allYears = new Set<string>();
   for (const slug of CHART_COUNTRIES) {
     for (const point of chartData.seriesByEntity?.[slug] ?? []) allYears.add(point.year);
@@ -99,7 +99,7 @@ export default async function ComparisonsPage({
                       const v = valuesByIndicator[i.slug].get(slug);
                       return (
                         <td key={i.slug} className="p-2">
-                          {v !== undefined ? v.toLocaleString() : '—'}
+                          {v !== undefined ? formatValue(v, i.unit) : '—'}
                         </td>
                       );
                     })}
