@@ -3,6 +3,7 @@ import TopBar from '@/components/TopBar';
 import KpiCard from '@/components/KpiCard';
 import WorldMap from '@/components/WorldMap';
 import { getLatestObservationsByIndicator } from '@/lib/supabase';
+import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,10 +35,9 @@ export default async function VueGlobalePage({
     ? allMapData.filter((d) => d.name.toLowerCase().includes(query))
     : allMapData;
 
-  const average =
-    mapData.length > 0
-      ? (mapData.reduce((sum, d) => sum + d.value, 0) / mapData.length).toFixed(3)
-      : '—';
+  const averageRaw =
+    mapData.length > 0 ? mapData.reduce((sum, d) => sum + d.value, 0) / mapData.length : undefined;
+  const average = averageRaw !== undefined ? formatValue(averageRaw, indicator?.unit) : '—';
 
   return (
     <div className="flex min-h-screen">
@@ -63,6 +63,7 @@ export default async function VueGlobalePage({
               <WorldMap
                 data={mapData}
                 indicatorLabel={indicator?.name_default ?? indicatorSlug}
+                indicatorUnit={indicator?.unit}
               />
             </div>
 
