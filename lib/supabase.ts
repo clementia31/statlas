@@ -246,3 +246,48 @@ export async function getCountryYearlySeries(indicatorSlug: string, entitySlugs:
 
   return { indicator, seriesByEntity, namesBySlug: Object.fromEntries(Array.from(idToName.entries()).map(([id, name]) => [idToSlug.get(id), name])) };
 }
+
+// Toutes les années disponibles pour un indicateur, groupées par année,
+// pour l'animation temporelle de la carte (onglet Map).
+export async function getIndicatorAllYears(indicatorSlug: string) {
+  const { data: indicator } = await supabase
+    .from('indicators')
+    .select('id, name_default, unit')
+    .eq('slug', indicatorSlug)
+    .single();
+
+  if (!indicator) return { indicator: null, years: [] as string[], yearsData: {} as Record<string, { slug: string; name: string; value: number }[]> };
+
+  const { data: obsRows, error } = await supabase
+    .from('observations')
+    .select('entity_id, value_number, period_start')
+    .eq('indicator_id', indicator.id)
+    .eq('status', 'validated')
+    .order('period_start', { ascending: true });
+
+  if (error || !obsRows) {
+    console.error('Erreur getIndicatorAllYears:', error?.message);
+    return { indicator, years: [] as string[], yearsData: {} as Record<string, { slug: string; name: string; value: number }[]> };
+  }
+
+  const entityIds = Array.from(new Set(obsRows.map((r) => r.entity_id)));
+  const { data: entities } = await supabase
+    .from('entities')
+    .select('id, slug, name_default')
+    .in('id', entityIds);
+
+  const entityById = new Map((entities ?? []).map((e) => [e.id, e]));
+
+  const yearsData: Record<string, { slug: string; name: string; value: number }[]> = {};
+  for (const row of obsRows) {
+    const year = row.period_start.slice(0, 4);
+    const entity = entityById.get(row.entity_id);
+    if (!entity) continue;
+    if (!yearsData[year]) yearsData[year] = [];
+    yearsData[year].push({ slug: entity.slug, name: entity.name_default, value: row.value_number });
+  }
+
+  const years = Object.keys(yearsData).sort();
+
+  return { indicator, years, yearsData };
+}
