@@ -1,6 +1,7 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { getCountryProfile } from '@/lib/supabase';
+import { formatValue } from '@/lib/format';
 import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -39,10 +40,10 @@ export default async function CountryDetailPage({
               <div key={row.indicator_id} className="bg-panel border border-border rounded-[10px] p-3.5">
                 <div className="text-textMuted text-[11px] mb-1.5">{row.indicator!.name_default}</div>
                 <div className="font-mono text-xl font-medium text-white">
-                  {row.value_number.toLocaleString()}
+                  {formatValue(row.value_number, row.indicator!.unit)}
                 </div>
                 <div className="text-textMuted text-[10px] mt-1">
-                  {row.indicator!.unit} · {row.period_start.slice(0, 4)}
+                  {row.period_start.slice(0, 4)}
                   {row.is_projection ? ' (projection)' : ''}
                 </div>
               </div>
