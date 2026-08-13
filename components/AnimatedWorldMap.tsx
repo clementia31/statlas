@@ -41,6 +41,8 @@ export default function AnimatedWorldMap({
   const [geoData, setGeoData] = useState<any>(null);
   const [yearIndex, setYearIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [speedMs, setSpeedMs] = useState(1200);
+  const [zoom, setZoom] = useState(1);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; value: string } | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -57,14 +59,14 @@ export default function AnimatedWorldMap({
     if (playing) {
       intervalRef.current = setInterval(() => {
         setYearIndex((i) => (i + 1 >= years.length ? 0 : i + 1));
-      }, 500);
+      }, speedMs);
     } else if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [playing, years.length]);
+  }, [playing, speedMs, years.length]);
 
   if (!geoData || years.length === 0) {
     return (
@@ -91,30 +93,32 @@ export default function AnimatedWorldMap({
   return (
     <div>
       <div className="relative">
-        <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="w-full h-auto block">
-          {geoData.map((d: any, i: number) => {
-            const value = valueByName.get(d.properties.name);
-            return (
-              <path
-                key={i}
-                d={path(d as GeoPermissibleObjects) || undefined}
-                fill={bucketColor(value, low, high)}
-                stroke="#0B1220"
-                strokeWidth={0.5}
-                onMouseMove={(e) => {
-                  const rect = svgRef.current?.getBoundingClientRect();
-                  if (!rect) return;
-                  setTooltip({
-                    x: e.clientX - rect.left + 14,
-                    y: e.clientY - rect.top - 10,
-                    name: d.properties.name,
-                    value: value !== undefined ? formatValue(value, indicatorUnit) : 'not available',
-                  });
-                }}
-                onMouseLeave={() => setTooltip(null)}
-              />
-            );
-          })}
+        <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="w-full h-auto block overflow-hidden">
+          <g style={{ transform: `scale(${zoom})`, transformOrigin: '50% 50%', transition: 'transform 0.15s' }}>
+            {geoData.map((d: any, i: number) => {
+              const value = valueByName.get(d.properties.name);
+              return (
+                <path
+                  key={i}
+                  d={path(d as GeoPermissibleObjects) || undefined}
+                  fill={bucketColor(value, low, high)}
+                  stroke="#0B1220"
+                  strokeWidth={0.5}
+                  onMouseMove={(e) => {
+                    const rect = svgRef.current?.getBoundingClientRect();
+                    if (!rect) return;
+                    setTooltip({
+                      x: e.clientX - rect.left + 14,
+                      y: e.clientY - rect.top - 10,
+                      name: d.properties.name,
+                      value: value !== undefined ? formatValue(value, indicatorUnit) : 'not available',
+                    });
+                  }}
+                  onMouseLeave={() => setTooltip(null)}
+                />
+              );
+            })}
+          </g>
         </svg>
 
         {tooltip && (
@@ -130,6 +134,47 @@ export default function AnimatedWorldMap({
 
         <div className="absolute top-3.5 left-3.5 bg-panel/95 border border-border rounded-lg px-3 py-1.5 font-mono text-lg text-white">
           {currentYear}
+          <span className="text-textMuted text-[10px] ml-2">({yearIndex + 1}/{years.length})</span>
+        </div>
+
+        <div className="absolute right-3.5 top-3.5 flex flex-col gap-1">
+          <button
+            onClick={() => setZoom((z) => Math.min(z + 0.5, 4))}
+            className="w-7 h-7 bg-panel2 border border-border rounded text-textSecondary hover:text-white text-sm"
+            aria-label="Zoom in"
+          >
+            +
+          </button>
+          <button
+            onClick={() => setZoom((z) => Math.max(z - 0.5, 1))}
+            className="w-7 h-7 bg-panel2 border border-border rounded text-textSecondary hover:text-white text-sm"
+            aria-label="Zoom out"
+          >
+            −
+          </button>
+          <button
+            onClick={() => setZoom(1)}
+            className="w-7 h-7 bg-panel2 border border-border rounded text-textSecondary hover:text-white text-xs"
+            aria-label="Reset zoom"
+          >
+            ⟲
+          </button>
+        </div>
+
+        <div className="absolute left-3.5 bottom-3.5 bg-panel/95 border border-border rounded-lg px-3 py-2.5 text-[11px]">
+          <div className="text-textSecondary font-medium mb-1.5">{indicatorLabel}</div>
+          <div className="flex items-center gap-1.5 py-0.5 text-textSecondary">
+            <span className="w-2.5 h-2.5 rounded-sm bg-green shrink-0" /> top third
+          </div>
+          <div className="flex items-center gap-1.5 py-0.5 text-textSecondary">
+            <span className="w-2.5 h-2.5 rounded-sm bg-yellow shrink-0" /> middle third
+          </div>
+          <div className="flex items-center gap-1.5 py-0.5 text-textSecondary">
+            <span className="w-2.5 h-2.5 rounded-sm bg-orange shrink-0" /> bottom third
+          </div>
+          <div className="flex items-center gap-1.5 py-0.5 text-textSecondary">
+            <span className="w-2.5 h-2.5 rounded-sm bg-[#3A4560] shrink-0" /> not available
+          </div>
         </div>
       </div>
 
@@ -155,6 +200,15 @@ export default function AnimatedWorldMap({
         <span className="font-mono text-xs text-textMuted w-24 text-right shrink-0">
           {years[0]}–{years[years.length - 1]}
         </span>
+        <select
+          value={speedMs}
+          onChange={(e) => setSpeedMs(Number(e.target.value))}
+          className="bg-panel2 border border-border rounded-md px-2 py-1 text-xs font-mono text-textSecondary shrink-0"
+        >
+          <option value={2000}>Slow</option>
+          <option value={1200}>Normal</option>
+          <option value={600}>Fast</option>
+        </select>
       </div>
     </div>
   );
