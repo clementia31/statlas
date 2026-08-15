@@ -4,6 +4,8 @@ const NAV_ITEMS = [
   { label: 'Map', href: '/carte' },
   { label: 'Countries', href: '/pays' },
   { label: 'Comparisons', href: '/comparaisons' },
+  { label: 'Analysis', href: '/analysis' },
+  { label: 'The Gazette', href: '/gazette' },
   { label: 'Bibliography', href: '/bibliographie' },
   { label: 'API & Export', href: '/api-export' },
 ];
