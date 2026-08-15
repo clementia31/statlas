@@ -21,12 +21,20 @@ const OTHER_INDICATORS = [
   { slug: 'population-total', label: 'Population' },
 ];
 
-export default function TopBar() {
+const INDICATOR_PAGES = ['/', '/indicateurs', '/carte'];
+const YEAR_PAGES = ['/', '/indicateurs'];
+
+export default function TopBar({ availableYears }: { availableYears?: string[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentIndicator = searchParams.get('indicator') ?? 'human-development-index';
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showIndicator = INDICATOR_PAGES.includes(pathname);
+  const showYear = YEAR_PAGES.includes(pathname);
+  const years = availableYears && availableYears.length > 0 ? availableYears : ['2024'];
+  const currentYear = searchParams.get('year') ?? years[years.length - 1];
 
   function updateParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -36,10 +44,6 @@ export default function TopBar() {
       params.delete(key);
     }
     router.replace(`${pathname}?${params.toString()}`);
-  }
-
-  function handleIndicatorChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    updateParam('indicator', e.target.value);
   }
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -57,27 +61,37 @@ export default function TopBar() {
         onChange={handleSearchChange}
         className="flex-1 max-w-[380px] bg-panel2 border border-border rounded-md px-3 py-1.5 text-[13px] text-textSecondary outline-none"
       />
-      <select
-        value={currentIndicator}
-        onChange={handleIndicatorChange}
-        className="bg-panel2 border border-border rounded-md px-3 py-1.5 text-xs font-mono text-textSecondary"
-      >
-        <optgroup label="GDP">
-          {GDP_INDICATORS.map((i) => (
-            <option key={i.slug} value={i.slug}>{i.label}</option>
+
+      {showIndicator && (
+        <select
+          value={currentIndicator}
+          onChange={(e) => updateParam('indicator', e.target.value)}
+          className="bg-panel2 border border-border rounded-md px-3 py-1.5 text-xs font-mono text-textSecondary"
+        >
+          <optgroup label="GDP">
+            {GDP_INDICATORS.map((i) => (
+              <option key={i.slug} value={i.slug}>{i.label}</option>
+            ))}
+          </optgroup>
+          <optgroup label="Other indicators">
+            {OTHER_INDICATORS.map((i) => (
+              <option key={i.slug} value={i.slug}>{i.label}</option>
+            ))}
+          </optgroup>
+        </select>
+      )}
+
+      {showYear && (
+        <select
+          value={currentYear}
+          onChange={(e) => updateParam('year', e.target.value)}
+          className="bg-panel2 border border-border rounded-md px-3 py-1.5 text-xs font-mono text-textSecondary"
+        >
+          {[...years].reverse().map((y) => (
+            <option key={y} value={y}>{y}</option>
           ))}
-        </optgroup>
-        <optgroup label="Other indicators">
-          {OTHER_INDICATORS.map((i) => (
-            <option key={i.slug} value={i.slug}>{i.label}</option>
-          ))}
-        </optgroup>
-      </select>
-      <select className="bg-panel2 border border-border rounded-md px-3 py-1.5 text-xs font-mono text-textSecondary">
-        <option>2024</option>
-        <option>2023</option>
-        <option>2020</option>
-      </select>
+        </select>
+      )}
 
       <div className="flex items-center gap-1.5 ml-2">
         <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-textSecondary hover:text-white text-sm" aria-label="Notifications" title="Notifications (coming soon)">
