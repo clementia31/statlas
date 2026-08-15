@@ -2,7 +2,7 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import TrendChart from '@/components/TrendChart';
 import AnimatedWorldMap from '@/components/AnimatedWorldMap';
-import { getLatestObservationsByIndicator, getIndicatorTimeSeries, getIndicatorAllYears } from '@/lib/supabase';
+import { getIndicatorAllYears, getIndicatorTimeSeries } from '@/lib/supabase';
 import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -12,25 +12,25 @@ const TABS = ['Overview', 'Data', 'Charts', 'Map', 'Analysis', 'Metadata'];
 export default async function IndicatorDetailPage({
   searchParams,
 }: {
-  searchParams: { indicator?: string; q?: string; tab?: string };
+  searchParams: { indicator?: string; q?: string; tab?: string; year?: string };
 }) {
   const indicatorSlug = searchParams.indicator ?? 'human-development-index';
   const query = (searchParams.q ?? '').toLowerCase().trim();
   const activeTab = searchParams.tab ?? 'Overview';
 
-  const [{ indicator, rows }, { series }] = await Promise.all([
-    getLatestObservationsByIndicator(indicatorSlug),
+  const [{ indicator, years, yearsData }, { series }] = await Promise.all([
+    getIndicatorAllYears(indicatorSlug),
     getIndicatorTimeSeries(indicatorSlug),
   ]);
 
-  // Ne charge l'historique complet (plus lourd) que si l'onglet Map est actif
-  const mapAnimationData =
-    activeTab === 'Map' ? await getIndicatorAllYears(indicatorSlug) : null;
+  const selectedYear =
+    searchParams.year && years.includes(searchParams.year)
+      ? searchParams.year
+      : years[years.length - 1];
 
-  const ranked = rows
-    .filter((r) => r.entity)
-    .filter((r) => r.entity!.name_default.toLowerCase().includes(query))
-    .sort((a, b) => b.value_number - a.value_number)
+  const ranked = (yearsData[selectedYear] ?? [])
+    .filter((r) => r.name.toLowerCase().includes(query))
+    .sort((a, b) => b.value - a.value)
     .slice(0, 50);
 
   function tabHref(tab: string) {
@@ -38,6 +38,7 @@ export default async function IndicatorDetailPage({
     params.set('indicator', indicatorSlug);
     params.set('tab', tab);
     if (query) params.set('q', searchParams.q ?? '');
+    if (searchParams.year) params.set('year', searchParams.year);
     return `/indicateurs?${params.toString()}`;
   }
 
@@ -46,7 +47,7 @@ export default async function IndicatorDetailPage({
       <Sidebar active="Indicators" />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
+        <TopBar availableYears={years} />
 
         <div className="p-[22px]">
           <div className="mb-3">
@@ -54,7 +55,7 @@ export default async function IndicatorDetailPage({
               {indicator?.name_default ?? indicatorSlug}
             </div>
             <div className="text-textMuted text-xs mt-1">
-              {ranked.length} countries ranked — latest available values
+              {selectedYear} — {ranked.length} countries ranked
               {query ? ` matching "${searchParams.q}"` : ''}
             </div>
           </div>
@@ -88,14 +89,14 @@ export default async function IndicatorDetailPage({
               <div className="bg-panel border border-border rounded-[10px] p-4 max-w-xl max-h-[70vh] overflow-auto">
                 {ranked.map((r, i) => (
                   <div
-                    key={r.entity_id}
+                    key={r.slug}
                     className="flex justify-between py-1.5 border-b border-border text-sm last:border-b-0"
                   >
                     <span>
                       <span className="text-textMuted font-mono mr-2 inline-block w-5">{i + 1}</span>
-                      {r.entity!.name_default}
+                      {r.name}
                     </span>
-                    <span className="font-mono font-medium">{formatValue(r.value_number, indicator?.unit)}</span>
+                    <span className="font-mono font-medium">{formatValue(r.value, indicator?.unit)}</span>
                   </div>
                 ))}
                 {ranked.length === 0 && (
@@ -105,14 +106,14 @@ export default async function IndicatorDetailPage({
             </>
           )}
 
-          {activeTab === 'Map' && mapAnimationData && (
+          {activeTab === 'Map' && (
             <div className="bg-panel border border-border rounded-[10px] p-4 max-w-4xl">
               <div className="text-textMuted text-[11px] mb-2">
-                animated over {mapAnimationData.years.length} years — press play
+                animated over {years.length} years — press play
               </div>
               <AnimatedWorldMap
-                years={mapAnimationData.years}
-                yearsData={mapAnimationData.yearsData}
+                years={years}
+                yearsData={yearsData}
                 indicatorLabel={indicator?.name_default ?? indicatorSlug}
                 indicatorUnit={indicator?.unit}
               />
