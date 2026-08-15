@@ -1,13 +1,9 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
-import WorldMap from '@/components/WorldMap';
-import { getLatestObservationsByIndicator } from '@/lib/supabase';
+import AnimatedWorldMap from '@/components/AnimatedWorldMap';
+import { getIndicatorAllYears } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
-
-const NAME_OVERRIDES: Record<string, string> = {
-  'United States': 'United States of America',
-};
 
 export default async function CartePage({
   searchParams,
@@ -16,22 +12,16 @@ export default async function CartePage({
 }) {
   const indicatorSlug = searchParams.indicator ?? 'human-development-index';
   const query = (searchParams.q ?? '').toLowerCase().trim();
-  const { indicator, rows } = await getLatestObservationsByIndicator(indicatorSlug);
+  const { indicator, years, yearsData } = await getIndicatorAllYears(indicatorSlug);
 
-  const allMapData = rows
-    .filter((r) => r.entity)
-    .map((r) => {
-      const rawName = r.entity!.name_default;
-      return {
-        slug: r.entity!.slug,
-        name: NAME_OVERRIDES[rawName] ?? rawName,
-        value: r.value_number,
-      };
-    });
-
-  const mapData = query
-    ? allMapData.filter((d) => d.name.toLowerCase().includes(query))
-    : allMapData;
+  const filteredYearsData = query
+    ? Object.fromEntries(
+        Object.entries(yearsData).map(([year, rows]) => [
+          year,
+          rows.filter((r) => r.name.toLowerCase().includes(query)),
+        ])
+      )
+    : yearsData;
 
   return (
     <div className="flex min-h-screen">
@@ -47,13 +37,14 @@ export default async function CartePage({
                 {indicator?.name_default ?? indicatorSlug}
               </div>
               <div className="text-textMuted text-xs mt-0.5">
-                {mapData.length} countries with data
-                {query ? ` matching "${searchParams.q}"` : ''}
+                Animated over {years.length} years
+                {query ? ` — filtered by "${searchParams.q}"` : ''}
                 {' — '}use the indicator selector above to switch
               </div>
             </div>
-            <WorldMap
-              data={mapData}
+            <AnimatedWorldMap
+              years={years}
+              yearsData={filteredYearsData}
               indicatorLabel={indicator?.name_default ?? indicatorSlug}
               indicatorUnit={indicator?.unit}
             />
