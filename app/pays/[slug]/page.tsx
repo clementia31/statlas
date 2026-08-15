@@ -18,7 +18,7 @@ export default async function CountryDetailPage({
     notFound();
   }
 
-  const { facts, memberships } = await getCountryExtras(entity!.id);
+  const { facts, currencyName, memberships } = await getCountryExtras(entity!.id);
 
   return (
     <div className="flex min-h-screen">
@@ -50,29 +50,33 @@ export default async function CountryDetailPage({
                 <div>
                   <div className="text-textMuted text-[11px] font-medium mb-2">identity</div>
                   <table className="w-full text-sm">
-                    {facts.capital && (
-                      <tr><td className="text-textSecondary py-0.5">Capital</td><td className="text-right">{facts.capital}</td></tr>
-                    )}
-                    {facts.official_languages?.length > 0 && (
-                      <tr><td className="text-textSecondary py-0.5">Language(s)</td><td className="text-right">{facts.official_languages.join(', ')}</td></tr>
-                    )}
-                    {facts.currency_code && (
-                      <tr><td className="text-textSecondary py-0.5">Currency</td><td className="text-right">{facts.currencies?.name ?? facts.currency_code} ({facts.currency_code})</td></tr>
-                    )}
+                    <tbody>
+                      {facts.capital && (
+                        <tr><td className="text-textSecondary py-0.5">Capital</td><td className="text-right">{facts.capital}</td></tr>
+                      )}
+                      {facts.official_languages?.length > 0 && (
+                        <tr><td className="text-textSecondary py-0.5">Language(s)</td><td className="text-right">{facts.official_languages.join(', ')}</td></tr>
+                      )}
+                      {facts.currency_code && (
+                        <tr><td className="text-textSecondary py-0.5">Currency</td><td className="text-right">{currencyName ?? facts.currency_code} ({facts.currency_code})</td></tr>
+                      )}
+                    </tbody>
                   </table>
                 </div>
 
                 <div>
                   <div className="text-textMuted text-[11px] font-medium mb-2">geography</div>
                   <table className="w-full text-sm">
-                    {facts.area_km2 && (
-                      <tr><td className="text-textSecondary py-0.5">Area</td><td className="text-right">{formatValue(facts.area_km2, 'people')} km²</td></tr>
-                    )}
-                    {facts.borders_iso3 && (
-                      <tr><td className="text-textSecondary py-0.5">Borders</td><td className="text-right">{facts.borders_iso3.length} countries</td></tr>
-                    )}
-                    <tr><td className="text-textSecondary py-0.5">Landlocked</td><td className="text-right">{facts.landlocked ? 'Yes' : 'No'}</td></tr>
-                    <tr><td className="text-textSecondary py-0.5">UN member</td><td className="text-right">{facts.un_member ? 'Yes' : 'No'}</td></tr>
+                    <tbody>
+                      {facts.area_km2 && (
+                        <tr><td className="text-textSecondary py-0.5">Area</td><td className="text-right">{Number(facts.area_km2).toLocaleString()} km²</td></tr>
+                      )}
+                      {facts.borders_iso3 && (
+                        <tr><td className="text-textSecondary py-0.5">Borders</td><td className="text-right">{facts.borders_iso3.length} countries</td></tr>
+                      )}
+                      <tr><td className="text-textSecondary py-0.5">Landlocked</td><td className="text-right">{facts.landlocked ? 'Yes' : 'No'}</td></tr>
+                      <tr><td className="text-textSecondary py-0.5">UN member</td><td className="text-right">{facts.un_member ? 'Yes' : 'No'}</td></tr>
+                    </tbody>
                   </table>
                 </div>
               </div>
@@ -81,7 +85,7 @@ export default async function CountryDetailPage({
                 <div className="mt-4 pt-4 border-t border-border">
                   <div className="text-textMuted text-[11px] font-medium mb-2">memberships</div>
                   <div className="flex gap-1.5 flex-wrap">
-                    {memberships.map((g: any) => (
+                    {memberships.map((g) => (
                       <span key={g.slug} className="bg-panel2 text-textSecondary text-xs px-2.5 py-1 rounded-md border border-border">
                         {g.name_default}
                       </span>
