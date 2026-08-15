@@ -4,8 +4,14 @@ import { getAllSources } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
-export default async function BibliographyPage() {
+export default async function BibliographyPage({
+  searchParams,
+}: {
+  searchParams: { q?: string };
+}) {
   const sources = await getAllSources();
+  const query = (searchParams.q ?? '').toLowerCase().trim();
+  const filtered = sources.filter((s) => s.name.toLowerCase().includes(query));
 
   return (
     <div className="flex min-h-screen">
@@ -17,11 +23,12 @@ export default async function BibliographyPage() {
         <div className="p-[22px]">
           <div className="font-serif text-2xl mb-1">Bibliography</div>
           <div className="text-textMuted text-xs mb-4">
-            Every source used to build Statlas — {sources.length} organizations
+            {filtered.length} organizations
+            {query ? ` matching "${searchParams.q}"` : ''}
           </div>
 
           <div className="max-w-3xl flex flex-col gap-3">
-            {sources.map((s) => (
+            {filtered.map((s) => (
               <div key={s.id} className="bg-panel border border-border rounded-[10px] p-4">
                 <div className="flex items-baseline justify-between mb-1">
                   <div className="font-serif text-lg">
@@ -57,6 +64,9 @@ export default async function BibliographyPage() {
                 )}
               </div>
             ))}
+            {filtered.length === 0 && (
+              <div className="text-textMuted text-sm">No source matches your search.</div>
+            )}
           </div>
         </div>
       </div>
