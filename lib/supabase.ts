@@ -291,3 +291,31 @@ export async function getIndicatorAllYears(indicatorSlug: string) {
 
   return { indicator, years, yearsData };
 }
+
+// Articles de la Gazette
+export async function getAllArticles() {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('id, slug, title, subtitle, article_type, discipline_slug, author_name, published_at')
+    .order('published_at', { ascending: false });
+
+  if (error) {
+    console.error('Erreur getAllArticles:', error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
+export async function getArticleBySlug(slug: string) {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('*, sources(name, url, source_documents(title, url, published_at))')
+    .eq('slug', slug)
+    .single();
+
+  if (error) {
+    console.error('Erreur getArticleBySlug:', error.message);
+    return null;
+  }
+  return data;
+}
