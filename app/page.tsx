@@ -2,7 +2,7 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import KpiCard from '@/components/KpiCard';
 import WorldMap from '@/components/WorldMap';
-import { getLatestObservationsByIndicator } from '@/lib/supabase';
+import { getIndicatorAllYears } from '@/lib/supabase';
 import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -14,22 +14,24 @@ const NAME_OVERRIDES: Record<string, string> = {
 export default async function VueGlobalePage({
   searchParams,
 }: {
-  searchParams: { indicator?: string; q?: string };
+  searchParams: { indicator?: string; q?: string; year?: string };
 }) {
   const indicatorSlug = searchParams.indicator ?? 'human-development-index';
   const query = (searchParams.q ?? '').toLowerCase().trim();
-  const { indicator, rows } = await getLatestObservationsByIndicator(indicatorSlug);
+  const { indicator, years, yearsData } = await getIndicatorAllYears(indicatorSlug);
 
-  const allMapData = rows
-    .filter((r) => r.entity)
-    .map((r) => {
-      const rawName = r.entity!.name_default;
-      return {
-        slug: r.entity!.slug,
-        name: NAME_OVERRIDES[rawName] ?? rawName,
-        value: r.value_number,
-      };
-    });
+  const selectedYear =
+    searchParams.year && years.includes(searchParams.year)
+      ? searchParams.year
+      : years[years.length - 1];
+
+  const rawData = yearsData[selectedYear] ?? [];
+
+  const allMapData = rawData.map((d) => ({
+    slug: d.slug,
+    name: NAME_OVERRIDES[d.name] ?? d.name,
+    value: d.value,
+  }));
 
   const mapData = query
     ? allMapData.filter((d) => d.name.toLowerCase().includes(query))
@@ -44,7 +46,7 @@ export default async function VueGlobalePage({
       <Sidebar active="Overview" />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
+        <TopBar availableYears={years} />
 
         <div className="flex-1 flex min-h-0">
           <div className="flex-1 min-w-0 p-[18px] overflow-auto">
@@ -54,15 +56,13 @@ export default async function VueGlobalePage({
                   {indicator?.name_default ?? indicatorSlug}
                 </div>
                 <div className="text-textMuted text-xs mt-0.5">
-                  Global overview of key indicators worldwide
-                  {' — '}
-                  {mapData.length} countries with data
+                  {selectedYear} — {mapData.length} countries with data
                   {query ? ` matching "${searchParams.q}"` : ''}
                 </div>
               </div>
               <WorldMap
                 data={mapData}
-                indicatorLabel={indicator?.name_default ?? indicatorSlug}
+                indicatorLabel={`${indicator?.name_default ?? indicatorSlug} (${selectedYear})`}
                 indicatorUnit={indicator?.unit}
               />
             </div>
