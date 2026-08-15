@@ -1,6 +1,7 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { getCountryProfile } from '@/lib/supabase';
+import { getCountryExtras } from '@/lib/country-facts';
 import { formatValue } from '@/lib/format';
 import { notFound } from 'next/navigation';
 
@@ -17,6 +18,8 @@ export default async function CountryDetailPage({
     notFound();
   }
 
+  const { facts, memberships } = await getCountryExtras(entity!.id);
+
   return (
     <div className="flex min-h-screen">
       <Sidebar active="Countries" />
@@ -25,13 +28,71 @@ export default async function CountryDetailPage({
         <TopBar />
 
         <div className="p-[22px]">
-          <div className="flex items-baseline justify-between mb-1">
-            <div className="font-serif text-3xl">{entity!.name_default}</div>
+          <div className="flex items-center gap-3 mb-1">
             {entity!.iso_code && (
-              <div className="text-textMuted text-xs font-mono">{entity!.iso_code}</div>
+              <img
+                src={`https://flagcdn.com/w80/${entity!.iso_code.toLowerCase()}.png`}
+                alt=""
+                className="w-10 h-7 rounded object-cover border border-border"
+              />
             )}
+            <div>
+              <div className="font-serif text-3xl">{entity!.name_default}</div>
+              {facts?.official_name && (
+                <div className="text-textMuted text-xs">{facts.official_name}</div>
+              )}
+            </div>
           </div>
-          <div className="text-textMuted text-xs mb-4">
+
+          {facts && (
+            <div className="bg-panel border border-border rounded-[10px] p-4 max-w-2xl mt-4 mb-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <div className="text-textMuted text-[11px] font-medium mb-2">identity</div>
+                  <table className="w-full text-sm">
+                    {facts.capital && (
+                      <tr><td className="text-textSecondary py-0.5">Capital</td><td className="text-right">{facts.capital}</td></tr>
+                    )}
+                    {facts.official_languages?.length > 0 && (
+                      <tr><td className="text-textSecondary py-0.5">Language(s)</td><td className="text-right">{facts.official_languages.join(', ')}</td></tr>
+                    )}
+                    {facts.currency_code && (
+                      <tr><td className="text-textSecondary py-0.5">Currency</td><td className="text-right">{facts.currencies?.name ?? facts.currency_code} ({facts.currency_code})</td></tr>
+                    )}
+                  </table>
+                </div>
+
+                <div>
+                  <div className="text-textMuted text-[11px] font-medium mb-2">geography</div>
+                  <table className="w-full text-sm">
+                    {facts.area_km2 && (
+                      <tr><td className="text-textSecondary py-0.5">Area</td><td className="text-right">{formatValue(facts.area_km2, 'people')} km²</td></tr>
+                    )}
+                    {facts.borders_iso3 && (
+                      <tr><td className="text-textSecondary py-0.5">Borders</td><td className="text-right">{facts.borders_iso3.length} countries</td></tr>
+                    )}
+                    <tr><td className="text-textSecondary py-0.5">Landlocked</td><td className="text-right">{facts.landlocked ? 'Yes' : 'No'}</td></tr>
+                    <tr><td className="text-textSecondary py-0.5">UN member</td><td className="text-right">{facts.un_member ? 'Yes' : 'No'}</td></tr>
+                  </table>
+                </div>
+              </div>
+
+              {memberships.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <div className="text-textMuted text-[11px] font-medium mb-2">memberships</div>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {memberships.map((g: any) => (
+                      <span key={g.slug} className="bg-panel2 text-textSecondary text-xs px-2.5 py-1 rounded-md border border-border">
+                        {g.name_default}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="text-textMuted text-xs mb-3">
             {indicators.length} indicators available for this country
           </div>
 
