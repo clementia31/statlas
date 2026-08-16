@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from 'd3-geo';
 import { feature } from 'topojson-client';
 import { formatValue } from '@/lib/format';
@@ -31,6 +32,7 @@ export default function WorldMap({
   indicatorLabel: string;
   indicatorUnit?: string;
 }) {
+  const router = useRouter();
   const svgRef = useRef<SVGSVGElement>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; value: string } | null>(null);
   const [geoData, setGeoData] = useState<any>(null);
@@ -59,8 +61,10 @@ export default function WorldMap({
   const path = geoPath(projection as any);
 
   const valueByName = new Map<string, number>();
+  const slugByName = new Map<string, string>();
   for (const d of data) {
     valueByName.set(d.name, d.value);
+    slugByName.set(d.name, d.slug);
   }
 
   const { low, high } = computeThresholds(data.map((d) => d.value));
@@ -71,6 +75,7 @@ export default function WorldMap({
         <g style={{ transform: `scale(${zoom})`, transformOrigin: '50% 50%', transition: 'transform 0.15s' }}>
           {geoData.map((d: any, i: number) => {
             const value = valueByName.get(d.properties.name);
+            const slug = slugByName.get(d.properties.name);
             return (
               <path
                 key={i}
@@ -78,7 +83,10 @@ export default function WorldMap({
                 fill={bucketColor(value, low, high)}
                 stroke="#0B1220"
                 strokeWidth={0.5}
-                className="cursor-pointer hover:stroke-white"
+                className={slug ? 'cursor-pointer hover:stroke-white' : 'hover:stroke-white'}
+                onClick={() => {
+                  if (slug) router.push(`/pays/${slug}`);
+                }}
                 onMouseMove={(e) => {
                   const rect = svgRef.current?.getBoundingClientRect();
                   if (!rect) return;
