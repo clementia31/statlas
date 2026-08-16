@@ -5,6 +5,7 @@ const NAV_ITEMS = [
   { label: 'Countries', href: '/pays' },
   { label: 'Comparisons', href: '/comparaisons' },
   { label: 'Rankings', href: '/rankings' },
+  { label: 'Benchmark', href: '/benchmark' },
   { label: 'Analysis', href: '/analysis' },
   { label: 'The Gazette', href: '/gazette' },
   { label: 'Bibliography', href: '/bibliographie' },
