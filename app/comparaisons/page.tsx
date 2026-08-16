@@ -1,29 +1,24 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
-import MultiTrendChart from '@/components/MultiTrendChart';
-import { getLatestObservationsByIndicator, getCountryYearlySeries } from '@/lib/supabase';
-import { formatValue } from '@/lib/format';
+import { getLatestObservationsByIndicator } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
 const INDICATORS = [
-  { slug: 'human-development-index', label: 'HDI', unit: 'index (0-1)' },
-  { slug: 'gdp-nominal-usd', label: 'Nominal GDP', unit: 'usd million' },
-  { slug: 'population-total', label: 'Population', unit: 'people' },
-  { slug: 'life-expectancy-birth', label: 'Life expectancy', unit: 'years' },
+  { slug: 'human-development-index', label: 'HDI' },
+  { slug: 'gdp-nominal-usd', label: 'Nominal GDP (USD M)' },
+  { slug: 'population-total', label: 'Population' },
+  { slug: 'life-expectancy-birth', label: 'Life expectancy' },
 ];
-
-const CHART_COUNTRIES = ['united-states', 'germany', 'france', 'india', 'china'];
 
 export default async function ComparisonsPage({
   searchParams,
 }: {
   searchParams: { q?: string };
 }) {
-  const [results, chartData] = await Promise.all([
-    Promise.all(INDICATORS.map((i) => getLatestObservationsByIndicator(i.slug))),
-    getCountryYearlySeries('human-development-index', CHART_COUNTRIES),
-  ]);
+  const results = await Promise.all(
+    INDICATORS.map((i) => getLatestObservationsByIndicator(i.slug))
+  );
 
   const valuesByIndicator: Record<string, Map<string, number>> = {};
   const nameBySlug = new Map<string, string>();
@@ -44,24 +39,10 @@ export default async function ComparisonsPage({
   });
 
   const query = (searchParams.q ?? '').toLowerCase().trim();
+
   const sortedSlugs = Array.from(allSlugs)
     .filter((slug) => (nameBySlug.get(slug) ?? slug).toLowerCase().includes(query))
     .sort((a, b) => (nameBySlug.get(a) ?? a).localeCompare(nameBySlug.get(b) ?? b));
-
-  const allYears = new Set<string>();
-  for (const slug of CHART_COUNTRIES) {
-    for (const point of chartData.seriesByEntity?.[slug] ?? []) allYears.add(point.year);
-  }
-  const years = Array.from(allYears).sort();
-
-  const datasets = CHART_COUNTRIES.map((slug) => {
-    const points = chartData.seriesByEntity?.[slug] ?? [];
-    const byYear = new Map(points.map((p) => [p.year, p.value]));
-    return {
-      label: chartData.namesBySlug?.[slug] ?? slug,
-      data: years.map((y) => byYear.get(y) ?? null),
-    };
-  });
 
   return (
     <div className="flex min-h-screen">
@@ -72,13 +53,11 @@ export default async function ComparisonsPage({
 
         <div className="p-[22px]">
           <div className="font-serif text-2xl mb-1">Country comparison</div>
-          <div className="text-textMuted text-xs mb-4">
+          <div className="text-textMuted text-xs mb-1">
             Live data from Statlas — {sortedSlugs.length} countries, {INDICATORS.length} indicators
           </div>
-
-          <div className="bg-panel border border-border rounded-[10px] p-4 max-w-4xl mb-4">
-            <div className="text-textMuted text-[11px] mb-2">HDI trend — selected countries</div>
-            <MultiTrendChart labels={years} datasets={datasets} />
+          <div className="text-textMuted text-[11px] mb-4">
+            <a href="/bibliographie" className="hover:text-accent underline">View all data sources →</a>
           </div>
 
           <div className="bg-panel border border-border rounded-[10px] overflow-auto max-w-4xl max-h-[70vh]">
@@ -99,7 +78,7 @@ export default async function ComparisonsPage({
                       const v = valuesByIndicator[i.slug].get(slug);
                       return (
                         <td key={i.slug} className="p-2">
-                          {v !== undefined ? formatValue(v, i.unit) : '—'}
+                          {v !== undefined ? v.toLocaleString() : '—'}
                         </td>
                       );
                     })}
