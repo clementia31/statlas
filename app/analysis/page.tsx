@@ -1,6 +1,8 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 
+export const dynamic = 'force-dynamic';
+
 export default function AnalysisPage() {
   return (
     <div className="flex min-h-screen">
