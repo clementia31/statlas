@@ -3,6 +3,7 @@ import TopBar from '@/components/TopBar';
 import TrendChart from '@/components/TrendChart';
 import AnimatedWorldMap from '@/components/AnimatedWorldMap';
 import { getIndicatorAllYears, getIndicatorTimeSeries } from '@/lib/supabase';
+import { getSourcesForIndicator } from '@/lib/sources';
 import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -18,9 +19,10 @@ export default async function IndicatorDetailPage({
   const query = (searchParams.q ?? '').toLowerCase().trim();
   const activeTab = searchParams.tab ?? 'Overview';
 
-  const [{ indicator, years, yearsData }, { series }] = await Promise.all([
+  const [{ indicator, years, yearsData }, { series }, sources] = await Promise.all([
     getIndicatorAllYears(indicatorSlug),
     getIndicatorTimeSeries(indicatorSlug),
+    getSourcesForIndicator(indicatorSlug),
   ]);
 
   const selectedYear =
@@ -50,7 +52,7 @@ export default async function IndicatorDetailPage({
         <TopBar availableYears={years} />
 
         <div className="p-[22px]">
-          <div className="mb-3">
+          <div className="mb-1">
             <div className="font-serif text-2xl">
               {indicator?.name_default ?? indicatorSlug}
             </div>
@@ -59,6 +61,24 @@ export default async function IndicatorDetailPage({
               {query ? ` matching "${searchParams.q}"` : ''}
             </div>
           </div>
+
+          {sources.length > 0 && (
+            <div className="text-textMuted text-[11px] mb-4">
+              Source{sources.length > 1 ? 's' : ''}:{' '}
+              {sources.map((s, i) => (
+                <span key={i}>
+                  {i > 0 && ', '}
+                  {s.sourceUrl ? (
+                    <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent underline">
+                      {s.sourceName}
+                    </a>
+                  ) : (
+                    s.sourceName
+                  )}
+                </span>
+              ))}
+            </div>
+          )}
 
           <div className="flex gap-1 border-b border-border mb-4">
             {TABS.map((tab) => (
