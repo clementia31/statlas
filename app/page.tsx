@@ -3,6 +3,7 @@ import TopBar from '@/components/TopBar';
 import KpiCard from '@/components/KpiCard';
 import WorldMap from '@/components/WorldMap';
 import { getIndicatorAllYears } from '@/lib/supabase';
+import { getSourcesForIndicator } from '@/lib/sources';
 import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +19,11 @@ export default async function VueGlobalePage({
 }) {
   const indicatorSlug = searchParams.indicator ?? 'human-development-index';
   const query = (searchParams.q ?? '').toLowerCase().trim();
-  const { indicator, years, yearsData } = await getIndicatorAllYears(indicatorSlug);
+
+  const [{ indicator, years, yearsData }, sources] = await Promise.all([
+    getIndicatorAllYears(indicatorSlug),
+    getSourcesForIndicator(indicatorSlug),
+  ]);
 
   const selectedYear =
     searchParams.year && years.includes(searchParams.year)
@@ -50,7 +55,7 @@ export default async function VueGlobalePage({
 
         <div className="flex-1 flex min-h-0">
           <div className="flex-1 min-w-0 p-[18px] overflow-auto">
-            <div className="bg-panel border border-border rounded-[10px] p-4 relative mb-4">
+            <div className="bg-panel border border-border rounded-[10px] p-4 relative mb-2">
               <div className="mb-2.5">
                 <div className="font-serif text-[17px]">
                   {indicator?.name_default ?? indicatorSlug}
@@ -66,6 +71,24 @@ export default async function VueGlobalePage({
                 indicatorUnit={indicator?.unit}
               />
             </div>
+
+            {sources.length > 0 && (
+              <div className="text-textMuted text-[11px] mb-4 px-1">
+                Source{sources.length > 1 ? 's' : ''}:{' '}
+                {sources.map((s, i) => (
+                  <span key={i}>
+                    {i > 0 && ', '}
+                    {s.sourceUrl ? (
+                      <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent underline">
+                        {s.sourceName}
+                      </a>
+                    ) : (
+                      s.sourceName
+                    )}
+                  </span>
+                ))}
+              </div>
+            )}
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               <KpiCard label="world average" value={average} delta="" positive />
