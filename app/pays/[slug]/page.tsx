@@ -96,8 +96,11 @@ export default async function CountryDetailPage({
             </div>
           )}
 
-          <div className="text-textMuted text-xs mb-3">
+          <div className="text-textMuted text-xs mb-1">
             {indicators.length} indicators available for this country
+          </div>
+          <div className="text-textMuted text-[11px] mb-3">
+            <a href="/bibliographie" className="hover:text-accent underline">View all data sources →</a>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl">
