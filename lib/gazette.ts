@@ -47,3 +47,26 @@ export async function getFeaturedAndLatest() {
   const all = data ?? [];
   return { featured: all[0] ?? null, latest: all.slice(1) };
 }
+
+export async function getRelatedForArticle(countrySlugs: string[] | null, indicatorSlugs: string[] | null) {
+  const countries: { slug: string; name_default: string }[] = [];
+  const indicators: { slug: string; name_default: string }[] = [];
+
+  if (countrySlugs && countrySlugs.length > 0) {
+    const { data } = await supabase
+      .from('entities')
+      .select('slug, name_default')
+      .in('slug', countrySlugs);
+    if (data) countries.push(...data);
+  }
+
+  if (indicatorSlugs && indicatorSlugs.length > 0) {
+    const { data } = await supabase
+      .from('indicators')
+      .select('slug, name_default')
+      .in('slug', indicatorSlugs);
+    if (data) indicators.push(...data);
+  }
+
+  return { countries, indicators };
+}
