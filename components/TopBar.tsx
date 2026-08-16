@@ -52,14 +52,22 @@ export default function TopBar({ availableYears }: { availableYears?: string[] }
     timer.current = setTimeout(() => updateParam('q', value), 250);
   }
 
+  function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      const value = (e.target as HTMLInputElement).value;
+      router.push(`/search?q=${encodeURIComponent(value)}`);
+    }
+  }
+
   return (
     <div className="h-[54px] border-b border-border flex items-center gap-3.5 px-[22px] shrink-0">
       <input
         type="text"
-        placeholder="Search a country..."
+        placeholder="Search a country, indicator, article... (Enter for full search)"
         defaultValue={searchParams.get('q') ?? ''}
         onChange={handleSearchChange}
-        className="flex-1 max-w-[380px] bg-panel2 border border-border rounded-md px-3 py-1.5 text-[13px] text-textSecondary outline-none"
+        onKeyDown={handleSearchKeyDown}
+        className="flex-1 max-w-[420px] bg-panel2 border border-border rounded-md px-3 py-1.5 text-[13px] text-textSecondary outline-none"
       />
 
       {showIndicator && (
