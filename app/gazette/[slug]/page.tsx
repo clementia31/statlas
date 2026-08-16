@@ -114,6 +114,52 @@ export default async function GazetteSlugPage({
               {article.body}
             </div>
 
+            {article.data_scope && (
+              <div className="mt-6 pt-5 border-t border-border">
+                <div className="text-textMuted text-[11px] mb-2">Data scope</div>
+                <div className="text-textSecondary text-sm">
+                  {article.data_scope.countriesCount && `${article.data_scope.countriesCount} countries`}
+                  {article.data_scope.startYear && article.data_scope.endYear &&
+                    ` · ${article.data_scope.startYear}–${article.data_scope.endYear}`}
+                  {article.data_scope.indicatorsCount && ` · ${article.data_scope.indicatorsCount} indicators`}
+                  {article.data_scope.observationsCount && ` · ${article.data_scope.observationsCount.toLocaleString()} observations`}
+                </div>
+                {article.data_scope.sources && (
+                  <div className="text-textMuted text-xs mt-1">
+                    Sources: {article.data_scope.sources.join(' · ')}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {article.key_findings && article.key_findings.length > 0 && (
+              <div className="mt-6 pt-5 border-t border-border">
+                <div className="text-textMuted text-[11px] mb-2">Key findings</div>
+                {article.key_findings.map((f: string, i: number) => (
+                  <div key={i} className="flex gap-3 py-1.5 text-sm text-textSecondary">
+                    <span className="text-textMuted font-mono shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                    <span>{f}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {article.methods && article.methods.length > 0 && (
+              <div className="mt-6 pt-5 border-t border-border">
+                <div className="text-textMuted text-[11px] mb-2">Methods</div>
+                <div className="text-textSecondary text-sm">{article.methods.join(' · ')}</div>
+              </div>
+            )}
+
+            {article.limitations && article.limitations.length > 0 && (
+              <div className="mt-6 pt-5 border-t border-border">
+                <div className="text-textMuted text-[11px] mb-2">Limitations</div>
+                {article.limitations.map((l: string, i: number) => (
+                  <div key={i} className="text-sm text-textSecondary py-1">{l}</div>
+                ))}
+              </div>
+            )}
+
             {source && (
               <div className="mt-8 pt-5 border-t border-border">
                 <div className="text-textMuted text-[11px] mb-1.5">Foundational text</div>
