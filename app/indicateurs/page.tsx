@@ -114,7 +114,9 @@ export default async function IndicatorDetailPage({
                   >
                     <span>
                       <span className="text-textMuted font-mono mr-2 inline-block w-5">{i + 1}</span>
-                      {r.name}
+                      <a href={`/pays/${r.slug}`} className="hover:text-accent hover:underline">
+                        {r.name}
+                      </a>
                     </span>
                     <span className="font-mono font-medium">{formatValue(r.value, indicator?.unit)}</span>
                   </div>
