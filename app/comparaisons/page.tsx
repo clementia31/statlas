@@ -73,7 +73,11 @@ export default async function ComparisonsPage({
               <tbody className="font-mono">
                 {sortedSlugs.map((slug) => (
                   <tr key={slug} className="border-b border-border last:border-b-0">
-                    <td className="p-2 font-sans font-medium">{nameBySlug.get(slug) ?? slug}</td>
+                    <td className="p-2 font-sans font-medium">
+                      <a href={`/pays/${slug}`} className="hover:text-accent hover:underline">
+                        {nameBySlug.get(slug) ?? slug}
+                      </a>
+                    </td>
                     {INDICATORS.map((i) => {
                       const v = valuesByIndicator[i.slug].get(slug);
                       return (
