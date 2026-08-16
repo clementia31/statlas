@@ -252,7 +252,7 @@ export async function getCountryYearlySeries(indicatorSlug: string, entitySlugs:
 export async function getIndicatorAllYears(indicatorSlug: string) {
   const { data: indicator } = await supabase
     .from('indicators')
-    .select('id, name_default, unit')
+    .select('id, name_default, unit, higher_is_better')
     .eq('slug', indicatorSlug)
     .single();
 
