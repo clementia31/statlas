@@ -307,15 +307,37 @@ export async function getAllArticles() {
 }
 
 export async function getArticleBySlug(slug: string) {
-  const { data, error } = await supabase
+  const { data: article, error } = await supabase
     .from('articles')
-    .select('*, sources(name, url, source_documents(title, url, published_at))')
+    .select('*')
     .eq('slug', slug)
-    .single();
+    .maybeSingle();
 
-  if (error) {
-    console.error('Erreur getArticleBySlug:', error.message);
+  if (error || !article) {
+    if (error) console.error('Erreur getArticleBySlug:', error.message);
     return null;
   }
-  return data;
+
+  let source: { name: string; url: string | null } | null = null;
+  let doc: { title: string; url: string | null; published_at: string | null } | null = null;
+
+  if (article.source_id) {
+    const { data: sourceRow } = await supabase
+      .from('sources')
+      .select('id, name, url')
+      .eq('id', article.source_id)
+      .maybeSingle();
+    if (sourceRow) {
+      source = { name: sourceRow.name, url: sourceRow.url };
+      const { data: docRow } = await supabase
+        .from('source_documents')
+        .select('title, url, published_at')
+        .eq('source_id', sourceRow.id)
+        .limit(1)
+        .maybeSingle();
+      if (docRow) doc = docRow;
+    }
+  }
+
+  return { ...article, source, doc };
 }
