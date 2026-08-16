@@ -70,3 +70,62 @@ export async function getRelatedForArticle(countrySlugs: string[] | null, indica
 
   return { countries, indicators };
 }
+
+export async function getArchiveArticles(filters: { year?: string; domain?: string; type?: string }) {
+  let query = supabase
+    .from('articles')
+    .select('slug, title, subtitle, article_type, domain_slug, author_name, published_at')
+    .order('published_at', { ascending: false });
+
+  if (filters.domain) query = query.eq('domain_slug', filters.domain);
+  if (filters.type) query = query.eq('article_type', filters.type);
+
+  const { data, error } = await query;
+  if (error) {
+    console.error('Erreur getArchiveArticles:', error.message);
+    return [];
+  }
+
+  if (filters.year) {
+    return (data ?? []).filter((a) => a.published_at?.startsWith(filters.year!));
+  }
+  return data ?? [];
+}
+
+export async function getActiveChartOfWeek() {
+  const { data } = await supabase
+    .from('chart_of_the_week')
+    .select('*')
+    .eq('active', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data;
+}
+
+export async function getDossiers() {
+  const { data, error } = await supabase
+    .from('dossiers')
+    .select('slug, title, description')
+    .order('title', { ascending: true });
+  if (error) console.error('Erreur getDossiers:', error.message);
+  return data ?? [];
+}
+
+export async function getDossierBySlug(slug: string) {
+  const { data: dossier } = await supabase
+    .from('dossiers')
+    .select('slug, title, description')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (!dossier) return { dossier: null, articles: [] };
+
+  const { data: articles } = await supabase
+    .from('articles')
+    .select('slug, title, subtitle, article_type, published_at')
+    .eq('dossier_slug', slug)
+    .order('published_at', { ascending: true });
+
+  return { dossier, articles: articles ?? [] };
+}
