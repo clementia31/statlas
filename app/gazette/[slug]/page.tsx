@@ -1,7 +1,7 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { getArticleBySlug } from '@/lib/supabase';
-import { getDomainBySlug, getArticlesByDomain, getDisciplines } from '@/lib/gazette';
+import { getDomainBySlug, getArticlesByDomain, getDisciplines, getRelatedForArticle } from '@/lib/gazette';
 import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -81,6 +81,10 @@ export default async function GazetteSlugPage({
 
   const source = article.source;
   const doc = article.doc;
+  const { countries, indicators } = await getRelatedForArticle(
+    article.related_countries,
+    article.related_indicators
+  );
 
   return (
     <div className="flex min-h-screen">
@@ -157,6 +161,38 @@ export default async function GazetteSlugPage({
                 {article.limitations.map((l: string, i: number) => (
                   <div key={i} className="text-sm text-textSecondary py-1">{l}</div>
                 ))}
+              </div>
+            )}
+
+            {(countries.length > 0 || indicators.length > 0) && (
+              <div className="mt-6 pt-5 border-t border-border">
+                <div className="text-textMuted text-[11px] mb-3">Explore the data</div>
+                {indicators.length > 0 && (
+                  <div className="mb-2">
+                    <span className="text-textMuted text-[11px] mr-2">Indicators:</span>
+                    {indicators.map((i, idx) => (
+                      <span key={i.slug}>
+                        {idx > 0 && ', '}
+                        <a href={`/indicateurs?indicator=${i.slug}`} className="text-textSecondary hover:text-accent underline">
+                          {i.name_default}
+                        </a>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {countries.length > 0 && (
+                  <div>
+                    <span className="text-textMuted text-[11px] mr-2">Countries:</span>
+                    {countries.map((c, idx) => (
+                      <span key={c.slug}>
+                        {idx > 0 && ', '}
+                        <a href={`/pays/${c.slug}`} className="text-textSecondary hover:text-accent underline">
+                          {c.name_default}
+                        </a>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
