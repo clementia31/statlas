@@ -1,14 +1,15 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
-import { getDomains, getDisciplines, getFeaturedAndLatest } from '@/lib/gazette';
+import { getDomains, getDisciplines, getFeaturedAndLatest, getActiveChartOfWeek } from '@/lib/gazette';
 
 export const dynamic = 'force-dynamic';
 
 export default async function GazettePage() {
-  const [domains, disciplines, { featured, latest }] = await Promise.all([
+  const [domains, disciplines, { featured, latest }, chartOfWeek] = await Promise.all([
     getDomains(),
     getDisciplines(),
     getFeaturedAndLatest(),
+    getActiveChartOfWeek(),
   ]);
 
   const secondary = latest.slice(0, 2);
@@ -97,8 +98,18 @@ export default async function GazettePage() {
             </div>
           )}
 
+          {chartOfWeek && (
+            <div className="pb-6 mb-6 border-b border-border">
+              <div className="text-[11px] text-textMuted mb-2">Chart of the week</div>
+              <div className="font-serif text-xl mb-1">{chartOfWeek.title}</div>
+              {chartOfWeek.description && (
+                <div className="text-textSecondary text-sm">{chartOfWeek.description}</div>
+              )}
+            </div>
+          )}
+
           {/* QUANTITATIVE DISCIPLINES — plain inline list */}
-          <div>
+          <div className="mb-6">
             <div className="text-[11px] text-textMuted mb-1">Quantitative disciplines</div>
             <div className="text-textSecondary text-[13px] leading-loose">
               {disciplines.map((d, i) => (
@@ -108,6 +119,12 @@ export default async function GazettePage() {
                 </span>
               ))}
             </div>
+          </div>
+
+          <div className="text-[11px] text-textMuted text-center">
+            <a href="/gazette/archive" className="hover:text-white">Archive</a>
+            <span className="mx-2 opacity-40">·</span>
+            <a href="/gazette/dossiers" className="hover:text-white">Dossiers</a>
           </div>
         </div>
       </div>
