@@ -2,6 +2,7 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { getCountryProfile } from '@/lib/supabase';
 import { getCountryExtras } from '@/lib/country-facts';
+import { getCountryRankings } from '@/lib/rankings';
 import { formatValue } from '@/lib/format';
 import { notFound } from 'next/navigation';
 
@@ -18,7 +19,12 @@ export default async function CountryDetailPage({
     notFound();
   }
 
-  const { facts, currencyName, memberships } = await getCountryExtras(entity!.id);
+  const [{ facts, currencyName, memberships }, rankings] = await Promise.all([
+    getCountryExtras(entity!.id),
+    getCountryRankings(params.slug),
+  ]);
+
+  const rankByIndicatorSlug = new Map(rankings.map((r) => [r.indicatorSlug, r]));
 
   return (
     <div className="flex min-h-screen">
@@ -104,18 +110,29 @@ export default async function CountryDetailPage({
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl">
-            {indicators.map((row) => (
-              <div key={row.indicator_id} className="bg-panel border border-border rounded-[10px] p-3.5">
-                <div className="text-textMuted text-[11px] mb-1.5">{row.indicator!.name_default}</div>
-                <div className="font-mono text-xl font-medium text-white">
-                  {formatValue(row.value_number, row.indicator!.unit)}
+            {indicators.map((row) => {
+              const rank = rankByIndicatorSlug.get(row.indicator!.slug);
+              return (
+                <div key={row.indicator_id} className="bg-panel border border-border rounded-[10px] p-3.5">
+                  <div className="text-textMuted text-[11px] mb-1.5">{row.indicator!.name_default}</div>
+                  <div className="font-mono text-xl font-medium text-white">
+                    {formatValue(row.value_number, row.indicator!.unit)}
+                  </div>
+                  <div className="text-textMuted text-[10px] mt-1">
+                    {row.period_start.slice(0, 4)}
+                    {row.is_projection ? ' (projection)' : ''}
+                  </div>
+                  {rank && (
+                    <a
+                      href={`/rankings/${row.indicator!.slug}`}
+                      className="text-accent text-[10px] mt-1.5 inline-block hover:underline"
+                    >
+                      #{rank.rank} of {rank.total}
+                    </a>
+                  )}
                 </div>
-                <div className="text-textMuted text-[10px] mt-1">
-                  {row.period_start.slice(0, 4)}
-                  {row.is_projection ? ' (projection)' : ''}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {indicators.length === 0 && (
