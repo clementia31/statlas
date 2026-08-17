@@ -1,7 +1,7 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import RadarChart from '@/components/RadarChart';
-import { getBenchmarkData, getAllCountriesForSelect, OVERVIEW_PRESET } from '@/lib/benchmark';
+import { getBenchmarkData, getAllCountriesForSelect, PRESETS } from '@/lib/benchmark';
 import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,7 @@ const COLORS = ['#3B82F6', '#22C55E', '#EAB308', '#EF4444', '#A855F7', '#F97316'
 export default async function BenchmarkPage({
   searchParams,
 }: {
-  searchParams: { countries?: string; mode?: string };
+  searchParams: { countries?: string; mode?: string; preset?: string };
 }) {
   const countrySlugs = (searchParams.countries ?? 'france,germany')
     .split(',')
@@ -20,10 +20,11 @@ export default async function BenchmarkPage({
     .slice(0, 6);
 
   const mode = searchParams.mode === 'percentile' ? 'percentile' : 'minmax';
+  const presetKey = searchParams.preset && PRESETS[searchParams.preset] ? searchParams.preset : 'overview';
 
-  const [{ labels, countryNames, scoresByCountry, rawByCountry, indicatorUnits }, allCountries] =
+  const [{ presetLabel, labels, countryNames, scoresByCountry, rawByCountry, indicatorUnits }, allCountries] =
     await Promise.all([
-      getBenchmarkData(countrySlugs, mode),
+      getBenchmarkData(countrySlugs, mode, presetKey),
       getAllCountriesForSelect(),
     ]);
 
@@ -32,10 +33,12 @@ export default async function BenchmarkPage({
     data: scoresByCountry[slug] ?? [],
   }));
 
-  function modeHref(m: string) {
+  function buildHref(overrides: Record<string, string>) {
     const params = new URLSearchParams();
     params.set('countries', countrySlugs.join(','));
-    params.set('mode', m);
+    params.set('mode', mode);
+    params.set('preset', presetKey);
+    Object.entries(overrides).forEach(([k, v]) => params.set(k, v));
     return `/benchmark?${params.toString()}`;
   }
 
@@ -50,13 +53,27 @@ export default async function BenchmarkPage({
           <div className="mb-1">
             <div className="font-serif text-2xl">Benchmark</div>
             <div className="text-textMuted text-xs mt-1">
-              Overview preset — {labels.length} categories, {countrySlugs.length} countries
+              {presetLabel} preset — {labels.length} categories, {countrySlugs.length} countries
             </div>
+          </div>
+
+          <div className="flex gap-2 mb-3 flex-wrap">
+            {Object.entries(PRESETS).map(([key, p]) => (
+              <a
+                key={key}
+                href={buildHref({ preset: key })}
+                className={`text-xs px-3 py-1.5 rounded-md border ${
+                  presetKey === key ? 'border-accent text-white bg-panel2' : 'border-border text-textMuted hover:text-white'
+                }`}
+              >
+                {p.label}
+              </a>
+            ))}
           </div>
 
           <div className="flex gap-2 mb-5">
             <a
-              href={modeHref('minmax')}
+              href={buildHref({ mode: 'minmax' })}
               className={`text-xs px-3 py-1.5 rounded-md border ${
                 mode === 'minmax' ? 'border-accent text-white bg-panel2' : 'border-border text-textMuted hover:text-white'
               }`}
@@ -64,7 +81,7 @@ export default async function BenchmarkPage({
               Min-max (0-100)
             </a>
             <a
-              href={modeHref('percentile')}
+              href={buildHref({ mode: 'percentile' })}
               className={`text-xs px-3 py-1.5 rounded-md border ${
                 mode === 'percentile' ? 'border-accent text-white bg-panel2' : 'border-border text-textMuted hover:text-white'
               }`}
