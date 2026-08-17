@@ -29,3 +29,22 @@ export async function getRankingForIndicator(indicatorSlug: string, year?: strin
 
   return { indicator, year: selectedYear, years, ranked };
 }
+
+export async function getCountryRankings(countrySlug: string) {
+  const indicators = await getAllRankableIndicators();
+  const results = await Promise.all(indicators.map((i) => getRankingForIndicator(i.slug)));
+
+  return results
+    .map((r, idx) => {
+      const position = r.ranked.findIndex((row) => row.slug === countrySlug);
+      if (position === -1) return null;
+      return {
+        indicatorSlug: indicators[idx].slug,
+        indicatorName: indicators[idx].name_default,
+        rank: position + 1,
+        total: r.ranked.length,
+        year: r.year,
+      };
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null);
+}
