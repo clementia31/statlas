@@ -1,6 +1,7 @@
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import RadarChart from '@/components/RadarChart';
+import CountrySelector from '@/components/CountrySelector';
 import { getBenchmarkData, getAllCountriesForSelect, PRESETS } from '@/lib/benchmark';
 import { formatValue } from '@/lib/format';
 
@@ -33,12 +34,25 @@ export default async function BenchmarkPage({
     data: scoresByCountry[slug] ?? [],
   }));
 
+  const selectedForPicker = countrySlugs.map((slug) => ({
+    slug,
+    name: countryNames[slug] ?? slug,
+  }));
+
   function buildHref(overrides: Record<string, string>) {
     const params = new URLSearchParams();
     params.set('countries', countrySlugs.join(','));
     params.set('mode', mode);
     params.set('preset', presetKey);
     Object.entries(overrides).forEach(([k, v]) => params.set(k, v));
+    return `/benchmark?${params.toString()}`;
+  }
+
+  function buildHrefWithCountries(newCountries: string[]) {
+    const params = new URLSearchParams();
+    params.set('countries', newCountries.join(','));
+    params.set('mode', mode);
+    params.set('preset', presetKey);
     return `/benchmark?${params.toString()}`;
   }
 
@@ -71,7 +85,7 @@ export default async function BenchmarkPage({
             ))}
           </div>
 
-          <div className="flex gap-2 mb-5">
+          <div className="flex gap-2 mb-4">
             <a
               href={buildHref({ mode: 'minmax' })}
               className={`text-xs px-3 py-1.5 rounded-md border ${
@@ -89,6 +103,12 @@ export default async function BenchmarkPage({
               Percentile rank
             </a>
           </div>
+
+          <CountrySelector
+            selected={selectedForPicker}
+            allCountries={allCountries}
+            buildHref={buildHrefWithCountries}
+          />
 
           <div className="bg-panel border border-border rounded-[10px] p-4 mb-4">
             <RadarChart labels={labels} datasets={datasets} />
@@ -129,10 +149,6 @@ export default async function BenchmarkPage({
                 ))}
               </tbody>
             </table>
-          </div>
-
-          <div className="text-textMuted text-[11px] mt-4">
-            Change countries by editing the URL, e.g. /benchmark?countries=france,germany,japan
           </div>
         </div>
       </div>
