@@ -2,20 +2,40 @@ import { supabase } from './supabase';
 import { getIndicatorAllYears } from './supabase';
 import { normalizeMinMax, percentileRank } from './rankings-engine';
 
-export const OVERVIEW_PRESET = [
-  { slug: 'human-development-index', label: 'HDI' },
-  { slug: 'gdp-nominal-per-capita-usd', label: 'GDP per capita' },
-  { slug: 'population-total', label: 'Population' },
-  { slug: 'life-expectancy-birth', label: 'Life expectancy' },
-  { slug: 'fertility-rate', label: 'Fertility rate' },
-  { slug: 'gini-index', label: 'Gini index' },
-  { slug: 'gni-per-capita-ppp-2017', label: 'GNI per capita' },
-  { slug: 'net-debt-gdp-percent', label: 'Net debt' },
-];
+export const PRESETS: Record<string, { label: string; indicators: { slug: string; label: string }[] }> = {
+  overview: {
+    label: 'Overview',
+    indicators: [
+      { slug: 'human-development-index', label: 'HDI' },
+      { slug: 'gdp-nominal-per-capita-usd', label: 'GDP per capita' },
+      { slug: 'population-total', label: 'Population' },
+      { slug: 'life-expectancy-birth', label: 'Life expectancy' },
+      { slug: 'fertility-rate', label: 'Fertility rate' },
+      { slug: 'gini-index', label: 'Gini index' },
+      { slug: 'gni-per-capita-ppp-2017', label: 'GNI per capita' },
+      { slug: 'net-debt-gdp-percent', label: 'Net debt' },
+    ],
+  },
+  economy: {
+    label: 'Economy',
+    indicators: [
+      { slug: 'gdp-nominal-usd', label: 'Nominal GDP' },
+      { slug: 'gdp-nominal-per-capita-usd', label: 'GDP per capita' },
+      { slug: 'gdp-ppp-per-capita-intl-dollar', label: 'GDP (PPP) per capita' },
+      { slug: 'gni-per-capita-ppp-2017', label: 'GNI per capita' },
+      { slug: 'net-debt-gdp-percent', label: 'Net debt' },
+      { slug: 'fdi-inward-stock', label: 'Inward FDI' },
+      { slug: 'gini-index', label: 'Gini index' },
+      { slug: 'population-total', label: 'Population' },
+    ],
+  },
+};
 
-export async function getBenchmarkData(countrySlugs: string[], mode: 'minmax' | 'percentile') {
+export async function getBenchmarkData(countrySlugs: string[], mode: 'minmax' | 'percentile', presetKey: string) {
+  const preset = PRESETS[presetKey] ?? PRESETS.overview;
+
   const results = await Promise.all(
-    OVERVIEW_PRESET.map((i) => getIndicatorAllYears(i.slug))
+    preset.indicators.map((i) => getIndicatorAllYears(i.slug))
   );
 
   const countryNames: Record<string, string> = {};
@@ -27,7 +47,7 @@ export async function getBenchmarkData(countrySlugs: string[], mode: 'minmax' | 
     rawByCountry[slug] = [];
   }
 
-  OVERVIEW_PRESET.forEach((preset, idx) => {
+  preset.indicators.forEach((p, idx) => {
     const { indicator, years, yearsData } = results[idx];
     if (!indicator || years.length === 0) {
       countrySlugs.forEach((s) => {
@@ -59,8 +79,8 @@ export async function getBenchmarkData(countrySlugs: string[], mode: 'minmax' | 
   });
 
   return {
-    labels: OVERVIEW_PRESET.map((p) => p.label),
-    units: [] as string[],
+    presetLabel: preset.label,
+    labels: preset.indicators.map((p) => p.label),
     countryNames,
     scoresByCountry,
     rawByCountry,
