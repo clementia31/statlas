@@ -4,6 +4,11 @@ import { getAllRankableIndicators } from '@/lib/rankings';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Rankings — Statlas',
+  description: 'Every Statlas indicator, ranked across nearly 200 countries with sourced data.',
+};
+
 export default async function RankingsPage() {
   const indicators = await getAllRankableIndicators();
 
