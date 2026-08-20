@@ -2,7 +2,7 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import RadarChart from '@/components/RadarChart';
 import CountrySelector from '@/components/CountrySelector';
-import { getBenchmarkData, getAllCountriesForSelect, PRESETS } from '@/lib/benchmark';
+import { getBenchmarkData, PRESETS } from '@/lib/benchmark';
 import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -20,14 +20,12 @@ export default async function BenchmarkPage({
     .filter(Boolean)
     .slice(0, 6);
 
-  const mode = searchParams.mode === 'percentile' ? 'percentile' : 'minmax';
+  const mode =
+    searchParams.mode === 'percentile' ? 'percentile' : searchParams.mode === 'base100' ? 'base100' : 'minmax';
   const presetKey = searchParams.preset && PRESETS[searchParams.preset] ? searchParams.preset : 'overview';
 
-  const [{ presetLabel, labels, countryNames, scoresByCountry, rawByCountry, indicatorUnits }, allCountries] =
-    await Promise.all([
-      getBenchmarkData(countrySlugs, mode, presetKey),
-      getAllCountriesForSelect(),
-    ]);
+  const { presetLabel, labels, countryNames, scoresByCountry, rawByCountry, indicatorUnits, maxScore, referenceSlug, completeCountries } =
+    await getBenchmarkData(countrySlugs, mode, presetKey);
 
   const datasets = countrySlugs.map((slug) => ({
     label: countryNames[slug] ?? slug,
@@ -68,6 +66,7 @@ export default async function BenchmarkPage({
             <div className="font-serif text-2xl">Benchmark</div>
             <div className="text-textMuted text-xs mt-1">
               {presetLabel} preset — {labels.length} categories, {countrySlugs.length} countries
+              {mode === 'base100' && ` — ${countryNames[referenceSlug] ?? referenceSlug} = 100`}
             </div>
           </div>
 
@@ -85,7 +84,7 @@ export default async function BenchmarkPage({
             ))}
           </div>
 
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4 flex-wrap">
             <a
               href={buildHref({ mode: 'minmax' })}
               className={`text-xs px-3 py-1.5 rounded-md border ${
@@ -102,21 +101,33 @@ export default async function BenchmarkPage({
             >
               Percentile rank
             </a>
+            <a
+              href={buildHref({ mode: 'base100' })}
+              className={`text-xs px-3 py-1.5 rounded-md border ${
+                mode === 'base100' ? 'border-accent text-white bg-panel2' : 'border-border text-textMuted hover:text-white'
+              }`}
+            >
+              Base 100 (vs first country)
+            </a>
           </div>
 
           <CountrySelector
             selected={selectedForPicker}
-            allCountries={allCountries}
+            allCountries={completeCountries}
             buildHref={buildHrefWithCountries}
           />
+          <div className="text-textMuted text-[10px] mb-3 -mt-2">
+            Only countries with complete data for this preset are selectable.
+          </div>
 
           <div className="bg-panel border border-border rounded-[10px] p-4 mb-4">
-            <RadarChart labels={labels} datasets={datasets} />
+            <RadarChart labels={labels} datasets={datasets} max={maxScore} />
             <div className="flex gap-4 mt-3 flex-wrap">
               {countrySlugs.map((slug, i) => (
                 <span key={slug} className="flex items-center gap-1.5 text-xs text-textSecondary">
                   <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                   {countryNames[slug] ?? slug}
+                  {mode === 'base100' && slug === referenceSlug && ' (reference)'}
                 </span>
               ))}
             </div>
