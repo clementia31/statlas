@@ -31,12 +31,34 @@ export const PRESETS: Record<string, { label: string; indicators: { slug: string
   },
 };
 
-export async function getBenchmarkData(countrySlugs: string[], mode: 'minmax' | 'percentile', presetKey: string) {
+export type BenchmarkMode = 'minmax' | 'percentile' | 'base100';
+
+export async function getBenchmarkData(countrySlugs: string[], mode: BenchmarkMode, presetKey: string) {
   const preset = PRESETS[presetKey] ?? PRESETS.overview;
 
   const results = await Promise.all(
     preset.indicators.map((i) => getIndicatorAllYears(i.slug))
   );
+
+  // Pays ayant une donnée pour CHAQUE indicateur du préréglage (aucun trou)
+  const nameBySlug = new Map<string, string>();
+  const perIndicatorSlugSets = results.map(({ years, yearsData }) => {
+    if (years.length === 0) return new Set<string>();
+    const latestYear = years[years.length - 1];
+    const rows = yearsData[latestYear] ?? [];
+    rows.forEach((r) => {
+      if (!nameBySlug.has(r.slug)) nameBySlug.set(r.slug, r.name);
+    });
+    return new Set(rows.map((r) => r.slug));
+  });
+
+  let completeSlugSet: Set<string> | null = null;
+  for (const set of perIndicatorSlugSets) {
+    completeSlugSet = completeSlugSet === null ? set : new Set([...completeSlugSet].filter((s) => set.has(s)));
+  }
+  const completeCountries = Array.from(completeSlugSet ?? [])
+    .map((slug) => ({ slug, name_default: nameBySlug.get(slug) ?? slug }))
+    .sort((a, b) => a.name_default.localeCompare(b.name_default));
 
   const countryNames: Record<string, string> = {};
   const scoresByCountry: Record<string, number[]> = {};
@@ -46,6 +68,8 @@ export async function getBenchmarkData(countrySlugs: string[], mode: 'minmax' | 
     scoresByCountry[slug] = [];
     rawByCountry[slug] = [];
   }
+
+  const referenceSlug = countrySlugs[0];
 
   preset.indicators.forEach((p, idx) => {
     const { indicator, years, yearsData } = results[idx];
@@ -61,6 +85,9 @@ export async function getBenchmarkData(countrySlugs: string[], mode: 'minmax' | 
     const values = rows.map((r) => r.value);
     const higherIsBetter = indicator.higher_is_better ?? true;
 
+    const referenceRow = rows.find((r) => r.slug === referenceSlug);
+    const referenceValue = referenceRow?.value;
+
     countrySlugs.forEach((slug) => {
       const row = rows.find((r) => r.slug === slug);
       if (!row) {
@@ -69,14 +96,24 @@ export async function getBenchmarkData(countrySlugs: string[], mode: 'minmax' | 
         return;
       }
       countryNames[slug] = row.name;
-      const score =
-        mode === 'percentile'
-          ? percentileRank(values, row.value, higherIsBetter)
-          : normalizeMinMax(values, row.value, higherIsBetter);
+
+      let score: number;
+      if (mode === 'percentile') {
+        score = percentileRank(values, row.value, higherIsBetter);
+      } else if (mode === 'base100') {
+        score = referenceValue && referenceValue !== 0 ? Math.round((row.value / referenceValue) * 1000) / 10 : 0;
+      } else {
+        score = normalizeMinMax(values, row.value, higherIsBetter);
+      }
       scoresByCountry[slug].push(score);
       rawByCountry[slug].push(row.value);
     });
   });
+
+  const maxScore =
+    mode === 'base100'
+      ? Math.max(100, ...Object.values(scoresByCountry).flat()) * 1.1
+      : 100;
 
   return {
     presetLabel: preset.label,
@@ -85,6 +122,9 @@ export async function getBenchmarkData(countrySlugs: string[], mode: 'minmax' | 
     scoresByCountry,
     rawByCountry,
     indicatorUnits: results.map((r) => r.indicator?.unit),
+    maxScore,
+    referenceSlug,
+    completeCountries,
   };
 }
 
