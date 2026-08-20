@@ -7,6 +7,15 @@ import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const { indicator, year, ranked } = await getRankingForIndicator(params.slug);
+  if (!indicator) return { title: 'Ranking not found — Statlas' };
+  return {
+    title: `${indicator.name_default} ranking (${year}) — Statlas`,
+    description: `${ranked.length} countries ranked by ${indicator.name_default} in ${year}, sourced and free to explore on Statlas.`,
+  };
+}
+
 export default async function RankingDetailPage({
   params,
   searchParams,
