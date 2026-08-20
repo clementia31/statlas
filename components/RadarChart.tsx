@@ -10,9 +10,11 @@ const COLORS = ['#3B82F6', '#22C55E', '#EAB308', '#EF4444', '#A855F7', '#F97316'
 export default function RadarChart({
   labels,
   datasets,
+  max = 100,
 }: {
   labels: string[];
   datasets: { label: string; data: number[] }[];
+  max?: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart | null>(null);
@@ -42,7 +44,7 @@ export default function RadarChart({
         scales: {
           r: {
             min: 0,
-            max: 100,
+            max: max,
             ticks: { display: false, stepSize: 25 },
             grid: { color: '#232F49' },
             angleLines: { color: '#232F49' },
@@ -55,7 +57,7 @@ export default function RadarChart({
     return () => {
       chartRef.current?.destroy();
     };
-  }, [labels, datasets]);
+  }, [labels, datasets, max]);
 
   return (
     <div className="h-[360px]">
