@@ -52,11 +52,14 @@ export async function getBenchmarkData(countrySlugs: string[], mode: BenchmarkMo
     return new Set(rows.map((r) => r.slug));
   });
 
-  let completeSlugSet: Set<string> | null = null;
-  for (const set of perIndicatorSlugSets) {
-    completeSlugSet = completeSlugSet === null ? set : new Set([...completeSlugSet].filter((s) => set.has(s)));
-  }
-  const completeCountries = Array.from(completeSlugSet ?? [])
+  const completeSlugSet: Set<string> =
+    perIndicatorSlugSets.length === 0
+      ? new Set<string>()
+      : perIndicatorSlugSets.reduce(
+          (acc: Set<string>, set: Set<string>) => new Set(Array.from(acc).filter((s: string) => set.has(s))),
+          perIndicatorSlugSets[0]
+        );
+  const completeCountries = Array.from(completeSlugSet)
     .map((slug) => ({ slug, name_default: nameBySlug.get(slug) ?? slug }))
     .sort((a, b) => a.name_default.localeCompare(b.name_default));
 
