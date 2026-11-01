@@ -3,7 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Les réponses Supabase sont mises en cache 10 minutes par Next.js, puis rafraîchies :
+// une donnée modifiée dans la base apparaît sur le site en 10 minutes maximum, sans redéploiement.
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  global: {
+    fetch: (input: any, init?: any) => fetch(input, { ...init, next: { revalidate: 600 } }),
+  },
+});
 
 // Supabase renvoie au maximum 1000 lignes par requête : on pagine pour tout récupérer.
 // build doit recréer la requête à chaque appel (avec un tri stable).
