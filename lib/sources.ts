@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase, fetchAllRows } from './supabase';
 
 export async function getSourcesForIndicator(indicatorSlug: string) {
   const { data: indicator } = await supabase
@@ -9,12 +9,15 @@ export async function getSourcesForIndicator(indicatorSlug: string) {
 
   if (!indicator) return [];
 
-  const { data: obsRows, error } = await supabase
-    .from('observations')
-    .select('source_document_id')
-    .eq('indicator_id', indicator.id)
-    .eq('status', 'validated')
-    .not('source_document_id', 'is', null);
+  const { data: obsRows, error } = await fetchAllRows<any>(() =>
+    supabase
+      .from('observations')
+      .select('source_document_id')
+      .eq('indicator_id', indicator.id)
+      .eq('status', 'validated')
+      .not('source_document_id', 'is', null)
+      .order('id', { ascending: true })
+  );
 
   if (error || !obsRows) {
     console.error('Erreur getSourcesForIndicator:', error?.message);
