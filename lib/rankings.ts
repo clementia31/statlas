@@ -12,10 +12,10 @@ export async function getAllRankableIndicators() {
 }
 
 export async function getRankingForIndicator(indicatorSlug: string, year?: string) {
-  const { indicator, years, yearsData } = await getIndicatorAllYears(indicatorSlug);
+  const { indicator, years, yearsData, latestActualYear } = await getIndicatorAllYears(indicatorSlug);
   if (!indicator) return { indicator: null, year: null, ranked: [] };
 
-  const selectedYear = year && years.includes(year) ? year : years[years.length - 1];
+  const selectedYear = year && years.includes(year) ? year : latestActualYear ?? years[years.length - 1];
   const rows = yearsData[selectedYear] ?? [];
   const higherIsBetter = indicator.higher_is_better ?? true;
 
