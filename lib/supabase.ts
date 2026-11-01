@@ -5,6 +5,20 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Supabase renvoie au maximum 1000 lignes par requête : on pagine pour tout récupérer.
+// build doit recréer la requête à chaque appel (avec un tri stable).
+export async function fetchAllRows<T = any>(build: () => any, pageSize = 1000): Promise<{ data: T[]; error: any }> {
+  const all: T[] = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await build().range(from, from + pageSize - 1);
+    if (error) return { data: all, error };
+    const rows = (data ?? []) as T[];
+    all.push(...rows);
+    if (rows.length < pageSize) break;
+  }
+  return { data: all, error: null };
+}
+
 export type Entity = {
   id: string;
   slug: string;
@@ -30,12 +44,15 @@ export async function getLatestObservationsByIndicator(indicatorSlug: string) {
 
   if (!indicator) return { indicator: null, rows: [] as ObservationRow[] };
 
-  const { data: obsRows, error: obsError } = await supabase
+  const { data: obsRows, error: obsError } = await fetchAllRows<any>(() =>
+    supabase
     .from('observations')
     .select('entity_id, value_number, period_start')
     .eq('indicator_id', indicator.id)
     .eq('status', 'validated')
-    .order('period_start', { ascending: false });
+    .order('period_start', { ascending: false })
+    .order('id', { ascending: true })
+    );
 
   if (obsError) {
     console.error('Erreur observations:', obsError.message);
@@ -97,12 +114,15 @@ export async function getCountryProfile(entitySlug: string) {
 
   if (!entity) return { entity: null, indicators: [] as any[] };
 
-  const { data: obsRows, error: obsError } = await supabase
+  const { data: obsRows, error: obsError } = await fetchAllRows<any>(() =>
+    supabase
     .from('observations')
     .select('indicator_id, value_number, period_start, unit, is_projection')
     .eq('entity_id', entity.id)
     .eq('status', 'validated')
-    .order('period_start', { ascending: false });
+    .order('period_start', { ascending: false })
+    .order('id', { ascending: true })
+    );
 
   if (obsError || !obsRows) {
     console.error('Erreur getCountryProfile observations:', obsError?.message);
@@ -175,12 +195,15 @@ export async function getIndicatorTimeSeries(indicatorSlug: string) {
 
   if (!indicator) return { indicator: null, series: [] as { year: string; average: number }[] };
 
-  const { data: obsRows, error } = await supabase
+  const { data: obsRows, error } = await fetchAllRows<any>(() =>
+    supabase
     .from('observations')
     .select('value_number, period_start')
     .eq('indicator_id', indicator.id)
     .eq('status', 'validated')
-    .order('period_start', { ascending: true });
+    .order('period_start', { ascending: true })
+    .order('id', { ascending: true })
+    );
 
   if (error || !obsRows) {
     console.error('Erreur getIndicatorTimeSeries:', error?.message);
@@ -222,13 +245,16 @@ export async function getCountryYearlySeries(indicatorSlug: string, entitySlugs:
   const idToSlug = new Map((entities ?? []).map((e) => [e.id, e.slug]));
   const idToName = new Map((entities ?? []).map((e) => [e.id, e.name_default]));
 
-  const { data: obsRows, error } = await supabase
+  const { data: obsRows, error } = await fetchAllRows<any>(() =>
+    supabase
     .from('observations')
     .select('entity_id, value_number, period_start')
     .eq('indicator_id', indicator.id)
     .in('entity_id', entityIds)
     .eq('status', 'validated')
-    .order('period_start', { ascending: true });
+    .order('period_start', { ascending: true })
+    .order('id', { ascending: true })
+    );
 
   if (error || !obsRows) {
     console.error('Erreur getCountryYearlySeries:', error?.message);
@@ -238,10 +264,16 @@ export async function getCountryYearlySeries(indicatorSlug: string, entitySlugs:
   const seriesByEntity: Record<string, { year: string; value: number }[]> = {};
   for (const slug of entitySlugs) seriesByEntity[slug] = [];
 
+  // Une seule valeur par année (dernière période de l'année pour les séries infra-annuelles)
+  const lastByEntityYear = new Map<string, Map<string, number>>();
   for (const row of obsRows) {
     const slug = idToSlug.get(row.entity_id);
     if (!slug) continue;
-    seriesByEntity[slug].push({ year: row.period_start.slice(0, 4), value: row.value_number });
+    if (!lastByEntityYear.has(slug)) lastByEntityYear.set(slug, new Map());
+    lastByEntityYear.get(slug)!.set(row.period_start.slice(0, 4), Number(row.value_number));
+  }
+  for (const [slug, m] of Array.from(lastByEntityYear.entries())) {
+    seriesByEntity[slug] = Array.from(m.entries()).map(([year, value]) => ({ year, value }));
   }
 
   return { indicator, seriesByEntity, namesBySlug: Object.fromEntries(Array.from(idToName.entries()).map(([id, name]) => [idToSlug.get(id), name])) };
@@ -256,18 +288,21 @@ export async function getIndicatorAllYears(indicatorSlug: string) {
     .eq('slug', indicatorSlug)
     .single();
 
-  if (!indicator) return { indicator: null, years: [] as string[], yearsData: {} as Record<string, { slug: string; name: string; value: number }[]> };
+  if (!indicator) return { indicator: null, years: [] as string[], yearsData: {} as Record<string, { slug: string; name: string; value: number }[]>, latestActualYear: undefined as string | undefined };
 
-  const { data: obsRows, error } = await supabase
+  const { data: obsRows, error } = await fetchAllRows<any>(() =>
+    supabase
     .from('observations')
-    .select('entity_id, value_number, period_start')
+    .select('entity_id, value_number, period_start, is_projection')
     .eq('indicator_id', indicator.id)
     .eq('status', 'validated')
-    .order('period_start', { ascending: true });
+    .order('period_start', { ascending: true })
+    .order('id', { ascending: true })
+    );
 
   if (error || !obsRows) {
     console.error('Erreur getIndicatorAllYears:', error?.message);
-    return { indicator, years: [] as string[], yearsData: {} as Record<string, { slug: string; name: string; value: number }[]> };
+    return { indicator, years: [] as string[], yearsData: {} as Record<string, { slug: string; name: string; value: number }[]>, latestActualYear: undefined as string | undefined };
   }
 
   const entityIds = Array.from(new Set(obsRows.map((r) => r.entity_id)));
@@ -278,18 +313,27 @@ export async function getIndicatorAllYears(indicatorSlug: string) {
 
   const entityById = new Map((entities ?? []).map((e) => [e.id, e]));
 
-  const yearsData: Record<string, { slug: string; name: string; value: number }[]> = {};
+  // Une seule valeur par pays et par année : pour les séries trimestrielles/mensuelles,
+  // on garde la dernière période de l'année (lignes triées par date croissante).
+  const byYear: Record<string, Map<string, { slug: string; name: string; value: number }>> = {};
+  const actualYears = new Set<string>();
   for (const row of obsRows) {
+    if (!row.is_projection) actualYears.add(row.period_start.slice(0, 4));
     const year = row.period_start.slice(0, 4);
     const entity = entityById.get(row.entity_id);
     if (!entity) continue;
-    if (!yearsData[year]) yearsData[year] = [];
-    yearsData[year].push({ slug: entity.slug, name: entity.name_default, value: row.value_number });
+    if (!byYear[year]) byYear[year] = new Map();
+    byYear[year].set(entity.slug, { slug: entity.slug, name: entity.name_default, value: Number(row.value_number) });
   }
+  const yearsData: Record<string, { slug: string; name: string; value: number }[]> = {};
+  for (const [year, m] of Object.entries(byYear)) yearsData[year] = Array.from(m.values());
 
   const years = Object.keys(yearsData).sort();
+  // Dernière année observée (hors projections) : année par défaut des classements
+  const actualSorted = Array.from(actualYears).sort();
+  const latestActualYear = actualSorted.length > 0 ? actualSorted[actualSorted.length - 1] : years[years.length - 1];
 
-  return { indicator, years, yearsData };
+  return { indicator, years, yearsData, latestActualYear };
 }
 
 // Articles de la Gazette
