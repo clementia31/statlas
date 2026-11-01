@@ -31,19 +31,35 @@ export async function getRankingForIndicator(indicatorSlug: string, year?: strin
 }
 
 export async function getCountryRankings(countrySlug: string) {
-  const indicators = await getAllRankableIndicators();
-  const results = await Promise.all(indicators.map((i) => getRankingForIndicator(i.slug)));
+  // Vue SQL obs_rank_latest : rang de chaque pays sur la dernière année observée (hors projections)
+  const { data: entity } = await supabase
+    .from('entities')
+    .select('id')
+    .eq('slug', countrySlug)
+    .maybeSingle();
+  if (!entity) return [];
 
-  return results
-    .map((r, idx) => {
-      const position = r.ranked.findIndex((row) => row.slug === countrySlug);
-      if (position === -1) return null;
+  const [{ data: rankRows, error }, { data: indicators }] = await Promise.all([
+    supabase
+      .from('obs_rank_latest')
+      .select('indicator_id, year, rank, total')
+      .eq('entity_id', entity.id),
+    supabase.from('indicators').select('id, slug, name_default'),
+  ]);
+  if (error) console.error('Erreur getCountryRankings:', error.message);
+
+  const indicatorById = new Map((indicators ?? []).map((i) => [i.id, i]));
+
+  return (rankRows ?? [])
+    .map((r) => {
+      const ind = indicatorById.get(r.indicator_id);
+      if (!ind) return null;
       return {
-        indicatorSlug: indicators[idx].slug,
-        indicatorName: indicators[idx].name_default,
-        rank: position + 1,
-        total: r.ranked.length,
-        year: r.year,
+        indicatorSlug: ind.slug as string,
+        indicatorName: ind.name_default as string,
+        rank: Number(r.rank),
+        total: Number(r.total),
+        year: String(r.year),
       };
     })
     .filter((x): x is NonNullable<typeof x> => x !== null);
