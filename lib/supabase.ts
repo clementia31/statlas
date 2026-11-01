@@ -44,14 +44,13 @@ export async function getLatestObservationsByIndicator(indicatorSlug: string) {
 
   if (!indicator) return { indicator: null, rows: [] as ObservationRow[] };
 
+  // Vue SQL obs_latest : une seule ligne (la plus récente) par pays et par indicateur
   const { data: obsRows, error: obsError } = await fetchAllRows<any>(() =>
     supabase
-    .from('observations')
+    .from('obs_latest')
     .select('entity_id, value_number, period_start')
     .eq('indicator_id', indicator.id)
-    .eq('status', 'validated')
-    .order('period_start', { ascending: false })
-    .order('id', { ascending: true })
+    .order('entity_id', { ascending: true })
     );
 
   if (obsError) {
@@ -114,14 +113,13 @@ export async function getCountryProfile(entitySlug: string) {
 
   if (!entity) return { entity: null, indicators: [] as any[] };
 
+  // Vue SQL obs_latest : une seule ligne (la plus récente) par indicateur pour ce pays
   const { data: obsRows, error: obsError } = await fetchAllRows<any>(() =>
     supabase
-    .from('observations')
+    .from('obs_latest')
     .select('indicator_id, value_number, period_start, unit, is_projection')
     .eq('entity_id', entity.id)
-    .eq('status', 'validated')
-    .order('period_start', { ascending: false })
-    .order('id', { ascending: true })
+    .order('indicator_id', { ascending: true })
     );
 
   if (obsError || !obsRows) {
