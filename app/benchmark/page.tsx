@@ -46,14 +46,6 @@ export default async function BenchmarkPage({
     return `/benchmark?${params.toString()}`;
   }
 
-  function buildHrefWithCountries(newCountries: string[]) {
-    const params = new URLSearchParams();
-    params.set('countries', newCountries.join(','));
-    params.set('mode', mode);
-    params.set('preset', presetKey);
-    return `/benchmark?${params.toString()}`;
-  }
-
   return (
     <div className="flex min-h-screen">
       <Sidebar active="Benchmark" />
@@ -114,7 +106,8 @@ export default async function BenchmarkPage({
           <CountrySelector
             selected={selectedForPicker}
             allCountries={completeCountries}
-            buildHref={buildHrefWithCountries}
+            basePath="/benchmark"
+            baseParams={{ mode, preset: presetKey }}
           />
           <div className="text-textMuted text-[10px] mb-3 -mt-2">
             Only countries with complete data for this preset are selectable.
