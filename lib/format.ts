@@ -13,14 +13,17 @@ export function formatValue(value: number, unit?: string): string {
   if (value === undefined || value === null || isNaN(value)) return '—';
   const u = (unit ?? '').toLowerCase();
 
-  if (u === 'usd million') {
-    // Valeur stockée en millions -> on repasse en dollars bruts avant d'abréger
+  if (u.endsWith('million')) {
+    // Valeur stockée en millions (USD ou PPA) -> on repasse en unités brutes avant d'abréger
     return '$' + abbreviateNumber(value * 1e6);
   }
   if (u === 'people') {
     return abbreviateNumber(value);
   }
   if (u === 'percent of gdp') {
+    return value.toFixed(1) + '%';
+  }
+  if (u === 'percent' || u === 'percent of labor force') {
     return value.toFixed(1) + '%';
   }
   if (u.startsWith('index')) {
@@ -32,7 +35,7 @@ export function formatValue(value: number, unit?: string): string {
   if (u === 'children per woman') {
     return value.toFixed(2);
   }
-  if (u.includes('dollar')) {
+  if (u.includes('dollar') || u === 'usd') {
     return '$' + abbreviateNumber(value);
   }
   return value.toLocaleString();
