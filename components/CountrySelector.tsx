@@ -5,15 +5,24 @@ import { useRouter } from 'next/navigation';
 export default function CountrySelector({
   selected,
   allCountries,
-  buildHref,
+  basePath,
+  baseParams,
 }: {
   selected: { slug: string; name: string }[];
   allCountries: { slug: string; name_default: string }[];
-  buildHref: (countries: string[]) => string;
+  basePath: string;
+  baseParams: Record<string, string>;
 }) {
   const router = useRouter();
   const selectedSlugs = selected.map((s) => s.slug);
   const available = allCountries.filter((c) => !selectedSlugs.includes(c.slug));
+
+  // Construit l'URL côté client (une fonction ne peut pas être passée d'un Server Component)
+  function buildHref(countries: string[]) {
+    const params = new URLSearchParams(baseParams);
+    params.set('countries', countries.join(','));
+    return `${basePath}?${params.toString()}`;
+  }
 
   function addCountry(slug: string) {
     if (!slug || selectedSlugs.length >= 6) return;
