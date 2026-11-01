@@ -42,9 +42,9 @@ export async function getBenchmarkData(countrySlugs: string[], mode: BenchmarkMo
 
   // Pays ayant une donnée pour CHAQUE indicateur du préréglage (aucun trou)
   const nameBySlug = new Map<string, string>();
-  const perIndicatorSlugSets = results.map(({ years, yearsData }) => {
+  const perIndicatorSlugSets = results.map(({ years, yearsData, latestActualYear }) => {
     if (years.length === 0) return new Set<string>();
-    const latestYear = years[years.length - 1];
+    const latestYear = latestActualYear ?? years[years.length - 1];
     const rows = yearsData[latestYear] ?? [];
     rows.forEach((r) => {
       if (!nameBySlug.has(r.slug)) nameBySlug.set(r.slug, r.name);
@@ -75,7 +75,7 @@ export async function getBenchmarkData(countrySlugs: string[], mode: BenchmarkMo
   const referenceSlug = countrySlugs[0];
 
   preset.indicators.forEach((p, idx) => {
-    const { indicator, years, yearsData } = results[idx];
+    const { indicator, years, yearsData, latestActualYear } = results[idx];
     if (!indicator || years.length === 0) {
       countrySlugs.forEach((s) => {
         scoresByCountry[s].push(0);
@@ -83,7 +83,7 @@ export async function getBenchmarkData(countrySlugs: string[], mode: BenchmarkMo
       });
       return;
     }
-    const latestYear = years[years.length - 1];
+    const latestYear = latestActualYear ?? years[years.length - 1];
     const rows = yearsData[latestYear] ?? [];
     const values = rows.map((r) => r.value);
     const higherIsBetter = indicator.higher_is_better ?? true;
