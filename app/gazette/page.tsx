@@ -53,7 +53,7 @@ export default async function GazetteHome() {
                 {featured.published_at ? ` · ${featured.published_at.slice(0, 4)}` : ''}
               </div>
               {lead && (
-                <div className="mt-5 font-serif text-[17px] leading-[1.65] sm:columns-2 sm:gap-7 sm:[column-rule:1px_solid_#CFC5B0] text-justify hyphens-auto">
+                <div className="mt-5 font-serif text-[17px] leading-[1.65] sm:columns-2 sm:gap-7 sm:[column-rule:1px_solid_#CFC5B0]">
                   <p className="first-letter:float-left first-letter:font-headline first-letter:font-extrabold first-letter:text-[64px] first-letter:leading-[0.82] first-letter:pr-2 first-letter:pt-1.5">
                     {lead}
                   </p>

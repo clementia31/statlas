@@ -109,7 +109,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
           subtitle={trendMeta ? `${trendMeta.source_name ?? ''} · dashed line = projection` : undefined}
           className="lg:col-span-2"
         >
-          <div className="flex flex-wrap gap-1.5 mb-3">
+          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-2 mb-4 overflow-x-auto pb-1">
             {indicators
               .filter((i) => i.meta.first_year !== i.meta.last_year)
               .map((i) => (
@@ -117,7 +117,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
                   key={i.meta.slug}
                   href={`/pays/${entity.slug}?trend=${i.meta.slug}`}
                   scroll={false}
-                  className={`inline-flex h-10 items-center rounded-full border px-3.5 text-[13px] ${
+                  className={`inline-flex h-10 shrink-0 whitespace-nowrap items-center rounded-full border px-3.5 text-[13px] ${
                     i.meta.slug === trendSlug ? 'border-text bg-text text-white' : 'border-borderStrong bg-panel text-text hover:border-accent'
                   }`}
                 >
