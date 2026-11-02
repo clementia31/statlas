@@ -1,5 +1,4 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
+import AppShell from '@/components/AppShell';
 import { getArchiveArticles, getDomains } from '@/lib/gazette';
 
 export const dynamic = 'force-dynamic';
@@ -26,11 +25,7 @@ export default async function ArchivePage({
   }
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="The Gazette" />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
+    <AppShell active="The Gazette">
 
         <div className="p-[28px] max-w-2xl mx-auto w-full">
           <a href="/gazette" className="text-textMuted text-xs hover:text-white">← The Gazette</a>
@@ -86,7 +81,6 @@ export default async function ArchivePage({
             <div className="text-textMuted text-sm italic">No articles match these filters.</div>
           )}
         </div>
-      </div>
-    </div>
+    </AppShell>
   );
 }

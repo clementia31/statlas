@@ -1,110 +1,91 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
-import { getRankingForIndicator } from '@/lib/rankings';
-import { getSourcesForIndicator } from '@/lib/sources';
-import { formatValue } from '@/lib/format';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import AppShell from '@/components/AppShell';
+import PageHeader from '@/components/ui/PageHeader';
+import Panel from '@/components/ui/Panel';
+import SourceNote from '@/components/ui/SourceNote';
+import Flag from '@/components/ui/Flag';
+import EmptyState from '@/components/ui/EmptyState';
+import RankingTable from '@/components/RankingTable';
+import YearSelect from '@/components/controls/YearSelect';
+import { getIndicatorMeta, getIndicatorYears, getYearValues, isCityIndicator, pickYear, rankValues } from '@/lib/data';
+import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const { indicator, year, ranked } = await getRankingForIndicator(params.slug);
-  if (!indicator) return { title: 'Ranking not found — Statlas' };
+  const meta = await getIndicatorMeta(params.slug);
+  if (!meta) return { title: 'Ranking not found — Statlas' };
   return {
-    title: `${indicator.name_default} ranking (${year}) — Statlas`,
-    description: `${ranked.length} countries ranked by ${indicator.name_default} in ${year}, sourced and free to explore on Statlas.`,
+    title: `${meta.name} — world ranking ${meta.ref_year} | Statlas`,
+    description: `${meta.ref_coverage} countries ranked by ${meta.name} in ${meta.ref_year}. Source: ${meta.source_name}.`,
   };
 }
 
-export default async function RankingDetailPage({
-  params,
-  searchParams,
-}: {
-  params: { slug: string };
-  searchParams: { year?: string };
-}) {
-  const [{ indicator, year, years, ranked }, sources] = await Promise.all([
-    getRankingForIndicator(params.slug, searchParams.year),
-    getSourcesForIndicator(params.slug),
-  ]);
+export default async function RankingPage({ params, searchParams }: { params: { slug: string }; searchParams: { year?: string } }) {
+  const meta = await getIndicatorMeta(params.slug);
+  if (!meta || meta.ref_year === null) notFound();
 
-  if (!indicator) {
-    notFound();
-  }
-
-  const record = ranked[0];
+  const years = await getIndicatorYears(meta.slug);
+  const year = pickYear(years, searchParams.year, meta.ref_year) ?? meta.ref_year;
+  const rows = await getYearValues(meta.slug, year);
+  const ranked = rankValues(rows, meta.higher_is_better);
+  const leader = ranked[0];
+  const city = isCityIndicator(meta.slug);
+  const direction = meta.higher_is_better === null ? 'Sorted from highest to lowest' : meta.higher_is_better ? 'Higher is better' : 'Lower is better';
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="Rankings" />
+    <AppShell active="Rankings">
+      <Link href="/rankings" className="text-[12px] text-textMuted hover:text-white">
+        ← All rankings
+      </Link>
+      <div className="mt-3">
+        <PageHeader
+          kicker={meta.category ?? 'Ranking'}
+          title={`${meta.name}`}
+          description={meta.definition ?? undefined}
+          actions={<YearSelect years={years} value={year} refYear={meta.ref_year} />}
+        />
+      </div>
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
-
-        <div className="p-[22px] max-w-3xl">
-          <a href="/rankings" className="text-textMuted text-xs hover:text-white">← Rankings</a>
-
-          <div className="mt-3 mb-1">
-            <div className="font-serif text-2xl">{indicator.name_default} ranking</div>
-            <div className="text-textMuted text-xs mt-1">{year} — {ranked.length} countries</div>
-          </div>
-
-          {sources.length > 0 && (
-            <div className="text-textMuted text-[11px] mb-5">
-              Source{sources.length > 1 ? 's' : ''}:{' '}
-              {sources.map((s, i) => (
-                <span key={i}>
-                  {i > 0 && ', '}
-                  {s.sourceUrl ? (
-                    <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent underline">
-                      {s.sourceName}
-                    </a>
-                  ) : (
-                    s.sourceName
-                  )}
-                </span>
-              ))}
-            </div>
+      <div className="grid sm:grid-cols-3 gap-3 mb-6">
+        <div className="rounded-xl border border-accent/50 bg-panel p-4">
+          <div className="text-[11px] text-textMuted">{meta.higher_is_better === false ? 'Lowest' : 'Highest'} · {year}</div>
+          {leader ? (
+            <Link href={city ? '#' : `/pays/${leader.entity_slug}`} className="mt-1 flex items-center gap-2 text-white hover:text-accent">
+              <Flag iso={leader.iso_code} size="md" />
+              <span className="font-serif text-[18px]">{leader.entity_name}</span>
+            </Link>
+          ) : (
+            <div className="text-textMuted">—</div>
           )}
-
-          {record && (
-            <div className="bg-panel border border-accent rounded-[10px] p-4 mb-5">
-              <div className="text-textMuted text-[11px] mb-1">Record — {year}</div>
-              <div className="flex items-baseline justify-between">
-                <a href={`/pays/${record.slug}`} className="font-serif text-xl hover:text-accent">{record.name}</a>
-                <span className="font-mono text-lg font-medium">{formatValue(record.value, indicator.unit)}</span>
-              </div>
-            </div>
-          )}
-
-          <div className="bg-panel border border-border rounded-[10px] overflow-hidden max-h-[65vh] overflow-y-auto">
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-panel">
-                <tr className="text-textMuted text-[11px] border-b border-border">
-                  <th className="text-left p-2 font-medium w-10">#</th>
-                  <th className="text-left p-2 font-medium">Country</th>
-                  <th className="text-right p-2 font-medium">Value</th>
-                  <th className="text-right p-2 font-medium">Score (0-100)</th>
-                </tr>
-              </thead>
-              <tbody className="font-mono">
-                {ranked.map((r, i) => (
-                  <tr key={r.slug} className="border-b border-border last:border-b-0">
-                    <td className="p-2 text-textMuted">{i + 1}</td>
-                    <td className="p-2 font-sans">
-                      <a href={`/pays/${r.slug}`} className="text-textSecondary hover:text-accent hover:underline">
-                        {r.name}
-                      </a>
-                    </td>
-                    <td className="p-2 text-right">{formatValue(r.value, indicator.unit)}</td>
-                    <td className="p-2 text-right text-textMuted">{r.score}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <div className="font-mono text-[16px] text-white mt-1">{leader ? formatValue(leader.value, meta.unit) : ''}</div>
+        </div>
+        <div className="rounded-xl border border-border bg-panel p-4">
+          <div className="text-[11px] text-textMuted">Coverage · {year}</div>
+          <div className="font-mono text-[22px] text-white mt-1">{rows.length}</div>
+          <div className="text-[11px] text-textMuted">{city ? 'cities' : 'countries'}</div>
+        </div>
+        <div className="rounded-xl border border-border bg-panel p-4">
+          <div className="text-[11px] text-textMuted">Method</div>
+          <div className="text-[13px] text-white mt-1">{direction}</div>
+          <div className="text-[11px] text-textMuted mt-1">Score: 0 = worst, 100 = best in {year}</div>
         </div>
       </div>
-    </div>
+
+      <Panel
+        title={`Ranking ${year}`}
+        right={
+          <a href={`/api/export/${meta.slug}`} className="rounded-md border border-border px-3 py-1.5 text-[12px] text-textSecondary hover:text-white">
+            Download CSV
+          </a>
+        }
+      >
+        {ranked.length ? <RankingTable rows={ranked} unit={meta.unit} showScore linkable={!city} /> : <EmptyState title="No data for this year" />}
+        <div className="mt-4">
+          <SourceNote meta={meta} year={year} count={rows.length} />
+        </div>
+      </Panel>
+    </AppShell>
   );
 }

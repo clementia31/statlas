@@ -1,5 +1,4 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
+import AppShell from '@/components/AppShell';
 import { getDomains, getDisciplines, getFeaturedAndLatest, getActiveChartOfWeek } from '@/lib/gazette';
 
 export const dynamic = 'force-dynamic';
@@ -16,11 +15,7 @@ export default async function GazettePage() {
   const rest = latest.slice(2);
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="The Gazette" />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
+    <AppShell active="The Gazette">
 
         <div className="p-[28px] max-w-2xl mx-auto w-full">
           {/* MASTHEAD */}
@@ -127,7 +122,6 @@ export default async function GazettePage() {
             <a href="/gazette/dossiers" className="hover:text-white">Dossiers</a>
           </div>
         </div>
-      </div>
-    </div>
+    </AppShell>
   );
 }

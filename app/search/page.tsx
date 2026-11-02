@@ -1,91 +1,78 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
+import Link from 'next/link';
+import AppShell from '@/components/AppShell';
+import PageHeader from '@/components/ui/PageHeader';
+import Panel from '@/components/ui/Panel';
+import Flag from '@/components/ui/Flag';
+import EmptyState from '@/components/ui/EmptyState';
 import { getGlobalSearchResults } from '@/lib/global-search';
 
 export const dynamic = 'force-dynamic';
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: { q?: string };
-}) {
-  const query = searchParams.q ?? '';
+export default async function SearchPage({ searchParams }: { searchParams: { q?: string } }) {
+  const query = (searchParams.q ?? '').trim();
   const { countries, indicators, articles } = await getGlobalSearchResults(query);
-  const totalResults = countries.length + indicators.length + articles.length;
+  const total = countries.length + indicators.length + articles.length;
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="" />
+    <AppShell active="">
+      <PageHeader kicker="Search" title={query ? `Results for “${query}”` : 'Search'} description={query ? `${total} result${total === 1 ? '' : 's'}` : undefined} />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
+      <form action="/search" method="get" className="mb-6 max-w-xl">
+        <input
+          name="q"
+          type="search"
+          defaultValue={query}
+          autoFocus
+          placeholder="Search countries, indicators, articles…"
+          aria-label="Search"
+          className="w-full rounded-lg border border-border bg-panel2 px-4 py-2.5 text-[14px] text-white placeholder:text-textMuted outline-none focus:border-accent"
+        />
+      </form>
 
-        <div className="p-[22px] max-w-3xl">
-          <div className="font-serif text-2xl mb-1">Search results</div>
-          <div className="text-textMuted text-xs mb-6">
-            {totalResults} results for &quot;{query}&quot;
-          </div>
+      {!query && <EmptyState title="What are you looking for?">Try a country (“Japan”), an indicator (“inflation”) or a topic (“demography”).</EmptyState>}
+      {query && total === 0 && <EmptyState title="No results">Check the spelling or try a broader term.</EmptyState>}
 
-          {countries.length > 0 && (
-            <div className="mb-6">
-              <div className="text-textMuted text-[11px] font-medium mb-2 uppercase">Countries</div>
-              <div className="bg-panel border border-border rounded-[10px] overflow-hidden">
-                {countries.map((c) => (
-                  <a
-                    key={c.slug}
-                    href={`/pays/${c.slug}`}
-                    className="block px-4 py-2.5 text-sm text-textSecondary hover:text-white hover:bg-panel2 border-b border-border last:border-b-0"
-                  >
-                    {c.name_default}
-                  </a>
-                ))}
-              </div>
+      <div className="grid gap-4">
+        {countries.length > 0 && (
+          <Panel title="Countries">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {countries.map((c) => (
+                <Link key={c.slug} href={`/pays/${c.slug}`} className="flex items-center gap-2.5 rounded-lg border border-border px-3 py-2 text-[13px] text-white hover:border-accent/60">
+                  <Flag iso={c.iso_code} />
+                  {c.name_default}
+                </Link>
+              ))}
             </div>
-          )}
-
-          {indicators.length > 0 && (
-            <div className="mb-6">
-              <div className="text-textMuted text-[11px] font-medium mb-2 uppercase">Indicators</div>
-              <div className="bg-panel border border-border rounded-[10px] overflow-hidden">
-                {indicators.map((i) => (
-                  <a
-                    key={i.slug}
-                    href={`/indicateurs?indicator=${i.slug}`}
-                    className="block px-4 py-2.5 text-sm text-textSecondary hover:text-white hover:bg-panel2 border-b border-border last:border-b-0"
-                  >
+          </Panel>
+        )}
+        {indicators.length > 0 && (
+          <Panel title="Indicators">
+            <ul className="divide-y divide-border">
+              {indicators.map((i) => (
+                <li key={i.slug}>
+                  <Link href={`/indicateurs?indicator=${i.slug}`} className="block py-2.5 text-[13px] text-white hover:text-accent">
                     {i.name_default}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {articles.length > 0 && (
-            <div className="mb-6">
-              <div className="text-textMuted text-[11px] font-medium mb-2 uppercase">The Gazette</div>
-              <div className="bg-panel border border-border rounded-[10px] overflow-hidden">
-                {articles.map((a) => (
-                  <a
-                    key={a.slug}
-                    href={`/gazette/${a.slug}`}
-                    className="block px-4 py-2.5 hover:bg-panel2 border-b border-border last:border-b-0"
-                  >
-                    <div className="text-sm text-textSecondary hover:text-white">{a.title}</div>
-                    {a.subtitle && <div className="text-textMuted text-xs">{a.subtitle}</div>}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {totalResults === 0 && query && (
-            <div className="text-textMuted text-sm">No results found for &quot;{query}&quot;.</div>
-          )}
-          {!query && (
-            <div className="text-textMuted text-sm">Type in the search bar above and press Enter.</div>
-          )}
-        </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+        )}
+        {articles.length > 0 && (
+          <Panel title="The Gazette">
+            <ul className="divide-y divide-border">
+              {articles.map((a) => (
+                <li key={a.slug}>
+                  <Link href={`/gazette/${a.slug}`} className="block py-2.5">
+                    <span className="block text-[13px] text-white hover:text-accent">{a.title}</span>
+                    {a.subtitle && <span className="block text-[12px] text-textMuted">{a.subtitle}</span>}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+        )}
       </div>
-    </div>
+    </AppShell>
   );
 }

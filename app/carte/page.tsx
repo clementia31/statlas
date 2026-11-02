@@ -1,56 +1,52 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
-import AnimatedWorldMap from '@/components/AnimatedWorldMap';
-import { getIndicatorAllYears } from '@/lib/supabase';
+import AppShell from '@/components/AppShell';
+import PageHeader from '@/components/ui/PageHeader';
+import Panel from '@/components/ui/Panel';
+import SourceNote from '@/components/ui/SourceNote';
+import EmptyState from '@/components/ui/EmptyState';
+import AnimatedMap from '@/components/AnimatedMap';
+import IndicatorSelect from '@/components/controls/IndicatorSelect';
+import { DEFAULT_INDICATOR, getAllYearValues, getCountryCatalog } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CartePage({
-  searchParams,
-}: {
-  searchParams: { indicator?: string; q?: string };
-}) {
-  const indicatorSlug = searchParams.indicator ?? 'human-development-index';
-  const query = (searchParams.q ?? '').toLowerCase().trim();
-  const { indicator, years, yearsData } = await getIndicatorAllYears(indicatorSlug);
+export default async function MapPage({ searchParams }: { searchParams: { indicator?: string } }) {
+  const catalog = await getCountryCatalog();
+  const meta = catalog.find((c) => c.slug === searchParams.indicator) ?? catalog.find((c) => c.slug === DEFAULT_INDICATOR) ?? catalog[0];
+  if (!meta) {
+    return (
+      <AppShell active="Map">
+        <EmptyState title="No indicators available yet" />
+      </AppShell>
+    );
+  }
 
-  const filteredYearsData = query
-    ? Object.fromEntries(
-        Object.entries(yearsData).map(([year, rows]) => [
-          year,
-          rows.filter((r) => r.name.toLowerCase().includes(query)),
-        ])
-      )
-    : yearsData;
+  const byYear = await getAllYearValues(meta.slug);
+  const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
+  const frames = Object.fromEntries(
+    years.map((y) => [
+      y,
+      byYear[y].map((r) => ({ slug: r.entity_slug, name: r.entity_name, iso: r.iso_code, value: r.value, projection: r.is_projection })),
+    ])
+  );
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="Map" />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
-
-        <div className="p-[18px]">
-          <div className="bg-panel border border-border rounded-[10px] p-4">
-            <div className="mb-2.5">
-              <div className="font-serif text-[17px]">
-                {indicator?.name_default ?? indicatorSlug}
-              </div>
-              <div className="text-textMuted text-xs mt-0.5">
-                Animated over {years.length} years
-                {query ? ` — filtered by "${searchParams.q}"` : ''}
-                {' — '}use the indicator selector above to switch
-              </div>
-            </div>
-            <AnimatedWorldMap
-              years={years}
-              yearsData={filteredYearsData}
-              indicatorLabel={indicator?.name_default ?? indicatorSlug}
-              indicatorUnit={indicator?.unit}
-            />
-          </div>
+    <AppShell active="Map">
+      <PageHeader
+        kicker="Map"
+        title="The world over time"
+        description="Play the map to see how an indicator evolved across countries. Colours use one scale for every year, so changes are comparable."
+        actions={<IndicatorSelect options={catalog.map((c) => ({ slug: c.slug, name: c.name, category: c.category }))} value={meta.slug} />}
+      />
+      <Panel title={meta.name} subtitle={`${years[0]}–${years[years.length - 1]}`}>
+        {years.length ? (
+          <AnimatedMap years={years} frames={frames} unit={meta.unit} label={meta.name} initialYear={meta.ref_year ?? years[years.length - 1]} />
+        ) : (
+          <EmptyState title="No data" />
+        )}
+        <div className="mt-4">
+          <SourceNote meta={meta} />
         </div>
-      </div>
-    </div>
+      </Panel>
+    </AppShell>
   );
 }

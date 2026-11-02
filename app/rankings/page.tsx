@@ -1,46 +1,62 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
-import { getAllRankableIndicators } from '@/lib/rankings';
+import Link from 'next/link';
+import AppShell from '@/components/AppShell';
+import PageHeader from '@/components/ui/PageHeader';
+import Flag from '@/components/ui/Flag';
+import { getCountryCatalog, getPodiums } from '@/lib/data';
+import { formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Rankings — Statlas',
-  description: 'Every Statlas indicator, ranked across nearly 200 countries with sourced data.',
+  title: 'World rankings — Statlas',
+  description: 'Every Statlas indicator ranked across countries, with sources and the year of the data.',
 };
 
 export default async function RankingsPage() {
-  const indicators = await getAllRankableIndicators();
+  const [catalog, podiums] = await Promise.all([getCountryCatalog(), getPodiums()]);
+  const groups = new Map<string, typeof catalog>();
+  for (const m of catalog) {
+    const g = m.category ?? 'Other';
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g)!.push(m);
+  }
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="Rankings" />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
-
-        <div className="p-[22px] max-w-3xl">
-          <div className="font-serif text-2xl mb-1">Rankings</div>
-          <div className="text-textMuted text-xs mb-6">
-            {indicators.length} rankings available — every Statlas indicator, ranked
+    <AppShell active="Rankings">
+      <PageHeader
+        kicker="Rankings"
+        title="World rankings"
+        description={`${catalog.length} indicators ranked on the most recent year with broad country coverage.`}
+      />
+      {Array.from(groups.entries()).map(([g, items]) => (
+        <section key={g} className="mb-8">
+          <h2 className="text-[11px] uppercase tracking-[0.14em] text-textMuted mb-3">{g}</h2>
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+            {items.map((m) => {
+              const podium = podiums.get(m.id) ?? [];
+              return (
+                <Link key={m.slug} href={`/rankings/${m.slug}`} className="rounded-xl border border-border bg-panel p-4 hover:border-accent/60 transition-colors">
+                  <div className="text-[14px] text-white font-medium leading-snug">{m.name}</div>
+                  <div className="text-[11px] text-textMuted mt-1">
+                    {m.ref_year} · {m.ref_coverage} countries ·{' '}
+                    {m.higher_is_better === null ? 'highest first' : m.higher_is_better ? 'higher is better' : 'lower is better'}
+                  </div>
+                  <ol className="mt-3 space-y-1.5">
+                    {podium.map((p) => (
+                      <li key={p.slug} className="flex items-center gap-2 text-[12.5px]">
+                        <span className="w-4 font-mono text-textMuted">{p.rank}</span>
+                        <Flag iso={p.iso} />
+                        <span className="flex-1 truncate text-textSecondary">{p.name}</span>
+                        <span className="font-mono text-white">{formatValue(p.value, m.unit)}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </Link>
+              );
+            })}
           </div>
-
-          <div className="bg-panel border border-border rounded-[10px] overflow-hidden">
-            {indicators.map((i) => (
-              <a
-                key={i.slug}
-                href={`/rankings/${i.slug}`}
-                className="flex justify-between items-center px-4 py-3 border-b border-border last:border-b-0 hover:bg-panel2 hover:text-accent"
-              >
-                <span className="text-sm text-textSecondary">{i.name_default}</span>
-                <span className="text-textMuted text-[11px] font-mono">
-                  {i.higher_is_better === false ? 'lower is better' : 'higher is better'}
-                </span>
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+        </section>
+      ))}
+    </AppShell>
   );
 }

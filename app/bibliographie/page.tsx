@@ -1,5 +1,4 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
+import AppShell from '@/components/AppShell';
 import { getAllSources } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -14,11 +13,7 @@ export default async function BibliographyPage({
   const filtered = sources.filter((s) => s.name.toLowerCase().includes(query));
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="Bibliography" />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
+    <AppShell active="Bibliography">
 
         <div className="p-[22px]">
           <div className="font-serif text-2xl mb-1">Bibliography</div>
@@ -69,7 +64,6 @@ export default async function BibliographyPage({
             )}
           </div>
         </div>
-      </div>
-    </div>
+    </AppShell>
   );
 }

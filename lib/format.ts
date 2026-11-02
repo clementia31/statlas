@@ -1,42 +1,67 @@
-// Formatte un nombre brut en version lisible (K/M/B/T) selon son unité.
+// Formatage des valeurs selon leur unité — une seule règle pour tout le site.
+
+const nf = (digits: number) =>
+  new Intl.NumberFormat('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
 
 function abbreviateNumber(n: number): string {
   const abs = Math.abs(n);
-  if (abs >= 1e12) return (n / 1e12).toFixed(2) + 'T';
-  if (abs >= 1e9) return (n / 1e9).toFixed(2) + 'B';
-  if (abs >= 1e6) return (n / 1e6).toFixed(2) + 'M';
-  if (abs >= 1e3) return (n / 1e3).toFixed(1) + 'K';
-  return n.toLocaleString();
+  if (abs >= 1e12) return nf(2).format(n / 1e12) + 'T';
+  if (abs >= 1e9) return nf(2).format(n / 1e9) + 'B';
+  if (abs >= 1e6) return nf(2).format(n / 1e6) + 'M';
+  if (abs >= 1e4) return nf(1).format(n / 1e3) + 'K';
+  return nf(0).format(n);
 }
 
-export function formatValue(value: number, unit?: string): string {
-  if (value === undefined || value === null || isNaN(value)) return '—';
+export function formatValue(value: number | null | undefined, unit?: string | null): string {
+  if (value === undefined || value === null || Number.isNaN(value)) return '—';
   const u = (unit ?? '').toLowerCase();
 
-  if (u.endsWith('million')) {
-    // Valeur stockée en millions (USD ou PPA) -> on repasse en unités brutes avant d'abréger
-    return '$' + abbreviateNumber(value * 1e6);
+  if (u.endsWith('million')) return '$' + abbreviateNumber(value * 1e6);
+  if (u === 'people') return abbreviateNumber(value);
+  if (u.startsWith('percent')) return nf(1).format(value) + '%';
+  if (u === 'index (0-1)') return nf(3).format(value);
+  if (u.startsWith('index')) return nf(1).format(value);
+  if (u === 'years') return nf(1).format(value) + ' yrs';
+  if (u === 'children per woman') return nf(2).format(value);
+  if (u.includes('per sq mi')) return nf(0).format(value) + ' /mi²';
+  if (u.includes('dollar') || u === 'usd') return '$' + abbreviateNumber(value);
+  return nf(Math.abs(value) < 10 ? 2 : 0).format(value);
+}
+
+// Variation lisible entre deux valeurs (points pour les pourcentages et indices, % sinon)
+export function formatChange(current: number, previous: number, unit?: string | null): { text: string; up: boolean } {
+  const u = (unit ?? '').toLowerCase();
+  const diff = current - previous;
+  if (u.startsWith('percent') || u.startsWith('index') || u === 'years' || u === 'children per woman') {
+    const digits = u === 'index (0-1)' ? 3 : u === 'children per woman' ? 2 : 1;
+    const suffix = u.startsWith('percent') ? ' pt' : u === 'years' ? ' yrs' : '';
+    return { text: (diff >= 0 ? '+' : '') + nf(digits).format(diff) + suffix, up: diff >= 0 };
   }
-  if (u === 'people') {
-    return abbreviateNumber(value);
-  }
-  if (u === 'percent of gdp') {
-    return value.toFixed(1) + '%';
-  }
-  if (u === 'percent' || u === 'percent of labor force') {
-    return value.toFixed(1) + '%';
-  }
-  if (u.startsWith('index')) {
-    return value.toFixed(3);
-  }
-  if (u === 'years') {
-    return value.toFixed(1) + ' yrs';
-  }
-  if (u === 'children per woman') {
-    return value.toFixed(2);
-  }
-  if (u.includes('dollar') || u === 'usd') {
-    return '$' + abbreviateNumber(value);
-  }
-  return value.toLocaleString();
+  const pct = previous !== 0 ? (diff / Math.abs(previous)) * 100 : 0;
+  return { text: (pct >= 0 ? '+' : '') + nf(1).format(pct) + '%', up: pct >= 0 };
+}
+
+// Libellé humain de l'unité
+export function unitLabel(unit?: string | null): string {
+  const u = (unit ?? '').toLowerCase();
+  if (u === 'usd million') return 'US dollars, current prices';
+  if (u === 'usd') return 'US dollars, current prices';
+  if (u === 'ppp international dollar million' || u === 'ppp international dollar') return 'International dollars (PPP), current prices';
+  if (u.includes('2017')) return 'International dollars (PPP, 2017 prices)';
+  if (u === 'people') return 'People';
+  if (u === 'percent of gdp') return '% of GDP';
+  if (u === 'percent of labor force') return '% of labour force';
+  if (u === 'percent') return '%';
+  if (u === 'years') return 'Years';
+  if (u === 'children per woman') return 'Children per woman';
+  if (u === 'index (0-1)') return 'Index, 0 to 1';
+  if (u === 'index (0-100)') return 'Index, 0 to 100';
+  if (u.includes('per sq mi')) return 'People per square mile';
+  return unit ?? '';
+}
+
+// Les montants (PIB, population…) s'additionnent ; les ratios et indices non
+export function isAdditive(unit?: string | null): boolean {
+  const u = (unit ?? '').toLowerCase();
+  return u === 'people' || u.endsWith('million');
 }

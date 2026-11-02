@@ -1,105 +1,94 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
-import { getLatestObservationsByIndicator } from '@/lib/supabase';
+import AppShell from '@/components/AppShell';
+import PageHeader from '@/components/ui/PageHeader';
+import Panel from '@/components/ui/Panel';
+import CompareTable from '@/components/CompareTable';
+import CountrySelector from '@/components/CountrySelector';
+import LineChart from '@/components/LineChart';
+import IndicatorSelect from '@/components/controls/IndicatorSelect';
+import { getCountries, getCountryCatalog, getCountrySeries, getYearValues } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
-const INDICATORS = [
-  { slug: 'human-development-index', label: 'HDI' },
-  { slug: 'gdp-nominal-usd', label: 'Nominal GDP (USD M)' },
+// Colonnes du tableau comparatif : chaque colonne utilise l'année de référence de son indicateur
+const TABLE_INDICATORS = [
   { slug: 'population-total', label: 'Population' },
+  { slug: 'gdp-nominal-usd', label: 'GDP' },
+  { slug: 'gdp-ppp-per-capita-intl-dollar', label: 'GDP per capita (PPP)' },
+  { slug: 'human-development-index', label: 'HDI' },
   { slug: 'life-expectancy-birth', label: 'Life expectancy' },
+  { slug: 'gini-index', label: 'Gini' },
+  { slug: 'net-debt-gdp-percent', label: 'Net debt' },
 ];
 
-export default async function ComparisonsPage({
-  searchParams,
-}: {
-  searchParams: { q?: string };
-}) {
-  const results = await Promise.all(
-    INDICATORS.map((i) => getLatestObservationsByIndicator(i.slug))
-  );
+export default async function ComparisonsPage({ searchParams }: { searchParams: { indicator?: string; countries?: string } }) {
+  const [catalog, countries] = await Promise.all([getCountryCatalog(), getCountries()]);
+  const bySlug = new Map(catalog.map((c) => [c.slug, c]));
 
-  const valuesByIndicator: Record<string, Map<string, number>> = {};
-  const nameBySlug = new Map<string, string>();
-  const allSlugs = new Set<string>();
-
-  INDICATORS.forEach((ind, idx) => {
-    const map = new Map<string, number>();
-    for (const row of results[idx].rows) {
-      if (row.entity) {
-        map.set(row.entity.slug, row.value_number);
-        allSlugs.add(row.entity.slug);
-        if (!nameBySlug.has(row.entity.slug)) {
-          nameBySlug.set(row.entity.slug, row.entity.name_default);
-        }
-      }
-    }
-    valuesByIndicator[ind.slug] = map;
+  const columns = TABLE_INDICATORS.filter((t) => bySlug.has(t.slug)).map((t) => {
+    const m = bySlug.get(t.slug)!;
+    return { slug: t.slug, label: t.label, unit: m.unit, year: m.ref_year };
   });
+  const columnValues = await Promise.all(columns.map((c) => (c.year ? getYearValues(c.slug, c.year) : Promise.resolve([]))));
 
-  const query = (searchParams.q ?? '').toLowerCase().trim();
+  const rows = countries.map((c) => ({ slug: c.slug, name: c.name, iso: c.iso, values: {} as Record<string, number | undefined> }));
+  const rowBySlug = new Map(rows.map((r) => [r.slug, r]));
+  columns.forEach((c, i) => {
+    for (const v of columnValues[i]) {
+      const r = rowBySlug.get(v.entity_slug);
+      if (r) r.values[c.slug] = v.value;
+    }
+  });
+  const tableRows = rows.filter((r) => Object.keys(r.values).length > 0);
 
-  const sortedSlugs = Array.from(allSlugs)
-    .filter((slug) => (nameBySlug.get(slug) ?? slug).toLowerCase().includes(query))
-    .sort((a, b) => (nameBySlug.get(a) ?? a).localeCompare(nameBySlug.get(b) ?? b));
+  // Graphique : un indicateur, jusqu'à 6 pays
+  const chartMeta = bySlug.get(searchParams.indicator ?? '') ?? bySlug.get('gdp-ppp-per-capita-intl-dollar') ?? catalog[0];
+  const selected = (searchParams.countries ?? 'france,germany,united-states,china,japan')
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => countries.some((c) => c.slug === s))
+    .slice(0, 6);
+  const series = chartMeta ? await getCountrySeries(chartMeta.slug, selected) : {};
+  const nameOf = new Map(countries.map((c) => [c.slug, c.name]));
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="Comparisons" />
+    <AppShell active="Comparisons">
+      <PageHeader
+        kicker="Compare"
+        title="Country comparisons"
+        description="Follow several countries over time, or scan every country side by side. Each column uses the latest year with broad coverage for that indicator."
+      />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
+      {chartMeta && (
+        <Panel
+          title={`${chartMeta.name} over time`}
+          subtitle={`${chartMeta.source_name ?? ''} · dashed segments are projections`}
+          className="mb-6"
+        >
+          <div className="flex flex-col lg:flex-row lg:items-end gap-3 mb-4">
+            <IndicatorSelect options={catalog.map((c) => ({ slug: c.slug, name: c.name, category: c.category }))} value={chartMeta.slug} />
+            <div className="flex-1">
+              <CountrySelector
+                selected={selected.map((s) => ({ slug: s, name: nameOf.get(s) ?? s }))}
+                allCountries={countries.map((c) => ({ slug: c.slug, name_default: c.name }))}
+                basePath="/comparaisons"
+                baseParams={{ indicator: chartMeta.slug }}
+              />
+            </div>
+          </div>
+          <LineChart
+            series={selected.map((s) => ({
+              label: nameOf.get(s) ?? s,
+              points: (series[s] ?? []).map((p) => ({ x: p.year, y: p.value, projection: p.is_projection })),
+            }))}
+            unit={chartMeta.unit}
+            height={320}
+          />
+        </Panel>
+      )}
 
-        <div className="p-[22px]">
-          <div className="font-serif text-2xl mb-1">Country comparison</div>
-          <div className="text-textMuted text-xs mb-1">
-            Live data from Statlas — {sortedSlugs.length} countries, {INDICATORS.length} indicators
-          </div>
-          <div className="text-textMuted text-[11px] mb-4">
-            <a href="/bibliographie" className="hover:text-accent underline">View all data sources →</a>
-          </div>
-
-          <div className="bg-panel border border-border rounded-[10px] overflow-auto max-w-4xl max-h-[70vh]">
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-panel">
-                <tr className="text-textMuted text-[11px] border-b border-border">
-                  <th className="text-left p-2 font-medium">Country</th>
-                  {INDICATORS.map((i) => (
-                    <th key={i.slug} className="text-left p-2 font-medium">{i.label}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="font-mono">
-                {sortedSlugs.map((slug) => (
-                  <tr key={slug} className="border-b border-border last:border-b-0">
-                    <td className="p-2 font-sans font-medium">
-                      <a href={`/pays/${slug}`} className="hover:text-accent hover:underline">
-                        {nameBySlug.get(slug) ?? slug}
-                      </a>
-                    </td>
-                    {INDICATORS.map((i) => {
-                      const v = valuesByIndicator[i.slug].get(slug);
-                      return (
-                        <td key={i.slug} className="p-2">
-                          {v !== undefined ? v.toLocaleString() : '—'}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-                {sortedSlugs.length === 0 && (
-                  <tr>
-                    <td colSpan={INDICATORS.length + 1} className="p-4 text-textMuted font-sans text-center">
-                      No country matches your search.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Panel title="All countries" subtitle="Latest year with broad coverage, shown under each column">
+        <CompareTable columns={columns} rows={tableRows} />
+      </Panel>
+    </AppShell>
   );
 }

@@ -1,156 +1,184 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
-import TrendChart from '@/components/TrendChart';
-import AnimatedWorldMap from '@/components/AnimatedWorldMap';
-import { getIndicatorAllYears, getIndicatorTimeSeries } from '@/lib/supabase';
-import { getSourcesForIndicator } from '@/lib/sources';
-import { formatValue } from '@/lib/format';
+import Link from 'next/link';
+import AppShell from '@/components/AppShell';
+import PageHeader from '@/components/ui/PageHeader';
+import Panel from '@/components/ui/Panel';
+import Tabs from '@/components/ui/Tabs';
+import SourceNote from '@/components/ui/SourceNote';
+import Badge from '@/components/ui/Badge';
+import EmptyState from '@/components/ui/EmptyState';
+import ChoroplethMap from '@/components/ChoroplethMap';
+import LineChart from '@/components/LineChart';
+import RankingTable from '@/components/RankingTable';
+import IndicatorSelect from '@/components/controls/IndicatorSelect';
+import YearSelect from '@/components/controls/YearSelect';
+import { DEFAULT_INDICATOR, getCatalog, getIndicatorYears, getWorldSeries, getYearValues, isCityIndicator, pickYear, rankValues } from '@/lib/data';
+import { formatValue, isAdditive, unitLabel } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
-const TABS = ['Overview', 'Data', 'Charts', 'Map', 'Analysis', 'Metadata'];
+const TABS = [
+  { key: 'overview', label: 'Overview' },
+  { key: 'map', label: 'Map' },
+  { key: 'data', label: 'Data' },
+  { key: 'metadata', label: 'Metadata' },
+];
 
-export default async function IndicatorDetailPage({
-  searchParams,
-}: {
-  searchParams: { indicator?: string; q?: string; tab?: string; year?: string };
-}) {
-  const indicatorSlug = searchParams.indicator ?? 'human-development-index';
-  const query = (searchParams.q ?? '').toLowerCase().trim();
-  const activeTab = searchParams.tab ?? 'Overview';
-
-  const [{ indicator, years, yearsData }, { series }, sources] = await Promise.all([
-    getIndicatorAllYears(indicatorSlug),
-    getIndicatorTimeSeries(indicatorSlug),
-    getSourcesForIndicator(indicatorSlug),
-  ]);
-
-  const selectedYear =
-    searchParams.year && years.includes(searchParams.year)
-      ? searchParams.year
-      : years[years.length - 1];
-
-  const ranked = (yearsData[selectedYear] ?? [])
-    .filter((r) => r.name.toLowerCase().includes(query))
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 50);
-
-  function tabHref(tab: string) {
-    const params = new URLSearchParams();
-    params.set('indicator', indicatorSlug);
-    params.set('tab', tab);
-    if (query) params.set('q', searchParams.q ?? '');
-    if (searchParams.year) params.set('year', searchParams.year);
-    return `/indicateurs?${params.toString()}`;
+export default async function IndicatorsPage({ searchParams }: { searchParams: { indicator?: string; year?: string; tab?: string } }) {
+  const catalog = await getCatalog();
+  const meta = catalog.find((c) => c.slug === searchParams.indicator) ?? catalog.find((c) => c.slug === DEFAULT_INDICATOR) ?? catalog[0];
+  if (!meta) {
+    return (
+      <AppShell active="Indicators">
+        <EmptyState title="No indicators available yet" />
+      </AppShell>
+    );
   }
 
+  const tab = TABS.some((t) => t.key === searchParams.tab) ? (searchParams.tab as string) : 'overview';
+  const [years, world] = await Promise.all([getIndicatorYears(meta.slug), getWorldSeries(meta.slug)]);
+  const year = pickYear(years, searchParams.year, meta.ref_year) ?? 0;
+  const rows = await getYearValues(meta.slug, year);
+  const ranked = rankValues(rows, meta.higher_is_better);
+  const city = isCityIndicator(meta.slug);
+  const additive = isAdditive(meta.unit);
+
+  const options = catalog.map((c) => ({ slug: c.slug, name: c.name, category: c.category }));
+  const href = (t: string) => {
+    const p = new URLSearchParams({ indicator: meta.slug, tab: t });
+    if (searchParams.year) p.set('year', searchParams.year);
+    return `/indicateurs?${p.toString()}`;
+  };
+
+  // Statistiques descriptives de l'année affichée
+  const values = rows.map((r) => r.value).sort((a, b) => a - b);
+  const q = (p: number) => (values.length ? values[Math.min(values.length - 1, Math.floor(p * (values.length - 1)))] : null);
+  const stats = [
+    { label: additive ? 'Sum of countries' : 'Median', value: additive ? values.reduce((s, v) => s + v, 0) : q(0.5) },
+    { label: 'Minimum', value: values[0] ?? null },
+    { label: 'Maximum', value: values[values.length - 1] ?? null },
+    { label: 'Countries', value: null, text: String(rows.length) },
+  ];
+
+  // Série mondiale : on n'affiche que les années à couverture comparable (≥ 80 % de la couverture max)
+  const maxN = Math.max(0, ...world.map((w) => w.n));
+  const comparable = world.filter((w) => w.n >= maxN * 0.8);
+
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="Indicators" />
+    <AppShell active="Indicators">
+      <PageHeader
+        kicker={meta.category ?? 'Indicator'}
+        title={meta.name}
+        description={meta.definition ?? undefined}
+        actions={
+          <>
+            <IndicatorSelect options={options} value={meta.slug} />
+            <YearSelect years={years} value={year} refYear={meta.ref_year} />
+          </>
+        }
+      />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar availableYears={years} />
+      <Tabs tabs={TABS.map((t) => ({ ...t, href: href(t.key) }))} active={tab} />
 
-        <div className="p-[22px]">
-          <div className="mb-1">
-            <div className="font-serif text-2xl">
-              {indicator?.name_default ?? indicatorSlug}
-            </div>
-            <div className="text-textMuted text-xs mt-1">
-              {selectedYear} — {ranked.length} countries ranked
-              {query ? ` matching "${searchParams.q}"` : ''}
-            </div>
-          </div>
-
-          {sources.length > 0 && (
-            <div className="text-textMuted text-[11px] mb-4">
-              Source{sources.length > 1 ? 's' : ''}:{' '}
-              {sources.map((s, i) => (
-                <span key={i}>
-                  {i > 0 && ', '}
-                  {s.sourceUrl ? (
-                    <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent underline">
-                      {s.sourceName}
-                    </a>
-                  ) : (
-                    s.sourceName
-                  )}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className="flex gap-1 border-b border-border mb-4">
-            {TABS.map((tab) => (
-              <a
-                key={tab}
-                href={tabHref(tab)}
-                className={`px-3.5 py-2 text-sm ${
-                  tab === activeTab
-                    ? 'text-white border-b-2 border-accent'
-                    : 'text-textSecondary border-b-2 border-transparent hover:text-white'
-                }`}
-              >
-                {tab}
-              </a>
+      {tab === 'overview' && (
+        <div className="grid gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {stats.map((s) => (
+              <div key={s.label} className="rounded-xl border border-border bg-panel px-4 py-3.5">
+                <div className="text-[11px] text-textMuted">
+                  {s.label} · {year}
+                </div>
+                <div className="font-mono text-[19px] text-white mt-1">{s.text ?? formatValue(s.value, meta.unit)}</div>
+              </div>
             ))}
           </div>
 
-          {activeTab === 'Overview' && (
-            <>
-              <div className="bg-panel border border-border rounded-[10px] p-4 max-w-3xl mb-4">
-                <div className="text-textMuted text-[11px] mb-2">world average over time</div>
-                <TrendChart
-                  labels={series.map((s) => s.year)}
-                  values={series.map((s) => Number(s.average.toFixed(3)))}
-                />
-              </div>
-
-              <div className="bg-panel border border-border rounded-[10px] p-4 max-w-xl max-h-[70vh] overflow-auto">
-                {ranked.map((r, i) => (
-                  <div
-                    key={r.slug}
-                    className="flex justify-between py-1.5 border-b border-border text-sm last:border-b-0"
-                  >
-                    <span>
-                      <span className="text-textMuted font-mono mr-2 inline-block w-5">{i + 1}</span>
-                      <a href={`/pays/${r.slug}`} className="hover:text-accent hover:underline">
-                        {r.name}
-                      </a>
-                    </span>
-                    <span className="font-mono font-medium">{formatValue(r.value, indicator?.unit)}</span>
-                  </div>
-                ))}
-                {ranked.length === 0 && (
-                  <div className="text-textMuted text-sm py-4">No data matches this search.</div>
-                )}
-              </div>
-            </>
-          )}
-
-          {activeTab === 'Map' && (
-            <div className="bg-panel border border-border rounded-[10px] p-4 max-w-4xl">
-              <div className="text-textMuted text-[11px] mb-2">
-                animated over {years.length} years — press play
-              </div>
-              <AnimatedWorldMap
-                years={years}
-                yearsData={yearsData}
-                indicatorLabel={indicator?.name_default ?? indicatorSlug}
-                indicatorUnit={indicator?.unit}
+          {!city && (
+            <Panel
+              title={additive ? 'World total over time' : 'World median over time'}
+              subtitle={`Years where at least 80% of the ${maxN} covered countries report data · ${unitLabel(meta.unit)}`}
+            >
+              <LineChart
+                series={[{ label: additive ? 'Total' : 'Median', points: comparable.map((w) => ({ x: w.year, y: additive ? w.total : w.median })) }]}
+                unit={meta.unit}
+                fill
               />
-            </div>
+            </Panel>
           )}
 
-          {activeTab !== 'Overview' && activeTab !== 'Map' && (
-            <div className="bg-panel border border-border rounded-[10px] p-8 max-w-3xl text-center">
-              <div className="text-textMuted text-sm italic">
-                {activeTab} — coming in a later phase.
-              </div>
-            </div>
-          )}
+          <Panel title={`Ranking ${year}`} subtitle="Top 10" right={<Link href={href('data')} className="text-[12px] text-accent hover:underline">All countries →</Link>}>
+            <RankingTable rows={ranked.slice(0, 10)} unit={meta.unit} linkable={!city} />
+          </Panel>
+          <SourceNote meta={meta} year={year} count={rows.length} />
         </div>
-      </div>
-    </div>
+      )}
+
+      {tab === 'map' && (
+        <Panel title={`${meta.name} — ${year}`} subtitle={`${rows.length} ${city ? 'cities' : 'countries'} with data`}>
+          {city ? (
+            <EmptyState title="This indicator covers cities, not countries">See the Data tab for the full list.</EmptyState>
+          ) : (
+            <ChoroplethMap
+              data={rows.map((r) => ({ slug: r.entity_slug, name: r.entity_name, iso: r.iso_code, value: r.value, projection: r.is_projection }))}
+              unit={meta.unit}
+              label={`${meta.name} (${year})`}
+            />
+          )}
+          <div className="mt-4">
+            <SourceNote meta={meta} year={year} count={rows.length} />
+          </div>
+        </Panel>
+      )}
+
+      {tab === 'data' && (
+        <Panel
+          title={`All ${city ? 'cities' : 'countries'} — ${year}`}
+          subtitle={`${rows.length} entries · ${unitLabel(meta.unit)}`}
+          right={
+            <a href={`/api/export/${meta.slug}`} className="rounded-md border border-border px-3 py-1.5 text-[12px] text-textSecondary hover:text-white">
+              Download CSV
+            </a>
+          }
+        >
+          {ranked.length ? <RankingTable rows={ranked} unit={meta.unit} linkable={!city} /> : <EmptyState title="No data for this year" />}
+          <div className="mt-4">
+            <SourceNote meta={meta} year={year} count={rows.length} />
+          </div>
+        </Panel>
+      )}
+
+      {tab === 'metadata' && (
+        <Panel title="About this indicator">
+          <dl className="grid sm:grid-cols-[200px_1fr] gap-x-6 gap-y-3 text-[13px]">
+            {[
+              ['Name', meta.name],
+              ['Definition', meta.definition ?? '—'],
+              ['Unit', unitLabel(meta.unit)],
+              ['Category', meta.category ?? '—'],
+              ['Source', [meta.source_name, meta.dataset_title].filter(Boolean).join(' — ') || '—'],
+              ['Coverage', `${meta.first_year}–${meta.last_actual_year} observed${meta.last_year && meta.last_actual_year && meta.last_year > meta.last_actual_year ? `, projections to ${meta.last_year}` : ''}`],
+              ['Reference year', `${meta.ref_year} (latest year with at least 80% of countries reporting) — ${meta.ref_coverage} ${city ? 'cities' : 'countries'}`],
+              ['Frequency', meta.sub_annual ? 'Quarterly or monthly — the annual value is the last period of the year, year-on-year' : 'Annual'],
+              ['Ranking direction', meta.higher_is_better === null ? 'Neutral (sorted from highest to lowest)' : meta.higher_is_better ? 'Higher is better' : 'Lower is better'],
+            ].map(([k, v]) => (
+              <div key={k} className="contents">
+                <dt className="text-textMuted">{k}</dt>
+                <dd className="text-white">{v}</dd>
+              </div>
+            ))}
+          </dl>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {meta.source_url && (
+              <a href={meta.source_url} target="_blank" rel="noopener noreferrer" className="rounded-md border border-border px-3 py-1.5 text-[12px] text-textSecondary hover:text-white">
+                Visit source ↗
+              </a>
+            )}
+            <a href={`/api/export/${meta.slug}`} className="rounded-md border border-border px-3 py-1.5 text-[12px] text-textSecondary hover:text-white">
+              Download CSV
+            </a>
+            {years.some((y) => y.is_projection) && <Badge tone="warn">Includes official projections</Badge>}
+          </div>
+        </Panel>
+      )}
+    </AppShell>
   );
 }

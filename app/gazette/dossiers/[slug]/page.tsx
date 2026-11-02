@@ -1,5 +1,4 @@
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
+import AppShell from '@/components/AppShell';
 import { getDossierBySlug } from '@/lib/gazette';
 import { notFound } from 'next/navigation';
 
@@ -17,11 +16,7 @@ export default async function DossierDetailPage({
   }
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar active="The Gazette" />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
+    <AppShell active="The Gazette">
 
         <div className="p-[28px] max-w-2xl mx-auto w-full">
           <a href="/gazette/dossiers" className="text-textMuted text-xs hover:text-white">← Dossiers</a>
@@ -50,7 +45,6 @@ export default async function DossierDetailPage({
             </a>
           ))}
         </div>
-      </div>
-    </div>
+    </AppShell>
   );
 }

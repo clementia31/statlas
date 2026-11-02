@@ -4,7 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  color-scheme: dark;
+}
+
 body {
-  background: #0B1220;
-  color: #EEF1F6;
+  background: #0b1220;
+  color: #eef1f6;
+}
+
+::selection {
+  background: rgba(59, 130, 246, 0.35);
+}
+
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+select option,
+select optgroup {
+  background: #16213a;
+  color: #eef1f6;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #232f49 transparent;
 }
