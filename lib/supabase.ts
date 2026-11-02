@@ -3,11 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Les réponses Supabase sont mises en cache 10 minutes par Next.js, puis rafraîchies :
-// une donnée modifiée dans la base apparaît sur le site en 10 minutes maximum, sans redéploiement.
+// Pas de cache Next.js sur les requêtes Supabase : le site affiche toujours l'état actuel de la base
+// (sinon Vercel peut servir indéfiniment d'anciennes réponses, même après un redéploiement).
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
-    fetch: (input: any, init?: any) => fetch(input, { ...init, next: { revalidate: 600 } }),
+    fetch: (input: any, init?: any) => fetch(input, { ...init, cache: 'no-store' }),
   },
 });
 
