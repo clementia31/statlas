@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
+import ArticleBody from '@/components/gazette/ArticleBody';
 import { ArticleList, CompactMasthead, GazettePage, Kicker, Ornament, SectionLabel, typeLabel } from '@/components/gazette/Gazette';
 import { getArticleBySlug } from '@/lib/supabase';
 import { getDomainBySlug, getArticlesByDomain, getDisciplines, getRelatedForArticle } from '@/lib/gazette';
@@ -69,7 +70,7 @@ export default async function GazetteSlugPage({
     article.related_indicators
   );
 
-  const words = (article.body ?? '').split(/\s+/).filter(Boolean).length;
+  const words = String(article.body ?? '').split(/\s+/).filter(Boolean).length;
   const minutes = Math.max(1, Math.round(words / 220));
   const label = 'font-sans text-[11px] font-semibold uppercase tracking-[0.16em]';
 
@@ -98,8 +99,8 @@ export default async function GazetteSlugPage({
             </div>
           </header>
 
-          <div className="mt-8 font-serif text-[18px] sm:text-[19px] leading-[1.7] whitespace-pre-line first-letter:float-left first-letter:font-headline first-letter:font-extrabold first-letter:text-[76px] sm:first-letter:text-[84px] first-letter:leading-[0.8] first-letter:pr-2.5 first-letter:pt-2">
-            {article.body}
+          <div className="mt-6">
+            <ArticleBody body={article.body} />
           </div>
 
           {article.key_findings && article.key_findings.length > 0 && (

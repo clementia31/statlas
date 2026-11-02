@@ -5,7 +5,7 @@ import { getArchiveArticles, getDomains } from '@/lib/gazette';
 
 export const dynamic = 'force-dynamic';
 
-const TYPES = ['analysis', 'data_story', 'brief', 'reference', 'methodology'];
+const TYPES = ['editorial', 'analysis', 'data_story', 'brief', 'reference', 'methodology'];
 
 export default async function ArchivePage({
   searchParams,

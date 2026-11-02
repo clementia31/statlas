@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
+import { leadText } from '@/components/gazette/ArticleBody';
 import { getDomains, getDisciplines, getFeaturedAndLatest, getActiveChartOfWeek } from '@/lib/gazette';
 import { ArticleList, DoubleRule, GazettePage, Kicker, Masthead, Ornament, SectionLabel, typeLabel } from '@/components/gazette/Gazette';
 
@@ -9,12 +10,6 @@ export const metadata = {
   title: 'The Statlas Gazette — A quantitative journal of the world',
   description: 'Essays and references on the quantitative social sciences, backed by sourced data.',
 };
-
-function excerpt(body: string | null | undefined, max = 520) {
-  if (!body) return '';
-  const t = body.replace(/\s+/g, ' ').trim();
-  return t.length > max ? t.slice(0, t.lastIndexOf(' ', max)) + '…' : t;
-}
 
 export default async function GazetteHome() {
   const [domains, disciplines, { featured, latest }, chartOfWeek] = await Promise.all([
@@ -26,7 +21,7 @@ export default async function GazetteHome() {
 
   const secondary = latest.slice(0, 2);
   const rest = latest.slice(2);
-  const lead = excerpt(featured?.body);
+  const lead = leadText(featured?.body);
 
   return (
     <AppShell active="The Gazette" paper>
