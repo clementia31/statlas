@@ -52,7 +52,7 @@ export default async function GazettePage() {
                 </div>
               )}
               <div className="text-textMuted text-[11px] font-mono">
-                {featured.author_name} — {featured.published_at?.slice(0, 10)}
+                {featured.author_name} — {featured.published_at?.slice(0, 4)}
               </div>
             </a>
           )}
@@ -86,7 +86,7 @@ export default async function GazettePage() {
                 >
                   <span className="text-[14px] text-textSecondary">{a.title}</span>
                   <span className="text-textMuted text-[11px] font-mono shrink-0 ml-3">
-                    {a.published_at?.slice(0, 10)}
+                    {a.published_at?.slice(0, 4)}
                   </span>
                 </a>
               ))}

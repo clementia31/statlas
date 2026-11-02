@@ -67,7 +67,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
   if (facts?.official_languages?.length) factRows.push(['Languages', facts.official_languages.join(', ')]);
   if (facts?.currency_code) factRows.push(['Currency', `${currencyName ?? facts.currency_code} (${facts.currency_code})`]);
   if (facts?.area_km2) factRows.push(['Area', `${new Intl.NumberFormat('en-US').format(Number(facts.area_km2))} km²`]);
-  if (facts?.borders_iso3) factRows.push(['Land borders', `${facts.borders_iso3.length} countries`]);
+  if (facts?.borders_iso3) factRows.push(['Land borders', facts.borders_iso3.length === 0 ? 'None' : `${facts.borders_iso3.length} ${facts.borders_iso3.length === 1 ? 'country' : 'countries'}`]);
   if (facts) factRows.push(['Landlocked', facts.landlocked ? 'Yes' : 'No']);
   if (facts) factRows.push(['UN member', facts.un_member ? 'Yes' : 'No']);
 

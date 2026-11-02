@@ -43,7 +43,7 @@ export default async function GazetteSlugPage({
                       <span className="text-[14px] text-textSecondary">{a.title}</span>
                     </span>
                     <span className="text-textMuted text-[11px] font-mono shrink-0 ml-3">
-                      {a.published_at?.slice(0, 10)}
+                      {a.published_at?.slice(0, 4)}
                     </span>
                   </a>
                 ))}
@@ -102,7 +102,7 @@ export default async function GazetteSlugPage({
               <div className="font-serif italic text-textSecondary text-lg mb-3">{article.subtitle}</div>
             )}
             <div className="text-textMuted text-xs font-mono mb-6 pb-6 border-b border-border">
-              {article.author_name} — {article.published_at?.slice(0, 10)}
+              {article.author_name} — {article.published_at?.slice(0, 4)}
             </div>
 
             <div className="text-textSecondary text-[16px] leading-[1.7] whitespace-pre-line">

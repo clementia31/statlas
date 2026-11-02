@@ -40,7 +40,7 @@ export default async function DossierDetailPage({
                 <span className="text-[14px] text-textSecondary">{a.title}</span>
               </span>
               <span className="text-textMuted text-[11px] font-mono shrink-0 ml-3">
-                {a.published_at?.slice(0, 10)}
+                {a.published_at?.slice(0, 4)}
               </span>
             </a>
           ))}
