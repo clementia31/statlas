@@ -16,7 +16,8 @@ import { formatValue } from '@/lib/format';
 
 Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Tooltip, Legend);
 
-export const SERIES_COLORS = ['#3B82F6', '#22C55E', '#EAB308', '#EF4444', '#A855F7', '#F97316'];
+import { SERIES_COLORS } from '@/lib/colors';
+export { SERIES_COLORS };
 
 export type Series = { label: string; points: { x: number; y: number | null; projection?: boolean }[] };
 

@@ -158,6 +158,7 @@ export async function getCountries(): Promise<Country[]> {
     .from('entities')
     .select('id, slug, name_default, iso_code')
     .eq('entity_type', 'country')
+    .not('iso_code', 'is', null) // exclut les entités historiques (RDA, RFA)
     .order('name_default', { ascending: true });
   if (error) console.error('getCountries:', error.message);
   return (data ?? []).map((e: any) => ({ id: e.id, slug: e.slug, name: e.name_default, iso: e.iso_code }));

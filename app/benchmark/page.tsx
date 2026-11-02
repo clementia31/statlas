@@ -4,7 +4,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import Panel from '@/components/ui/Panel';
 import RadarChart from '@/components/RadarChart';
 import CountrySelector from '@/components/CountrySelector';
-import { SERIES_COLORS } from '@/components/LineChart';
+import { SERIES_COLORS } from '@/lib/colors';
 import { getBenchmarkData, PRESETS, type BenchmarkMode } from '@/lib/benchmark';
 import { formatValue } from '@/lib/format';
 
