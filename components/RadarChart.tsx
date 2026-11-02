@@ -13,7 +13,7 @@ export default function RadarChart({
   max = 100,
 }: {
   labels: string[];
-  datasets: { label: string; data: number[] }[];
+  datasets: { label: string; data: (number | null)[] }[];
   max?: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,6 +35,7 @@ export default function RadarChart({
           borderWidth: 2,
           pointRadius: 3,
           pointBackgroundColor: COLORS[i % COLORS.length],
+          spanGaps: true,
         })),
       },
       options: {

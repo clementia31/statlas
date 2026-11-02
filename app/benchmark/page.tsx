@@ -6,7 +6,7 @@ import RadarChart from '@/components/RadarChart';
 import CountrySelector from '@/components/CountrySelector';
 import { SERIES_COLORS } from '@/lib/colors';
 import { getBenchmarkData, PRESETS, type BenchmarkMode } from '@/lib/benchmark';
-import { formatValue } from '@/lib/format';
+import { formatValue, shortSource } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,14 +18,23 @@ export const metadata = {
 export default async function BenchmarkPage({ searchParams }: { searchParams: { countries?: string; mode?: string; preset?: string } }) {
   const presetKey = searchParams.preset && PRESETS[searchParams.preset] ? searchParams.preset : 'development';
   const mode: BenchmarkMode = searchParams.mode === 'minmax' ? 'minmax' : 'percentile';
-  const requested = (searchParams.countries ?? 'france,germany,japan')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .slice(0, 6);
+  const DEFAULTS = ['france', 'germany', 'united-states', 'brazil', 'india', 'japan', 'china'];
+  const asked = searchParams.countries
+    ? searchParams.countries
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 6)
+    : DEFAULTS;
 
-  const data = await getBenchmarkData(requested, mode, presetKey);
-  const countrySlugs = requested.filter((s) => data.names[s]);
+  let data = await getBenchmarkData(asked, mode, presetKey);
+  // Sans choix explicite : trois pays ayant des données sur tous les axes
+  if (!searchParams.countries) {
+    const complete = new Set(data.completeCountries.map((c) => c.slug));
+    const picked = DEFAULTS.filter((s) => complete.has(s)).slice(0, 3);
+    data = await getBenchmarkData(picked, mode, presetKey);
+  }
+  const countrySlugs = Object.keys(data.scores).filter((s) => data.names[s]);
 
   const href = (o: Record<string, string>) => {
     const p = new URLSearchParams({ countries: countrySlugs.join(','), mode, preset: presetKey, ...o });
@@ -71,7 +80,7 @@ export default async function BenchmarkPage({ searchParams }: { searchParams: { 
           <div className="max-w-[560px] mx-auto">
             <RadarChart
               labels={data.columns.map((c) => c.label)}
-              datasets={countrySlugs.map((s) => ({ label: data.names[s] ?? s, data: (data.scores[s] ?? []).map((v) => v ?? 0) }))}
+              datasets={countrySlugs.map((s) => ({ label: data.names[s] ?? s, data: data.scores[s] ?? [] }))}
               max={100}
             />
           </div>
@@ -99,13 +108,13 @@ export default async function BenchmarkPage({ searchParams }: { searchParams: { 
                         {c.label}
                       </Link>
                       <span className="block text-[10.5px] text-textMuted">
-                        {c.year} · {c.source}
+                        {c.year} · {shortSource(c.source)}
                       </span>
                     </td>
                     {countrySlugs.map((s) => (
                       <td key={s} className="py-2 px-2 text-right font-mono text-white whitespace-nowrap">
                         {formatValue(data.raw[s]?.[ci], c.unit)}
-                        <span className="block text-[10.5px] text-textMuted">{data.scores[s]?.[ci] != null ? Math.round(data.scores[s][ci] as number) : '—'}/100</span>
+                        <span className="block text-[10.5px] text-textMuted">{data.scores[s]?.[ci] != null ? `${Math.round(data.scores[s][ci] as number)}/100` : 'no data'}</span>
                       </td>
                     ))}
                   </tr>

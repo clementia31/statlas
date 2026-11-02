@@ -9,7 +9,7 @@ import LineChart from '@/components/LineChart';
 import { supabase } from '@/lib/supabase';
 import { getCountryExtras } from '@/lib/country-facts';
 import { getCountryForecasts, getCountryIndicators, getCountrySeries } from '@/lib/data';
-import { formatValue } from '@/lib/format';
+import { formatValue, shortSource } from '@/lib/format';
 import { regionOf, ISO } from '@/lib/iso';
 
 export const dynamic = 'force-dynamic';
@@ -163,7 +163,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
                       {i.is_projection ? ' (projection)' : ''}
                     </span>
                     {i.rank !== null && i.rankYear !== i.year && <span>· rank as of {i.rankYear}</span>}
-                    <span>· {i.meta.source_name}</span>
+                    <span>· {shortSource(i.meta.source_name)}</span>
                   </div>
                   {fc && fc.year > i.year && (
                     <div className="mt-2 text-[11px] text-yellow/90">

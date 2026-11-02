@@ -65,3 +65,13 @@ export function isAdditive(unit?: string | null): boolean {
   const u = (unit ?? '').toLowerCase();
   return u === 'people' || u.endsWith('million');
 }
+
+// Nom court d'une source pour les espaces étroits
+export function shortSource(name?: string | null): string {
+  const n = (name ?? '').toLowerCase();
+  if (n.includes('international monetary fund')) return 'IMF';
+  if (n.includes('development programme')) return 'UNDP';
+  if (n.includes('world population prospects')) return 'UN WPP';
+  if (n === 'oecd') return 'OECD';
+  return name ?? '';
+}
