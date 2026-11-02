@@ -97,7 +97,7 @@ export default function Nav({ active }: { active: string }) {
           <Links active={active} />
         </div>
         <div className="px-5 py-3 border-t border-border text-[11px] text-textMuted">
-          Data: IMF, UNDP, OECD, UN
+          Data: IMF, World Bank, UNDP, OECD, UN
         </div>
       </aside>
 

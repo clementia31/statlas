@@ -17,7 +17,10 @@ const TABLE_INDICATORS = [
   { slug: 'human-development-index', label: 'HDI' },
   { slug: 'life-expectancy-birth', label: 'Life expectancy' },
   { slug: 'gini-index', label: 'Gini' },
-  { slug: 'net-debt-gdp-percent', label: 'Net debt' },
+  { slug: 'public-debt-gdp-percent', label: 'Public debt' },
+  { slug: 'unemployment-rate', label: 'Unemployment' },
+  { slug: 'inflation-rate-cpi', label: 'Inflation' },
+  { slug: 'co2-emissions-per-capita', label: 'CO2 per capita' },
 ];
 
 export default async function ComparisonsPage({ searchParams }: { searchParams: { indicator?: string; countries?: string } }) {

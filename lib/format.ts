@@ -24,6 +24,7 @@ export function formatValue(value: number | null | undefined, unit?: string | nu
   if (u === 'years') return nf(1).format(value) + ' yrs';
   if (u === 'children per woman') return nf(2).format(value);
   if (u.includes('per sq mi')) return nf(0).format(value) + ' /mi²';
+  if (u.startsWith('t co2')) return nf(2).format(value) + ' t';
   if (u.includes('dollar') || u === 'usd') return '$' + abbreviateNumber(value);
   return nf(Math.abs(value) < 10 ? 2 : 0).format(value);
 }
@@ -52,6 +53,8 @@ export function unitLabel(unit?: string | null): string {
   if (u === 'percent of gdp') return '% of GDP';
   if (u === 'percent of labor force') return '% of labour force';
   if (u === 'percent') return '%';
+  if (u === 'percent gross') return '% of official school-age population (gross)';
+  if (u.startsWith('t co2')) return 'Tonnes of CO2 per person';
   if (u === 'years') return 'Years';
   if (u === 'children per woman') return 'Children per woman';
   if (u === 'index (0-1)') return 'Index, 0 to 1';
@@ -73,5 +76,6 @@ export function shortSource(name?: string | null): string {
   if (n.includes('development programme')) return 'UNDP';
   if (n.includes('world population prospects')) return 'UN WPP';
   if (n === 'oecd') return 'OECD';
+  if (n === 'world bank') return 'World Bank';
   return name ?? '';
 }

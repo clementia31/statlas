@@ -46,7 +46,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
       <PageHeader
         kicker="World overview"
         title="The world in numbers"
-        description={`${catalog.length} indicators from the IMF, UNDP, OECD and UN, harmonised by country and year. Every figure links back to its source.`}
+        description={`${catalog.length} indicators from the IMF, World Bank, UNDP, OECD and UN, harmonised by country and year. Every figure links back to its source.`}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
