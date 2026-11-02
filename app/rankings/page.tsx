@@ -30,14 +30,14 @@ export default async function RankingsPage() {
       />
       {Array.from(groups.entries()).map(([g, items]) => (
         <section key={g} className="mb-8">
-          <h2 className="text-[11px] uppercase tracking-[0.14em] text-textMuted mb-3">{g}</h2>
+          <h2 className="text-[12px] uppercase tracking-[0.14em] text-textMuted mb-3">{g}</h2>
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
             {items.map((m) => {
               const podium = podiums.get(m.id) ?? [];
               return (
-                <Link key={m.slug} href={`/rankings/${m.slug}`} className="rounded-xl border border-border bg-panel p-4 hover:border-accent/60 transition-colors">
-                  <div className="text-[14px] text-white font-medium leading-snug">{m.name}</div>
-                  <div className="text-[11px] text-textMuted mt-1">
+                <Link key={m.slug} href={`/rankings/${m.slug}`} className="rounded-xl border border-border bg-panel p-4 hover:border-accent transition-colors">
+                  <div className="text-[14px] text-text font-medium leading-snug">{m.name}</div>
+                  <div className="text-[12px] text-textMuted mt-1">
                     {m.ref_year} · {m.ref_coverage} countries ·{' '}
                     {m.higher_is_better === null ? 'highest first' : m.higher_is_better ? 'higher is better' : 'lower is better'}
                   </div>
@@ -47,7 +47,7 @@ export default async function RankingsPage() {
                         <span className="w-4 font-mono text-textMuted">{p.rank}</span>
                         <Flag iso={p.iso} />
                         <span className="flex-1 truncate text-textSecondary">{p.name}</span>
-                        <span className="font-mono text-white">{formatValue(p.value, m.unit)}</span>
+                        <span className="font-mono text-text">{formatValue(p.value, m.unit)}</span>
                       </li>
                     ))}
                   </ol>

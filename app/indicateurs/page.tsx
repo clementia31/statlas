@@ -84,10 +84,10 @@ export default async function IndicatorsPage({ searchParams }: { searchParams: {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {stats.map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-panel px-4 py-3.5">
-                <div className="text-[11px] text-textMuted">
+                <div className="text-[12px] text-textMuted">
                   {s.label} · {year}
                 </div>
-                <div className="font-mono text-[19px] text-white mt-1">{s.text ?? formatValue(s.value, meta.unit)}</div>
+                <div className="font-mono text-[19px] text-text mt-1">{s.text ?? formatValue(s.value, meta.unit)}</div>
               </div>
             ))}
           </div>
@@ -105,7 +105,7 @@ export default async function IndicatorsPage({ searchParams }: { searchParams: {
             </Panel>
           )}
 
-          <Panel title={`Ranking ${year}`} subtitle="Top 10" right={<Link href={href('data')} className="text-[12px] text-accent hover:underline">All countries →</Link>}>
+          <Panel title={`Ranking ${year}`} subtitle="Top 10" right={<Link href={href('data')} className="text-[13px] text-accent hover:underline">All countries →</Link>}>
             <RankingTable rows={ranked.slice(0, 10)} unit={meta.unit} linkable={!city} />
           </Panel>
           <SourceNote meta={meta} year={year} count={rows.length} />
@@ -134,7 +134,7 @@ export default async function IndicatorsPage({ searchParams }: { searchParams: {
           title={`All ${city ? 'cities' : 'countries'} — ${year}`}
           subtitle={`${rows.length} entries · ${unitLabel(meta.unit)}`}
           right={
-            <a href={`/api/export/${meta.slug}`} className="rounded-md border border-border px-3 py-1.5 text-[12px] text-textSecondary hover:text-white">
+            <a href={`/api/export/${meta.slug}`} className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium text-text hover:border-accent">
               Download CSV
             </a>
           }
@@ -148,7 +148,7 @@ export default async function IndicatorsPage({ searchParams }: { searchParams: {
 
       {tab === 'metadata' && (
         <Panel title="About this indicator">
-          <dl className="grid sm:grid-cols-[200px_1fr] gap-x-6 gap-y-3 text-[13px]">
+          <dl className="grid sm:grid-cols-[200px_1fr] gap-x-6 gap-y-3 text-[14px]">
             {[
               ['Name', meta.name],
               ['Definition', meta.definition ?? '—'],
@@ -162,17 +162,17 @@ export default async function IndicatorsPage({ searchParams }: { searchParams: {
             ].map(([k, v]) => (
               <div key={k} className="contents">
                 <dt className="text-textMuted">{k}</dt>
-                <dd className="text-white">{v}</dd>
+                <dd className="text-text">{v}</dd>
               </div>
             ))}
           </dl>
           <div className="mt-5 flex flex-wrap gap-2">
             {meta.source_url && (
-              <a href={meta.source_url} target="_blank" rel="noopener noreferrer" className="rounded-md border border-border px-3 py-1.5 text-[12px] text-textSecondary hover:text-white">
+              <a href={meta.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium text-text hover:border-accent">
                 Visit source ↗
               </a>
             )}
-            <a href={`/api/export/${meta.slug}`} className="rounded-md border border-border px-3 py-1.5 text-[12px] text-textSecondary hover:text-white">
+            <a href={`/api/export/${meta.slug}`} className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium text-text hover:border-accent">
               Download CSV
             </a>
             {years.some((y) => y.is_projection) && <Badge tone="warn">Includes official projections</Badge>}

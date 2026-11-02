@@ -73,25 +73,25 @@ export default async function CountryPage({ params, searchParams }: { params: { 
 
   return (
     <AppShell active="Countries">
-      <Link href="/pays" className="text-[12px] text-textMuted hover:text-white">
+      <Link href="/pays" className="text-[13px] text-textMuted hover:text-accent">
         ← All countries
       </Link>
 
       <div className="mt-3 mb-6 flex items-center gap-4">
         <Flag iso={entity.iso_code} size="lg" />
         <div className="min-w-0">
-          <h1 className="font-serif text-[28px] sm:text-[32px] leading-tight text-white">{entity.name_default}</h1>
-          {facts?.official_name && <div className="text-[13px] text-textMuted">{facts.official_name}</div>}
+          <h1 className="font-serif text-[34px] sm:text-[44px] font-semibold leading-[1.05] tracking-[-0.02em] text-text">{entity.name_default}</h1>
+          {facts?.official_name && <div className="text-[14px] text-textMuted">{facts.official_name}</div>}
         </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4 mb-6">
         <Panel title="Key facts" className="lg:col-span-1">
-          <dl className="grid grid-cols-[110px_1fr] gap-y-2 text-[13px]">
+          <dl className="grid grid-cols-[110px_1fr] gap-y-2 text-[14px]">
             {factRows.map(([k, v]) => (
               <div key={k} className="contents">
                 <dt className="text-textMuted">{k}</dt>
-                <dd className="text-white text-right">{v}</dd>
+                <dd className="text-text text-right">{v}</dd>
               </div>
             ))}
           </dl>
@@ -117,8 +117,8 @@ export default async function CountryPage({ params, searchParams }: { params: { 
                   key={i.meta.slug}
                   href={`/pays/${entity.slug}?trend=${i.meta.slug}`}
                   scroll={false}
-                  className={`rounded-full border px-2.5 py-1 text-[11px] ${
-                    i.meta.slug === trendSlug ? 'border-accent bg-accent/15 text-white' : 'border-border text-textSecondary hover:text-white'
+                  className={`inline-flex h-10 items-center rounded-full border px-3.5 text-[13px] ${
+                    i.meta.slug === trendSlug ? 'border-text bg-text text-white' : 'border-borderStrong bg-panel text-text hover:border-accent'
                   }`}
                 >
                   {i.meta.name}
@@ -137,8 +137,8 @@ export default async function CountryPage({ params, searchParams }: { params: { 
       {indicators.length === 0 && <div className="text-textMuted text-sm">No statistics available yet for this country.</div>}
 
       {Array.from(byCategory.entries()).map(([cat, items]) => (
-        <section key={cat} className="mb-6">
-          <h2 className="text-[11px] uppercase tracking-[0.14em] text-textMuted mb-3">{cat}</h2>
+        <section key={cat} className="mb-10">
+          <h2 className="font-serif text-[24px] font-semibold text-text mb-3 pb-2 border-b-2 border-text">{cat}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
             {items.map((i) => {
               const fc = forecasts.get(i.meta.slug);
@@ -146,18 +146,18 @@ export default async function CountryPage({ params, searchParams }: { params: { 
                 <Link
                   key={i.meta.slug}
                   href={`/rankings/${i.meta.slug}`}
-                  className="rounded-xl border border-border bg-panel p-4 hover:border-accent/60 transition-colors"
+                  className="rounded-xl border border-border bg-panel p-5 hover:border-accent transition-colors"
                 >
-                  <div className="text-[12px] text-textSecondary leading-snug min-h-[32px]">{i.meta.name}</div>
+                  <div className="text-[13px] text-textSecondary leading-snug min-h-[32px]">{i.meta.name}</div>
                   <div className="mt-1.5 flex items-baseline justify-between gap-2">
-                    <span className="font-mono text-[22px] text-white">{formatValue(i.value, i.meta.unit)}</span>
+                    <span className="font-mono text-[26px] text-text">{formatValue(i.value, i.meta.unit)}</span>
                     {i.rank !== null && (
-                      <span className="text-[11px] text-textMuted whitespace-nowrap">
+                      <span className="text-[12px] text-textMuted whitespace-nowrap">
                         #{i.rank} of {i.rankTotal}
                       </span>
                     )}
                   </div>
-                  <div className="mt-1.5 text-[11px] text-textMuted flex flex-wrap gap-x-2">
+                  <div className="mt-1.5 text-[12px] text-textMuted flex flex-wrap gap-x-2">
                     <span>
                       {i.year}
                       {i.is_projection ? ' (projection)' : ''}
@@ -166,7 +166,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
                     <span>· {shortSource(i.meta.source_name)}</span>
                   </div>
                   {fc && fc.year > i.year && (
-                    <div className="mt-2 text-[11px] text-yellow/90">
+                    <div className="mt-2 text-[12px] text-yellow">
                       Forecast {fc.year}: {formatValue(fc.value, i.meta.unit)}
                     </div>
                   )}
@@ -177,7 +177,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
         </section>
       ))}
 
-      <p className="text-[11.5px] text-textMuted">
+      <p className="text-[12px] text-textMuted">
         Values show the latest observed year for each indicator. Ranks compare countries on the most recent year with broad coverage. Forecasts are the source&apos;s own
         projections.
       </p>

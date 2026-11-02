@@ -18,7 +18,7 @@ export default function IndicatorSelect({ options, value, param = 'indicator' }:
 
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[10.5px] uppercase tracking-[0.1em] text-textMuted">Indicator</span>
+      <span className="text-[13px] text-textMuted">Indicator</span>
       <select
         value={value}
         onChange={(e) => {
@@ -27,7 +27,7 @@ export default function IndicatorSelect({ options, value, param = 'indicator' }:
           p.delete('year');
           router.push(`${pathname}?${p.toString()}`);
         }}
-        className="min-w-[240px] max-w-full rounded-lg border border-border bg-panel2 px-3 py-2 text-[13px] text-white outline-none focus:border-accent"
+        className="min-w-[240px] max-w-full rounded-lg border border-borderStrong bg-panel h-11 px-3 text-[14px] text-text outline-none focus:border-accent"
       >
         {Array.from(groups.entries()).map(([g, items]) => (
           <optgroup key={g} label={g}>

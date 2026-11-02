@@ -22,9 +22,9 @@ export default async function ExportPage() {
       />
       <Panel title="Download indicators" subtitle={`${catalog.length} datasets`} padded={false}>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-[13px]">
+          <table className="w-full min-w-[640px] text-[14px]">
             <thead>
-              <tr className="text-left text-[11px] uppercase tracking-[0.08em] text-textMuted border-b border-border">
+              <tr className="text-left text-[12px] uppercase tracking-[0.08em] text-textMuted border-b border-border">
                 <th className="py-2.5 px-4 sm:px-5 font-medium">Indicator</th>
                 <th className="py-2.5 px-2 font-medium">Source</th>
                 <th className="py-2.5 px-2 font-medium">Years</th>
@@ -35,15 +35,15 @@ export default async function ExportPage() {
               {catalog.map((m) => (
                 <tr key={m.slug} className="border-b border-border/60">
                   <td className="py-2.5 px-4 sm:px-5">
-                    <div className="text-white">{m.name}</div>
-                    <div className="text-[11px] text-textMuted">{unitLabel(m.unit)}</div>
+                    <div className="text-text">{m.name}</div>
+                    <div className="text-[12px] text-textMuted">{unitLabel(m.unit)}</div>
                   </td>
                   <td className="py-2.5 px-2 text-textSecondary">{m.source_name}</td>
                   <td className="py-2.5 px-2 font-mono text-textSecondary whitespace-nowrap">
                     {m.first_year}–{m.last_year}
                   </td>
                   <td className="py-2.5 px-4 sm:px-5 text-right">
-                    <a href={`/api/export/${m.slug}`} className="rounded-md border border-border px-3 py-1.5 text-[12px] text-textSecondary hover:text-white">
+                    <a href={`/api/export/${m.slug}`} className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium text-text hover:border-accent">
                       CSV
                     </a>
                   </td>
@@ -53,7 +53,7 @@ export default async function ExportPage() {
           </table>
         </div>
       </Panel>
-      <p className="mt-4 text-[12px] text-textMuted">
+      <p className="mt-4 text-[13px] text-textMuted">
         Direct URL pattern: <code className="font-mono text-textSecondary">/api/export/&lt;indicator-slug&gt;</code> — returns UTF-8 CSV.
       </p>
     </AppShell>

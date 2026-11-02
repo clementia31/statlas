@@ -10,8 +10,8 @@ import { isoNumeric } from '@/lib/iso';
 export type MapDatum = { slug: string; name: string; iso: string | null; value: number; projection?: boolean };
 
 // Palette séquentielle (5 classes) : plus foncé = valeur plus élevée, sans jugement bon/mauvais
-const PALETTE = ['#1E3A5F', '#1F5F8B', '#2B86B4', '#4FB0D6', '#9BDCF2'];
-const NO_DATA = '#273148';
+const PALETTE = ['#DCE6FA', '#9FB8F0', '#5C86E3', '#2F5CCB', '#173A8C'];
+const NO_DATA = '#E7E2D6';
 
 let worldCache: any[] | null = null;
 
@@ -102,7 +102,7 @@ export default function ChoroplethMap({
                 key={i}
                 d={path(f as GeoPermissibleObjects) || undefined}
                 fill={d ? PALETTE[classOf(d.value, breaks)] : NO_DATA}
-                stroke="#0B1220"
+                stroke="#F7F5EF"
                 strokeWidth={0.5 / zoom}
                 className={d ? 'cursor-pointer hover:opacity-80' : ''}
                 onClick={() => d && router.push(`/pays/${d.slug}`)}
@@ -126,10 +126,10 @@ export default function ChoroplethMap({
       </svg>
 
       {tip && (
-        <div className="absolute z-10 pointer-events-none rounded-lg border border-border bg-panel2/95 px-3 py-2 shadow-xl min-w-[150px]" style={{ left: tip.x, top: tip.y }}>
-          <div className="text-[13px] text-white font-medium">{tip.name}</div>
-          <div className="font-mono text-[15px] text-white mt-0.5">{tip.value}</div>
-          {tip.projection && <div className="text-[10.5px] text-yellow mt-0.5">Projection</div>}
+        <div className="absolute z-10 pointer-events-none rounded-lg border border-border bg-panel px-3 py-2 shadow-lg min-w-[150px]" style={{ left: tip.x, top: tip.y }}>
+          <div className="text-[14px] text-text font-medium">{tip.name}</div>
+          <div className="font-mono text-[15px] text-text mt-0.5">{tip.value}</div>
+          {tip.projection && <div className="text-[12px] text-yellow mt-0.5">Projection</div>}
         </div>
       )}
 
@@ -139,14 +139,14 @@ export default function ChoroplethMap({
           { l: '−', a: 'Zoom out', f: () => setZoom((z) => Math.max(z - 0.5, 1)) },
           { l: '⟲', a: 'Reset zoom', f: () => setZoom(1) },
         ].map((b) => (
-          <button key={b.a} type="button" onClick={b.f} aria-label={b.a} className="w-7 h-7 rounded-md border border-border bg-panel2/90 text-textSecondary hover:text-white text-sm">
+          <button key={b.a} type="button" onClick={b.f} aria-label={b.a} className="w-9 h-9 rounded-md border border-borderStrong bg-panel text-textSecondary hover:text-accent text-sm">
             {b.l}
           </button>
         ))}
       </div>
 
       {data.length > 0 && (
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-textSecondary">
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px] text-textSecondary">
           {legend.map((l) => (
             <span key={l.color} className="inline-flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-sm" style={{ background: l.color }} />

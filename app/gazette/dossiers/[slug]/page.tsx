@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import AppShell from '@/components/AppShell';
+import { ArticleList, CompactMasthead, GazettePage, Kicker } from '@/components/gazette/Gazette';
 import { getDossierBySlug } from '@/lib/gazette';
 import { notFound } from 'next/navigation';
 
@@ -16,35 +18,23 @@ export default async function DossierDetailPage({
   }
 
   return (
-    <AppShell active="The Gazette">
-
-        <div className="p-[28px] max-w-2xl mx-auto w-full">
-          <a href="/gazette/dossiers" className="text-textMuted text-xs hover:text-white">← Dossiers</a>
-
-          <div className="mt-5 mb-6 pb-5 border-b-2 border-white/20 text-center">
-            <div className="text-[11px] text-textMuted mb-2">Dossier</div>
-            <div className="font-serif text-3xl">{dossier.title}</div>
-            {dossier.description && (
-              <div className="text-textSecondary text-sm mt-2 max-w-md mx-auto">{dossier.description}</div>
-            )}
+    <AppShell active="The Gazette" paper>
+      <GazettePage>
+        <CompactMasthead section="Dossier" />
+        <div className="mx-auto max-w-[760px] pt-10">
+          <div className="text-center">
+            <Kicker>Dossier</Kicker>
+            <h1 className="mt-2 font-headline text-[40px] sm:text-[56px] font-extrabold leading-none">{dossier.title}</h1>
+            {dossier.description && <p className="mx-auto mt-4 max-w-[560px] font-serif text-[17px] leading-relaxed text-inkSoft">{dossier.description}</p>}
           </div>
-
-          {articles.map((a) => (
-            <a
-              key={a.slug}
-              href={`/gazette/${a.slug}`}
-              className="flex justify-between items-baseline py-2.5 border-b border-border hover:text-accent"
-            >
-              <span>
-                <span className="text-[10px] text-textMuted mr-2">{a.article_type}</span>
-                <span className="text-[14px] text-textSecondary">{a.title}</span>
-              </span>
-              <span className="text-textMuted text-[11px] font-mono shrink-0 ml-3">
-                {a.published_at?.slice(0, 4)}
-              </span>
-            </a>
-          ))}
+          <div className="mt-10">
+            <ArticleList articles={articles} />
+          </div>
+          <Link href="/gazette/dossiers" className="mt-8 inline-flex h-11 items-center font-sans text-[13px] uppercase tracking-[0.1em] hover:text-press">
+            ← All dossiers
+          </Link>
         </div>
+      </GazettePage>
     </AppShell>
   );
 }

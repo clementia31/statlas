@@ -11,7 +11,7 @@ export default function YearSelect({ years, value, refYear }: { years: YearOptio
 
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[10.5px] uppercase tracking-[0.1em] text-textMuted">Year</span>
+      <span className="text-[13px] text-textMuted">Year</span>
       <select
         value={value}
         onChange={(e) => {
@@ -19,7 +19,7 @@ export default function YearSelect({ years, value, refYear }: { years: YearOptio
           p.set('year', e.target.value);
           router.push(`${pathname}?${p.toString()}`);
         }}
-        className="rounded-lg border border-border bg-panel2 px-3 py-2 text-[13px] text-white font-mono outline-none focus:border-accent"
+        className="rounded-lg border border-borderStrong bg-panel h-11 px-3 text-[14px] text-text font-mono outline-none focus:border-accent"
       >
         {[...years].reverse().map((y) => (
           <option key={y.year} value={y.year}>

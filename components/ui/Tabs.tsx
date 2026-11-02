@@ -9,8 +9,8 @@ export default function Tabs({ tabs, active }: { tabs: { key: string; label: str
             key={t.key}
             href={t.href}
             aria-current={t.key === active ? 'page' : undefined}
-            className={`px-3.5 py-2.5 text-[13px] border-b-2 -mb-px transition-colors ${
-              t.key === active ? 'border-accent text-white' : 'border-transparent text-textSecondary hover:text-white'
+            className={`px-4 h-11 inline-flex items-center text-[14px] border-b-2 -mb-px transition-colors ${
+              t.key === active ? 'border-text font-semibold text-text' : 'border-transparent text-textSecondary hover:text-accent'
             }`}
           >
             {t.label}

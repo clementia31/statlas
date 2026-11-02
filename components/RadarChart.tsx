@@ -5,7 +5,7 @@ import { Chart, RadarController, LineElement, PointElement, RadialLinearScale, L
 
 Chart.register(RadarController, LineElement, PointElement, RadialLinearScale, Legend, Filler);
 
-const COLORS = ['#3B82F6', '#22C55E', '#EAB308', '#EF4444', '#A855F7', '#F97316'];
+const COLORS = ['#1F4FD1', '#D9822B', '#15171A', '#2E9C8F', '#B4381F', '#7A4FB5'];
 
 export default function RadarChart({
   labels,
@@ -47,9 +47,9 @@ export default function RadarChart({
             min: 0,
             max: max,
             ticks: { display: false, stepSize: 25 },
-            grid: { color: '#232F49' },
-            angleLines: { color: '#232F49' },
-            pointLabels: { color: '#97A3BC', font: { size: 11 } },
+            grid: { color: '#DEDAD0' },
+            angleLines: { color: '#DEDAD0' },
+            pointLabels: { color: '#3F4550', font: { size: 11 } },
           },
         },
       },

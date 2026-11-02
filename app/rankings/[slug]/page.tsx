@@ -36,7 +36,7 @@ export default async function RankingPage({ params, searchParams }: { params: { 
 
   return (
     <AppShell active="Rankings">
-      <Link href="/rankings" className="text-[12px] text-textMuted hover:text-white">
+      <Link href="/rankings" className="text-[13px] text-textMuted hover:text-accent">
         ← All rankings
       </Link>
       <div className="mt-3">
@@ -50,33 +50,33 @@ export default async function RankingPage({ params, searchParams }: { params: { 
 
       <div className="grid sm:grid-cols-3 gap-3 mb-6">
         <div className="rounded-xl border border-accent/50 bg-panel p-4">
-          <div className="text-[11px] text-textMuted">{meta.higher_is_better === false ? 'Lowest' : 'Highest'} · {year}</div>
+          <div className="text-[12px] text-textMuted">{meta.higher_is_better === false ? 'Lowest' : 'Highest'} · {year}</div>
           {leader ? (
-            <Link href={city ? '#' : `/pays/${leader.entity_slug}`} className="mt-1 flex items-center gap-2 text-white hover:text-accent">
+            <Link href={city ? '#' : `/pays/${leader.entity_slug}`} className="mt-1 flex items-center gap-2 text-text hover:text-accent">
               <Flag iso={leader.iso_code} size="md" />
               <span className="font-serif text-[18px]">{leader.entity_name}</span>
             </Link>
           ) : (
             <div className="text-textMuted">—</div>
           )}
-          <div className="font-mono text-[16px] text-white mt-1">{leader ? formatValue(leader.value, meta.unit) : ''}</div>
+          <div className="font-mono text-[16px] text-text mt-1">{leader ? formatValue(leader.value, meta.unit) : ''}</div>
         </div>
         <div className="rounded-xl border border-border bg-panel p-4">
-          <div className="text-[11px] text-textMuted">Coverage · {year}</div>
-          <div className="font-mono text-[22px] text-white mt-1">{rows.length}</div>
-          <div className="text-[11px] text-textMuted">{city ? 'cities' : 'countries'}</div>
+          <div className="text-[12px] text-textMuted">Coverage · {year}</div>
+          <div className="font-mono text-[22px] text-text mt-1">{rows.length}</div>
+          <div className="text-[12px] text-textMuted">{city ? 'cities' : 'countries'}</div>
         </div>
         <div className="rounded-xl border border-border bg-panel p-4">
-          <div className="text-[11px] text-textMuted">Method</div>
-          <div className="text-[13px] text-white mt-1">{direction}</div>
-          <div className="text-[11px] text-textMuted mt-1">Score: 0 = worst, 100 = best in {year}</div>
+          <div className="text-[12px] text-textMuted">Method</div>
+          <div className="text-[14px] text-text mt-1">{direction}</div>
+          <div className="text-[12px] text-textMuted mt-1">Score: 0 = worst, 100 = best in {year}</div>
         </div>
       </div>
 
       <Panel
         title={`Ranking ${year}`}
         right={
-          <a href={`/api/export/${meta.slug}`} className="rounded-md border border-border px-3 py-1.5 text-[12px] text-textSecondary hover:text-white">
+          <a href={`/api/export/${meta.slug}`} className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium text-text hover:border-accent">
             Download CSV
           </a>
         }

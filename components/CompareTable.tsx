@@ -44,23 +44,23 @@ export default function CompareTable({ columns, rows }: { columns: CompareColumn
         onChange={(e) => setQ(e.target.value)}
         placeholder="Filter countries…"
         aria-label="Filter countries"
-        className="mb-3 w-full sm:w-72 rounded-lg border border-border bg-panel2 px-3 py-2 text-[13px] text-white placeholder:text-textMuted outline-none focus:border-accent"
+        className="mb-3 w-full sm:w-72 rounded-lg border border-borderStrong bg-panel h-11 px-3 text-[14px] text-text placeholder:text-textMuted outline-none focus:border-accent"
       />
       <div className="overflow-auto max-h-[70vh] rounded-lg border border-border">
-        <table className="w-full min-w-[860px] text-[13px]">
+        <table className="w-full min-w-[860px] text-[14px]">
           <thead className="sticky top-0 z-10 bg-panel">
-            <tr className="border-b border-border text-[11px] text-textMuted">
+            <tr className="border-b border-border text-[12px] text-textMuted">
               <th className="sticky left-0 bg-panel text-left font-medium px-3 py-2.5">
-                <button type="button" onClick={() => toggle('name')} className="hover:text-white">
+                <button type="button" onClick={() => toggle('name')} className="hover:text-accent">
                   Country{arrow('name')}
                 </button>
               </th>
               {columns.map((c) => (
                 <th key={c.slug} className="text-right font-medium px-3 py-2.5 align-bottom">
-                  <button type="button" onClick={() => toggle(c.slug)} className="hover:text-white text-right">
+                  <button type="button" onClick={() => toggle(c.slug)} className="hover:text-accent text-right">
                     {c.label}
                     {arrow(c.slug)}
-                    <span className="block text-[10px] text-textMuted/80 font-normal">{c.year ?? ''}</span>
+                    <span className="block text-[12px] text-textMuted/80 font-normal">{c.year ?? ''}</span>
                   </button>
                 </th>
               ))}
@@ -70,13 +70,13 @@ export default function CompareTable({ columns, rows }: { columns: CompareColumn
             {sorted.map((r) => (
               <tr key={r.slug} className="border-b border-border/60 hover:bg-panel2/50">
                 <td className="sticky left-0 bg-bg/95 px-3 py-2">
-                  <Link href={`/pays/${r.slug}`} className="inline-flex items-center gap-2 text-white hover:text-accent">
+                  <Link href={`/pays/${r.slug}`} className="inline-flex items-center gap-2 text-text hover:text-accent">
                     <Flag iso={r.iso} />
                     <span className="truncate max-w-[180px]">{r.name}</span>
                   </Link>
                 </td>
                 {columns.map((c) => (
-                  <td key={c.slug} className="px-3 py-2 text-right font-mono text-white whitespace-nowrap">
+                  <td key={c.slug} className="px-3 py-2 text-right font-mono text-text whitespace-nowrap">
                     {r.values[c.slug] !== undefined ? formatValue(r.values[c.slug], c.unit) : <span className="text-textMuted">—</span>}
                   </td>
                 ))}
@@ -85,7 +85,7 @@ export default function CompareTable({ columns, rows }: { columns: CompareColumn
           </tbody>
         </table>
       </div>
-      <div className="mt-2 text-[12px] text-textMuted">{sorted.length} countries · click a column to sort</div>
+      <div className="mt-2 text-[13px] text-textMuted">{sorted.length} countries · click a column to sort</div>
     </div>
   );
 }

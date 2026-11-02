@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import AppShell from '@/components/AppShell';
+import { ArticleList, CompactMasthead, GazettePage, Kicker, Ornament, SectionLabel, typeLabel } from '@/components/gazette/Gazette';
 import { getArticleBySlug } from '@/lib/supabase';
 import { getDomainBySlug, getArticlesByDomain, getDisciplines, getRelatedForArticle } from '@/lib/gazette';
 import { notFound } from 'next/navigation';
@@ -19,51 +21,37 @@ export default async function GazetteSlugPage({
     ]);
 
     return (
-      <AppShell active="The Gazette">
-          <div className="p-[28px] max-w-2xl mx-auto w-full">
-            <a href="/gazette" className="text-textMuted text-xs hover:text-white">← The Gazette</a>
-
-            <div className="mt-5 mb-6 pb-5 border-b-2 border-white/20 text-center">
-              <div className="font-serif text-3xl">{domain.name}</div>
-              <div className="font-serif italic text-textSecondary text-sm mt-1">{domain.tagline}</div>
-              <div className="text-textMuted text-xs mt-2 max-w-md mx-auto">{domain.description}</div>
+      <AppShell active="The Gazette" paper>
+        <GazettePage>
+          <CompactMasthead section="Section" />
+          <div className="mx-auto max-w-[760px] pt-10 text-center">
+            <Kicker>Section</Kicker>
+            <h1 className="mt-2 font-headline text-[44px] sm:text-[60px] font-extrabold leading-none">{domain.name}</h1>
+            {domain.tagline && <p className="mt-3 font-headline italic text-[20px] text-inkSoft">{domain.tagline}</p>}
+            {domain.description && <p className="mx-auto mt-3 max-w-[560px] font-serif text-[16px] leading-relaxed text-inkSoft">{domain.description}</p>}
+          </div>
+          <div className="mx-auto mt-10 max-w-[760px]">
+            <div className="pb-2">
+              <SectionLabel>
+                {articles.length} {articles.length === 1 ? 'article' : 'articles'}
+              </SectionLabel>
             </div>
-
-            <div className="text-[11px] text-textMuted mb-2">Articles ({articles.length})</div>
             {articles.length > 0 ? (
-              <div className="mb-8">
-                {articles.map((a) => (
-                  <a
-                    key={a.slug}
-                    href={`/gazette/${a.slug}`}
-                    className="flex justify-between items-baseline py-2.5 border-b border-border hover:text-accent"
-                  >
-                    <span>
-                      <span className="text-[10px] text-textMuted mr-2">{a.article_type}</span>
-                      <span className="text-[14px] text-textSecondary">{a.title}</span>
-                    </span>
-                    <span className="text-textMuted text-[11px] font-mono shrink-0 ml-3">
-                      {a.published_at?.slice(0, 4)}
-                    </span>
-                  </a>
-                ))}
-              </div>
+              <ArticleList articles={articles} />
             ) : (
-              <div className="text-textMuted text-sm mb-8 italic">
-                No articles published in this domain yet.
+              <p className="border-t border-ink pt-4 font-serif italic text-inkMuted">No articles published in this section yet.</p>
+            )}
+            {disciplines.length > 0 && (
+              <div className="mt-10 border-y border-ink py-5 text-center">
+                <SectionLabel>Index of quantitative disciplines</SectionLabel>
+                <p className="mt-3 font-serif italic text-[15px] leading-[1.9] text-inkSoft">{disciplines.map((d) => d.name).join(' · ')}</p>
               </div>
             )}
-
-            <div className="text-[11px] text-textMuted mb-1">Quantitative disciplines</div>
-            <div className="text-textSecondary text-[13px] leading-loose">
-              {disciplines.map((d, i) => (
-                <span key={d.slug}>
-                  {i > 0 && <span className="mx-1.5 opacity-50">·</span>}
-                  {d.name}
-                </span>
-              ))}
-            </div>
+            <Link href="/gazette" className="mt-6 inline-flex h-11 items-center font-sans text-[13px] uppercase tracking-[0.1em] hover:text-press">
+              ← Back to the front page
+            </Link>
           </div>
+        </GazettePage>
       </AppShell>
     );
   }
@@ -81,124 +69,136 @@ export default async function GazetteSlugPage({
     article.related_indicators
   );
 
+  const words = (article.body ?? '').split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.round(words / 220));
+  const label = 'font-sans text-[11px] font-semibold uppercase tracking-[0.16em]';
+
   return (
-    <AppShell active="The Gazette">
+    <AppShell active="The Gazette" paper>
+      <GazettePage>
+        <CompactMasthead section={[typeLabel(article.article_type), article.domain_slug].filter(Boolean).join(' · ')} />
 
-        <div className="p-[28px] max-w-2xl mx-auto w-full">
-          <a href="/gazette" className="text-textMuted text-xs hover:text-white">← The Gazette</a>
-
-          <div className="mt-5">
-            <div className="text-[11px] text-textMuted mb-2">
-              {article.article_type}
+        <article className="mx-auto max-w-[720px] pt-10">
+          <header className="text-center">
+            <Kicker>
+              {typeLabel(article.article_type)}
               {article.domain_slug && (
                 <>
                   {' · '}
-                  <a href={`/gazette/${article.domain_slug}`} className="hover:text-accent">{article.domain_slug}</a>
+                  <Link href={`/gazette/${article.domain_slug}`} className="hover:underline">
+                    {article.domain_slug}
+                  </Link>
                 </>
               )}
+            </Kicker>
+            <h1 className="mt-3 font-headline text-[44px] sm:text-[68px] font-extrabold leading-none tracking-[-0.01em]">{article.title}</h1>
+            {article.subtitle && <p className="mt-4 font-headline italic text-[21px] sm:text-[26px] leading-snug text-inkSoft">{article.subtitle}</p>}
+            <div className="mt-6 border-y border-ink py-2.5 font-sans text-[12px] uppercase tracking-[0.1em] text-inkSoft">
+              By {article.author_name ?? 'Statlas Editorial'} · {minutes} min read
             </div>
-            <div className="font-serif text-[32px] font-medium leading-tight mb-2">{article.title}</div>
-            {article.subtitle && (
-              <div className="font-serif italic text-textSecondary text-lg mb-3">{article.subtitle}</div>
-            )}
-            <div className="text-textMuted text-xs font-mono mb-6 pb-6 border-b border-border">
-              {article.author_name} — {article.published_at?.slice(0, 4)}
-            </div>
+          </header>
 
-            <div className="text-textSecondary text-[16px] leading-[1.7] whitespace-pre-line">
-              {article.body}
-            </div>
-
-            {article.data_scope && (
-              <div className="mt-6 pt-5 border-t border-border">
-                <div className="text-textMuted text-[11px] mb-2">Data scope</div>
-                <div className="text-textSecondary text-sm">
-                  {article.data_scope.countriesCount && `${article.data_scope.countriesCount} countries`}
-                  {article.data_scope.startYear && article.data_scope.endYear &&
-                    ` · ${article.data_scope.startYear}–${article.data_scope.endYear}`}
-                  {article.data_scope.indicatorsCount && ` · ${article.data_scope.indicatorsCount} indicators`}
-                  {article.data_scope.observationsCount && ` · ${article.data_scope.observationsCount.toLocaleString()} observations`}
-                </div>
-                {article.data_scope.sources && (
-                  <div className="text-textMuted text-xs mt-1">
-                    Sources: {article.data_scope.sources.join(' · ')}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {article.key_findings && article.key_findings.length > 0 && (
-              <div className="mt-6 pt-5 border-t border-border">
-                <div className="text-textMuted text-[11px] mb-2">Key findings</div>
-                {article.key_findings.map((f: string, i: number) => (
-                  <div key={i} className="flex gap-3 py-1.5 text-sm text-textSecondary">
-                    <span className="text-textMuted font-mono shrink-0">{String(i + 1).padStart(2, '0')}</span>
-                    <span>{f}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {article.methods && article.methods.length > 0 && (
-              <div className="mt-6 pt-5 border-t border-border">
-                <div className="text-textMuted text-[11px] mb-2">Methods</div>
-                <div className="text-textSecondary text-sm">{article.methods.join(' · ')}</div>
-              </div>
-            )}
-
-            {article.limitations && article.limitations.length > 0 && (
-              <div className="mt-6 pt-5 border-t border-border">
-                <div className="text-textMuted text-[11px] mb-2">Limitations</div>
-                {article.limitations.map((l: string, i: number) => (
-                  <div key={i} className="text-sm text-textSecondary py-1">{l}</div>
-                ))}
-              </div>
-            )}
-
-            {(countries.length > 0 || indicators.length > 0) && (
-              <div className="mt-6 pt-5 border-t border-border">
-                <div className="text-textMuted text-[11px] mb-3">Explore the data</div>
-                {indicators.length > 0 && (
-                  <div className="mb-2">
-                    <span className="text-textMuted text-[11px] mr-2">Indicators:</span>
-                    {indicators.map((i, idx) => (
-                      <span key={i.slug}>
-                        {idx > 0 && ', '}
-                        <a href={`/indicateurs?indicator=${i.slug}`} className="text-textSecondary hover:text-accent underline">
-                          {i.name_default}
-                        </a>
-                      </span>
-                    ))}
-                  </div>
-                )}
-                {countries.length > 0 && (
-                  <div>
-                    <span className="text-textMuted text-[11px] mr-2">Countries:</span>
-                    {countries.map((c, idx) => (
-                      <span key={c.slug}>
-                        {idx > 0 && ', '}
-                        <a href={`/pays/${c.slug}`} className="text-textSecondary hover:text-accent underline">
-                          {c.name_default}
-                        </a>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {source && (
-              <div className="mt-8 pt-5 border-t border-border">
-                <div className="text-textMuted text-[11px] mb-1.5">Foundational text</div>
-                <div className="text-sm font-serif">{doc?.title}</div>
-                <div className="text-textMuted text-xs mt-1">
-                  {source.name}
-                  {doc?.published_at ? ` — ${doc.published_at.slice(0, 4)}` : ''}
-                </div>
-              </div>
-            )}
+          <div className="mt-8 font-serif text-[18px] sm:text-[19px] leading-[1.7] whitespace-pre-line first-letter:float-left first-letter:font-headline first-letter:font-extrabold first-letter:text-[76px] sm:first-letter:text-[84px] first-letter:leading-[0.8] first-letter:pr-2.5 first-letter:pt-2">
+            {article.body}
           </div>
-        </div>
+
+          {article.key_findings && article.key_findings.length > 0 && (
+            <section className="mt-10 border-t border-ink pt-4">
+              <div className={label}>Key findings</div>
+              <ol className="mt-3">
+                {article.key_findings.map((f: string, i: number) => (
+                  <li key={i} className="flex gap-4 border-b border-rule py-3 font-serif text-[17px] leading-relaxed">
+                    <span className="shrink-0 font-mono text-[14px] text-press">{String(i + 1).padStart(2, '0')}</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
+          {article.data_scope && (
+            <section className="mt-10 border-t border-ink pt-4">
+              <div className={label}>Data scope</div>
+              <p className="mt-2 font-serif text-[16px] text-inkSoft">
+                {[
+                  article.data_scope.countriesCount && `${article.data_scope.countriesCount} countries`,
+                  article.data_scope.startYear && article.data_scope.endYear && `${article.data_scope.startYear}–${article.data_scope.endYear}`,
+                  article.data_scope.indicatorsCount && `${article.data_scope.indicatorsCount} indicators`,
+                  article.data_scope.observationsCount && `${Number(article.data_scope.observationsCount).toLocaleString('en-US')} observations`,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+              {article.data_scope.sources && <p className="mt-1 font-sans text-[13px] text-inkMuted">Sources: {article.data_scope.sources.join(' · ')}</p>}
+            </section>
+          )}
+
+          {article.methods && article.methods.length > 0 && (
+            <section className="mt-8 border-t border-ink pt-4">
+              <div className={label}>Methods</div>
+              <p className="mt-2 font-serif text-[16px] text-inkSoft">{article.methods.join(' · ')}</p>
+            </section>
+          )}
+
+          {article.limitations && article.limitations.length > 0 && (
+            <section className="mt-8 border-t border-ink pt-4">
+              <div className={label}>Limitations</div>
+              {article.limitations.map((l: string, i: number) => (
+                <p key={i} className="mt-2 font-serif text-[16px] text-inkSoft">
+                  {l}
+                </p>
+              ))}
+            </section>
+          )}
+
+          {source && (
+            <aside className="mt-10 border-[3px] border-double border-ink bg-paperLight px-5 py-4 sm:px-6">
+              <div className={label}>Foundational text</div>
+              {doc?.title && <div className="mt-2 font-headline italic text-[22px] sm:text-[24px] leading-snug">{doc.title}</div>}
+              <div className="mt-1.5 font-sans text-[14px] text-inkSoft">
+                {source.name}
+                {doc?.published_at ? (
+                  <>
+                    {' — '}
+                    <span className="font-mono">{doc.published_at.slice(0, 4)}</span>
+                  </>
+                ) : null}
+              </div>
+            </aside>
+          )}
+
+          {(countries.length > 0 || indicators.length > 0) && (
+            <section className="mt-10 border-t-[3px] border-double border-ink pt-4">
+              <div className={label}>Explore the data on Statlas</div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {indicators.map((i) => (
+                  <Link
+                    key={i.slug}
+                    href={`/indicateurs?indicator=${i.slug}`}
+                    className="inline-flex h-11 items-center border border-ink px-3.5 font-sans text-[14px] hover:bg-ink hover:text-paper"
+                  >
+                    {i.name_default}
+                  </Link>
+                ))}
+                {countries.map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/pays/${c.slug}`}
+                    className="inline-flex h-11 items-center border border-rule px-3.5 font-sans text-[14px] hover:bg-ink hover:text-paper"
+                  >
+                    {c.name_default}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <Ornament />
+          <Link href="/gazette" className="inline-flex h-11 items-center font-sans text-[13px] uppercase tracking-[0.1em] hover:text-press">
+            ← Back to the front page
+          </Link>
+        </article>
+      </GazettePage>
     </AppShell>
   );
 }

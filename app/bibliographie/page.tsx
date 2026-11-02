@@ -15,16 +15,17 @@ export default async function BibliographyPage({
   return (
     <AppShell active="Bibliography">
 
-        <div className="p-[22px]">
-          <div className="font-serif text-2xl mb-1">Bibliography</div>
-          <div className="text-textMuted text-xs mb-4">
+        <div>
+          <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent mb-2.5">Sources</div>
+          <h1 className="font-serif text-[34px] sm:text-[44px] font-semibold leading-[1.05] tracking-[-0.02em]">Bibliography</h1>
+          <div className="text-textMuted text-[14px] mt-3 mb-6">
             {filtered.length} organizations
             {query ? ` matching "${searchParams.q}"` : ''}
           </div>
 
           <div className="max-w-3xl flex flex-col gap-3">
             {filtered.map((s) => (
-              <div key={s.id} className="bg-panel border border-border rounded-[10px] p-4">
+              <div key={s.id} className="bg-panel border border-border rounded-xl p-5">
                 <div className="flex items-baseline justify-between mb-1">
                   <div className="font-serif text-lg">
                     {s.url ? (
@@ -35,12 +36,12 @@ export default async function BibliographyPage({
                       s.name
                     )}
                   </div>
-                  <div className="text-textMuted text-[10px] font-mono uppercase">{s.source_type}</div>
+                  <div className="text-textMuted text-[12px] font-mono uppercase">{s.source_type}</div>
                 </div>
                 {s.documents.length > 0 && (
                   <div className="mt-2 flex flex-col gap-1">
                     {s.documents.map((d: any) => (
-                      <div key={d.id} className="text-xs text-textSecondary flex justify-between">
+                      <div key={d.id} className="text-[13px] text-textSecondary flex justify-between gap-3">
                         <span>
                           {d.url ? (
                             <a href={d.url} target="_blank" rel="noopener noreferrer" className="hover:text-accent">

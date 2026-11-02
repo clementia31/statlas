@@ -58,24 +58,24 @@ export default function LineChart({ series, unit, height = 280, fill = false }: 
         plugins: {
           legend: {
             display: series.length > 1,
-            labels: { color: '#97A3BC', boxWidth: 10, boxHeight: 10, font: { size: 11 } },
+            labels: { color: '#3F4550', boxWidth: 10, boxHeight: 10, font: { size: 11 } },
           },
           tooltip: {
-            backgroundColor: '#16213A',
-            borderColor: '#232F49',
+            backgroundColor: '#FFFFFF',
+            borderColor: '#CFCABD',
             borderWidth: 1,
-            titleColor: '#EEF1F6',
-            bodyColor: '#EEF1F6',
+            titleColor: '#15171A',
+            bodyColor: '#15171A',
             callbacks: {
               label: (ctx: any) => `${ctx.dataset.label}: ${formatValue(ctx.parsed.y, unit)}`,
             },
           },
         },
         scales: {
-          x: { ticks: { color: '#5D6A88', font: { size: 10 }, maxRotation: 0, autoSkipPadding: 12 }, grid: { color: '#1B2640' } },
+          x: { ticks: { color: '#5B6270', font: { size: 10 }, maxRotation: 0, autoSkipPadding: 12 }, grid: { color: '#ECE8DE' } },
           y: {
-            ticks: { color: '#5D6A88', font: { size: 10 }, callback: (v: any) => formatValue(Number(v), unit) },
-            grid: { color: '#1B2640' },
+            ticks: { color: '#5B6270', font: { size: 10 }, callback: (v: any) => formatValue(Number(v), unit) },
+            grid: { color: '#ECE8DE' },
           },
         },
       },

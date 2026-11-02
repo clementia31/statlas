@@ -24,7 +24,7 @@ export default function CountryDirectory({ countries }: { countries: DirCountry[
           onChange={(e) => setQ(e.target.value)}
           placeholder="Filter countries…"
           aria-label="Filter countries"
-          className="flex-1 rounded-lg border border-border bg-panel2 px-3 py-2 text-[13px] text-white placeholder:text-textMuted outline-none focus:border-accent"
+          className="flex-1 rounded-lg border border-borderStrong bg-panel h-11 px-3 text-[14px] text-text placeholder:text-textMuted outline-none focus:border-accent"
         />
         <div className="flex flex-wrap gap-1.5">
           {regions.map((r) => (
@@ -33,8 +33,8 @@ export default function CountryDirectory({ countries }: { countries: DirCountry[
               type="button"
               onClick={() => setRegion(r)}
               aria-pressed={region === r}
-              className={`rounded-full border px-3 py-1.5 text-[12px] ${
-                region === r ? 'border-accent bg-accent/15 text-white' : 'border-border text-textSecondary hover:text-white'
+              className={`inline-flex h-10 items-center rounded-full border px-4 text-[14px] ${
+                region === r ? 'border-text bg-text text-white' : 'border-borderStrong bg-panel text-text hover:border-accent'
               }`}
             >
               {r}
@@ -42,18 +42,18 @@ export default function CountryDirectory({ countries }: { countries: DirCountry[
           ))}
         </div>
       </div>
-      <div className="text-[12px] text-textMuted mb-3">{filtered.length} countries</div>
+      <div className="text-[13px] text-textMuted mb-3">{filtered.length} countries</div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
         {filtered.map((c) => (
           <Link
             key={c.slug}
             href={`/pays/${c.slug}`}
-            className="flex items-center gap-3 rounded-lg border border-border bg-panel px-3 py-2.5 hover:border-accent/60 transition-colors"
+            className="flex items-center gap-3 rounded-lg border border-border bg-panel px-3 py-2.5 hover:border-accent transition-colors"
           >
             <Flag iso={c.iso} size="md" />
             <span className="min-w-0">
-              <span className="block text-[13px] text-white truncate">{c.name}</span>
-              <span className="block text-[11px] text-textMuted">{c.region}</span>
+              <span className="block text-[14px] text-text truncate">{c.name}</span>
+              <span className="block text-[12px] text-textMuted">{c.region}</span>
             </span>
           </Link>
         ))}

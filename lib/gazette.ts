@@ -40,7 +40,7 @@ export async function getArticlesByDomain(domainSlug: string) {
 export async function getFeaturedAndLatest() {
   const { data, error } = await supabase
     .from('articles')
-    .select('slug, title, subtitle, article_type, domain_slug, author_name, published_at')
+    .select('slug, title, subtitle, article_type, domain_slug, author_name, published_at, body')
     .order('published_at', { ascending: false })
     .limit(9);
   if (error) console.error('Erreur getFeaturedAndLatest:', error.message);

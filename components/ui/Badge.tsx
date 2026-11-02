@@ -5,5 +5,5 @@ export default function Badge({ children, tone = 'neutral' }: { children: React.
       : tone === 'accent'
         ? 'border-accent/40 text-accent bg-accent/10'
         : 'border-border text-textSecondary bg-panel2';
-  return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10.5px] font-medium ${cls}`}>{children}</span>;
+  return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11.5px] font-medium ${cls}`}>{children}</span>;
 }

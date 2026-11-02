@@ -8,9 +8,9 @@ export default function RankingTable({ rows, unit, showScore = false, linkable =
   const max = Math.max(...rows.map((r) => Math.abs(r.value)), 0) || 1;
   return (
     <div className="overflow-x-auto -mx-4 sm:mx-0">
-      <table className="w-full min-w-[520px] text-[13px]">
+      <table className="w-full min-w-[520px] text-[14px]">
         <thead>
-          <tr className="text-left text-[11px] uppercase tracking-[0.08em] text-textMuted border-b border-border">
+          <tr className="text-left text-[12px] uppercase tracking-[0.08em] text-textMuted border-b border-border">
             <th className="py-2.5 pl-4 sm:pl-0 pr-2 w-12 font-medium">#</th>
             <th className="py-2.5 pr-2 font-medium">Country</th>
             <th className="py-2.5 pr-2 font-medium text-right">Value</th>
@@ -24,12 +24,12 @@ export default function RankingTable({ rows, unit, showScore = false, linkable =
               <td className="py-2 pl-4 sm:pl-0 pr-2 font-mono text-textMuted">{r.rank}</td>
               <td className="py-2 pr-2">
                 {linkable ? (
-                  <Link href={`/pays/${r.entity_slug}`} className="inline-flex items-center gap-2.5 text-white hover:text-accent">
+                  <Link href={`/pays/${r.entity_slug}`} className="inline-flex items-center gap-2.5 text-text hover:text-accent">
                     <Flag iso={r.iso_code} />
                     <span>{r.entity_name}</span>
                   </Link>
                 ) : (
-                  <span className="inline-flex items-center gap-2.5 text-white">
+                  <span className="inline-flex items-center gap-2.5 text-text">
                     <Flag iso={r.iso_code} />
                     <span>{r.entity_name}</span>
                   </span>
@@ -40,7 +40,7 @@ export default function RankingTable({ rows, unit, showScore = false, linkable =
                   </span>
                 )}
               </td>
-              <td className="py-2 pr-2 text-right font-mono text-white whitespace-nowrap">{formatValue(r.value, unit)}</td>
+              <td className="py-2 pr-2 text-right font-mono text-text whitespace-nowrap">{formatValue(r.value, unit)}</td>
               <td className="py-2 pr-4 sm:pr-0 hidden sm:table-cell">
                 <div className="h-1.5 rounded-full bg-panel2 overflow-hidden">
                   <div className="h-full rounded-full bg-accent/70" style={{ width: `${Math.max(1, (Math.abs(r.value) / max) * 100)}%` }} />

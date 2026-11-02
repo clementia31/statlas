@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import AppShell from '@/components/AppShell';
+import { ArticleList, CompactMasthead, GazettePage, SectionLabel, typeLabel } from '@/components/gazette/Gazette';
 import { getArchiveArticles, getDomains } from '@/lib/gazette';
 
 export const dynamic = 'force-dynamic';
@@ -24,63 +26,52 @@ export default async function ArchivePage({
     return `/gazette/archive?${params.toString()}`;
   }
 
+  const pill = (on: boolean) =>
+    `inline-flex h-10 items-center px-3 border font-sans text-[12px] uppercase tracking-[0.12em] ${on ? 'border-ink bg-ink text-paper' : 'border-rule hover:border-ink'}`;
+
   return (
-    <AppShell active="The Gazette">
-
-        <div className="p-[28px] max-w-2xl mx-auto w-full">
-          <a href="/gazette" className="text-textMuted text-xs hover:text-white">← The Gazette</a>
-
-          <div className="mt-5 mb-6 pb-5 border-b-2 border-white/20 text-center">
-            <div className="font-serif text-3xl">Archive</div>
-            <div className="font-serif italic text-textSecondary text-sm mt-1">
-              Every article, chronologically
-            </div>
+    <AppShell active="The Gazette" paper>
+      <GazettePage>
+        <CompactMasthead section="Archive" />
+        <div className="mx-auto max-w-[760px] pt-10">
+          <div className="text-center">
+            <h1 className="font-headline text-[44px] sm:text-[60px] font-extrabold leading-none">Archive</h1>
+            <p className="mt-3 font-headline italic text-[20px] text-inkSoft">Every article, chronologically</p>
           </div>
 
-          <div className="flex flex-wrap gap-2 justify-center mb-6 text-[11px] text-textMuted">
-            <a href={filterHref('domain', '')} className={!searchParams.domain ? 'text-white' : 'hover:text-white'}>All domains</a>
+          <div className="mt-8 flex flex-wrap justify-center gap-2">
+            <Link href={filterHref('domain', '')} className={pill(!searchParams.domain)}>
+              All sections
+            </Link>
             {domains.map((d) => (
-              <span key={d.slug}>
-                <span className="mx-1 opacity-40">·</span>
-                <a href={filterHref('domain', d.slug)} className={searchParams.domain === d.slug ? 'text-white' : 'hover:text-white'}>
-                  {d.name}
-                </a>
-              </span>
+              <Link key={d.slug} href={filterHref('domain', d.slug)} className={pill(searchParams.domain === d.slug)}>
+                {d.name}
+              </Link>
             ))}
           </div>
-
-          <div className="flex flex-wrap gap-2 justify-center mb-8 text-[11px] text-textMuted">
-            <a href={filterHref('type', '')} className={!searchParams.type ? 'text-white' : 'hover:text-white'}>All types</a>
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            <Link href={filterHref('type', '')} className={pill(!searchParams.type)}>
+              All types
+            </Link>
             {TYPES.map((t) => (
-              <span key={t}>
-                <span className="mx-1 opacity-40">·</span>
-                <a href={filterHref('type', t)} className={searchParams.type === t ? 'text-white' : 'hover:text-white'}>
-                  {t}
-                </a>
-              </span>
+              <Link key={t} href={filterHref('type', t)} className={pill(searchParams.type === t)}>
+                {typeLabel(t)}
+              </Link>
             ))}
           </div>
 
-          <div className="text-textMuted text-[11px] mb-2">{articles.length} articles</div>
-          {articles.map((a) => (
-            <a
-              key={a.slug}
-              href={`/gazette/${a.slug}`}
-              className="flex justify-between items-baseline py-2.5 border-b border-border hover:text-accent"
-            >
-              <span>
-                <span className="text-[10px] text-textMuted mr-2">{a.article_type}</span>
-                <span className="text-[14px] text-textSecondary">{a.title}</span>
-              </span>
-              <span className="text-textMuted text-[11px] font-mono shrink-0 ml-3">
-                {a.published_at?.slice(0, 4)}
-              </span>
-            </a>
-          ))}
-          {articles.length === 0 && (
-            <div className="text-textMuted text-sm italic">No articles match these filters.</div>
+          <div className="mt-10 pb-2">
+            <SectionLabel>
+              {articles.length} {articles.length === 1 ? 'article' : 'articles'}
+            </SectionLabel>
+          </div>
+          {articles.length > 0 ? (
+            <ArticleList articles={articles} />
+          ) : (
+            <p className="border-t border-ink pt-4 font-serif italic text-inkMuted">No articles match these filters.</p>
           )}
         </div>
+      </GazettePage>
     </AppShell>
   );
 }

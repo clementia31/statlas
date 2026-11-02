@@ -49,19 +49,19 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
         description={`${catalog.length} indicators from the IMF, World Bank, UNDP, OECD and UN, harmonised by country and year. Every figure links back to its source.`}
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 border-t-2 border-text mb-10">
         {kpis.map((k) => {
           const ch = k.previous !== null ? formatChange(k.value, k.previous, k.unit) : null;
           return (
             <Link
               key={k.slug}
               href={`/indicateurs?indicator=${k.slug}`}
-              className="rounded-xl border border-border bg-panel px-4 py-3.5 hover:border-accent/60 transition-colors"
+              className="border-b border-border px-3 py-4 hover:bg-panel transition-colors xl:[&:not(:last-child)]:border-r"
             >
-              <div className="text-[11px] text-textMuted leading-tight min-h-[28px]">{k.label}</div>
-              <div className="font-mono text-[20px] text-white mt-1">{formatValue(k.value, k.unit)}</div>
-              <div className="mt-1 flex items-center gap-2 text-[11px]">
-                {ch && <span className={ch.up ? 'text-green' : 'text-red'}>{ch.text}</span>}
+              <div className="text-[13px] text-textMuted leading-tight min-h-[32px]">{k.label}</div>
+              <div className="font-mono text-[24px] sm:text-[26px] text-text mt-1.5">{formatValue(k.value, k.unit)}</div>
+              <div className="mt-1 flex items-center gap-2 text-[12px]">
+                {ch && <span className={`font-semibold ${ch.up ? 'text-green' : 'text-red'}`}>{ch.text}</span>}
                 <span className="text-textMuted">
                   {k.year} · {k.n} countries
                 </span>
@@ -105,16 +105,16 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
             <ol className="divide-y divide-border">
               {col.items.map((r) => (
                 <li key={r.entity_slug} className="flex items-center gap-3 py-2">
-                  <span className="w-7 text-right font-mono text-[12px] text-textMuted">{r.rank}</span>
+                  <span className="w-7 text-right font-mono text-[13px] text-textMuted">{r.rank}</span>
                   <Flag iso={r.iso_code} />
-                  <Link href={`/pays/${r.entity_slug}`} className="flex-1 text-[13px] text-white hover:text-accent truncate">
+                  <Link href={`/pays/${r.entity_slug}`} className="flex-1 text-[14px] text-text hover:text-accent truncate">
                     {r.entity_name}
                   </Link>
-                  <span className="font-mono text-[13px] text-white">{formatValue(r.value, meta.unit)}</span>
+                  <span className="font-mono text-[14px] text-text">{formatValue(r.value, meta.unit)}</span>
                 </li>
               ))}
             </ol>
-            <Link href={`/rankings/${meta.slug}?year=${year}`} className="mt-3 inline-block text-[12px] text-accent hover:underline">
+            <Link href={`/rankings/${meta.slug}?year=${year}`} className="mt-3 inline-block text-[13px] text-accent hover:underline">
               Full ranking →
             </Link>
           </Panel>
@@ -125,12 +125,12 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
         {[
           { href: '/pays', t: 'Country profiles', d: 'Every indicator for every country, with its world rank.' },
           { href: '/rankings', t: 'Rankings', d: 'Who leads and who lags, year by year.' },
-          { href: '/benchmark', t: 'Benchmark', d: 'Compare up to six countries on a radar chart.' },
+          { href: '/benchmark', t: 'Benchmark', d: 'See where up to six countries stand among all countries.' },
           { href: '/gazette', t: 'The Gazette', d: 'Essays on the quantitative social sciences.' },
         ].map((c) => (
-          <Link key={c.href} href={c.href} className="rounded-xl border border-border bg-panel p-4 hover:border-accent/60 transition-colors">
-            <div className="text-[14px] text-white font-medium">{c.t}</div>
-            <div className="text-[12px] text-textMuted mt-1 leading-relaxed">{c.d}</div>
+          <Link key={c.href} href={c.href} className="rounded-xl border border-border bg-panel p-5 hover:border-accent transition-colors">
+            <div className="font-serif text-[19px] font-semibold text-text">{c.t}</div>
+            <div className="text-[13px] text-textMuted mt-1 leading-relaxed">{c.d}</div>
           </Link>
         ))}
       </div>

@@ -15,7 +15,12 @@ export const metadata = {
   description: 'Compare up to six countries across development and economic indicators on a single radar chart.',
 };
 
-export default async function BenchmarkPage({ searchParams }: { searchParams: { countries?: string; mode?: string; preset?: string } }) {
+export default async function BenchmarkPage({
+  searchParams,
+}: {
+  searchParams: { countries?: string; mode?: string; preset?: string; view?: string };
+}) {
+  const view: 'bars' | 'radar' = searchParams.view === 'radar' ? 'radar' : 'bars';
   const presetKey = searchParams.preset && PRESETS[searchParams.preset] ? searchParams.preset : 'development';
   const mode: BenchmarkMode = searchParams.mode === 'minmax' ? 'minmax' : 'percentile';
   const DEFAULTS = ['france', 'germany', 'united-states', 'brazil', 'india', 'japan', 'china'];
@@ -37,22 +42,22 @@ export default async function BenchmarkPage({ searchParams }: { searchParams: { 
   const countrySlugs = Object.keys(data.scores).filter((s) => data.names[s]);
 
   const href = (o: Record<string, string>) => {
-    const p = new URLSearchParams({ countries: countrySlugs.join(','), mode, preset: presetKey, ...o });
+    const p = new URLSearchParams({ countries: countrySlugs.join(','), mode, preset: presetKey, view, ...o });
     return `/benchmark?${p.toString()}`;
   };
   const pill = (active: boolean) =>
-    `rounded-full border px-3 py-1.5 text-[12px] ${active ? 'border-accent bg-accent/15 text-white' : 'border-border text-textSecondary hover:text-white'}`;
+    `inline-flex h-11 items-center rounded-full border px-4 text-[14px] ${active ? 'border-text bg-text text-white' : 'border-borderStrong bg-panel text-text hover:border-accent'}`;
 
   return (
     <AppShell active="Benchmark">
       <PageHeader
         kicker="Benchmark"
         title="Country benchmark"
-        description="Each axis shows where a country stands among all countries with data (100 = best). Raw values and years are in the table below."
+        description="Where each country stands among all countries, indicator by indicator. 100 means best in the world, 50 means the middle."
       />
 
       <div className="flex flex-col gap-3 mb-5">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {Object.entries(PRESETS).map(([k, p]) => (
             <Link key={k} href={href({ preset: k })} className={pill(presetKey === k)}>
               {p.label}
@@ -70,13 +75,27 @@ export default async function BenchmarkPage({ searchParams }: { searchParams: { 
           selected={countrySlugs.map((s) => ({ slug: s, name: data.names[s] ?? s }))}
           allCountries={data.completeCountries}
           basePath="/benchmark"
-          baseParams={{ mode, preset: presetKey }}
+          baseParams={{ mode, preset: presetKey, view }}
         />
-        <div className="text-[11px] text-textMuted">Only countries with data for every axis of this preset can be added.</div>
+        <div className="text-[12px] text-textMuted">Only countries with data for every axis of this preset can be added.</div>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-4">
-        <Panel title={data.preset.label} subtitle={mode === 'percentile' ? 'Percentile among all countries' : 'Min–max score (0 = lowest, 100 = highest)'} className="lg:col-span-3">
+      <Panel
+        title={data.preset.label}
+        subtitle={mode === 'percentile' ? 'Percentile among all countries (100 = best)' : 'Min–max score (0 = lowest, 100 = highest)'}
+        right={
+          <div className="flex gap-2">
+            <Link href={href({ view: 'bars' })} className={pill(view === 'bars')} aria-current={view === 'bars' ? 'true' : undefined}>
+              Bars
+            </Link>
+            <Link href={href({ view: 'radar' })} className={pill(view === 'radar')} aria-current={view === 'radar' ? 'true' : undefined}>
+              Radar
+            </Link>
+          </div>
+        }
+        className="mb-8"
+      >
+        {view === 'radar' ? (
           <div className="max-w-[560px] mx-auto">
             <RadarChart
               labels={data.columns.map((c) => c.label)}
@@ -84,13 +103,59 @@ export default async function BenchmarkPage({ searchParams }: { searchParams: { 
               max={100}
             />
           </div>
-        </Panel>
+        ) : (
+          <div>
+            <div className="hidden sm:grid grid-cols-[220px_minmax(0,1fr)] pb-2 text-[12px] font-mono text-textMuted">
+              <span />
+              <div className="flex justify-between">
+                <span>0</span>
+                <span>25</span>
+                <span>50</span>
+                <span>75</span>
+                <span>100</span>
+              </div>
+            </div>
+            {data.columns.map((c, ci) => (
+              <div key={c.slug} className="grid gap-2 sm:gap-0 sm:grid-cols-[220px_minmax(0,1fr)] items-center border-t border-border py-4">
+                <div className="pr-4">
+                  <Link href={`/rankings/${c.slug}`} className="font-medium text-text hover:text-accent">
+                    {c.label}
+                  </Link>
+                  <div className="text-[12px] text-textMuted">
+                    {shortSource(c.source)} · {c.year}
+                  </div>
+                </div>
+                <div className="grid gap-1.5">
+                  {countrySlugs.map((s, i) => {
+                    const v = data.scores[s]?.[ci];
+                    return v == null ? (
+                      <div key={s} className="h-3 text-[12px] leading-3 text-textMuted">
+                        {data.names[s]} — no data
+                      </div>
+                    ) : (
+                      <div key={s} className="flex items-center gap-2" title={`${data.names[s]}: ${Math.round(v)}/100`}>
+                        <div className="h-3 flex-1">
+                          <div
+                            className="h-3 rounded-sm"
+                            style={{ width: `${Math.max(1, Math.min(100, v))}%`, background: SERIES_COLORS[i % SERIES_COLORS.length] }}
+                          />
+                        </div>
+                        <span className="w-8 text-right font-mono text-[12px] text-textSecondary">{Math.round(v)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Panel>
 
-        <Panel title="Values" subtitle="Latest year with broad coverage" className="lg:col-span-2">
+        <Panel title="The figures behind the bars" subtitle="Latest year with broad coverage">
           <div className="overflow-x-auto">
-            <table className="w-full text-[12.5px]">
+            <table className="w-full text-[14px]">
               <thead>
-                <tr className="text-left text-[11px] text-textMuted border-b border-border">
+                <tr className="text-left text-[12px] text-textMuted border-b border-border">
                   <th className="py-2 pr-2 font-medium">Indicator</th>
                   {countrySlugs.map((s, i) => (
                     <th key={s} className="py-2 px-2 font-medium text-right whitespace-nowrap">
@@ -104,17 +169,17 @@ export default async function BenchmarkPage({ searchParams }: { searchParams: { 
                 {data.columns.map((c, ci) => (
                   <tr key={c.slug} className="border-b border-border/60">
                     <td className="py-2 pr-2 text-textSecondary">
-                      <Link href={`/rankings/${c.slug}`} className="hover:text-white">
+                      <Link href={`/rankings/${c.slug}`} className="hover:text-accent">
                         {c.label}
                       </Link>
-                      <span className="block text-[10.5px] text-textMuted">
+                      <span className="block text-[12px] text-textMuted">
                         {c.year} · {shortSource(c.source)}
                       </span>
                     </td>
                     {countrySlugs.map((s) => (
-                      <td key={s} className="py-2 px-2 text-right font-mono text-white whitespace-nowrap">
+                      <td key={s} className="py-2 px-2 text-right font-mono text-text whitespace-nowrap">
                         {formatValue(data.raw[s]?.[ci], c.unit)}
-                        <span className="block text-[10.5px] text-textMuted">{data.scores[s]?.[ci] != null ? `${Math.round(data.scores[s][ci] as number)}/100` : 'no data'}</span>
+                        <span className="block text-[12px] text-textMuted">{data.scores[s]?.[ci] != null ? `${Math.round(data.scores[s][ci] as number)}/100` : 'no data'}</span>
                       </td>
                     ))}
                   </tr>
@@ -123,7 +188,6 @@ export default async function BenchmarkPage({ searchParams }: { searchParams: { 
             </table>
           </div>
         </Panel>
-      </div>
     </AppShell>
   );
 }

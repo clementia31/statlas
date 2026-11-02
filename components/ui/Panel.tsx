@@ -16,15 +16,15 @@ export default function Panel({
   return (
     <section className={`rounded-xl border border-border bg-panel ${className}`}>
       {(title || right) && (
-        <div className="flex items-start justify-between gap-3 px-4 sm:px-5 pt-4">
+        <div className="flex items-start justify-between gap-3 px-4 sm:px-6 pt-5">
           <div className="min-w-0">
-            {title && <h2 className="text-[14px] font-medium text-white">{title}</h2>}
-            {subtitle && <div className="text-[12px] text-textMuted mt-0.5">{subtitle}</div>}
+            {title && <h2 className="font-serif text-[20px] sm:text-[22px] font-semibold leading-snug text-text">{title}</h2>}
+            {subtitle && <div className="text-[14px] text-textMuted mt-1">{subtitle}</div>}
           </div>
           {right}
         </div>
       )}
-      <div className={padded ? 'p-4 sm:p-5' : ''}>{children}</div>
+      <div className={padded ? 'p-4 sm:p-6' : ''}>{children}</div>
     </section>
   );
 }

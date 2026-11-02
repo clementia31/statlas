@@ -29,17 +29,17 @@ export default function CountrySelector({
 
   return (
     <div>
-      <span className="block text-[10.5px] uppercase tracking-[0.1em] text-textMuted mb-1">Countries ({selected.length}/{max})</span>
-      <div className="flex items-center gap-1.5 flex-wrap">
+      <span className="block text-[13px] text-textMuted mb-2">Countries ({selected.length}/{max})</span>
+      <div className="flex items-center gap-2 flex-wrap">
         {selected.map((c, i) => (
-          <span key={c.slug} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-panel2 pl-2.5 pr-1.5 py-1 text-[12px] text-white">
-            <span className="w-2 h-2 rounded-full" style={{ background: SERIES_COLORS[i % SERIES_COLORS.length] }} />
+          <span key={c.slug} className="inline-flex items-center gap-1.5 rounded-full border border-borderStrong bg-panel pl-3 pr-1 h-10 text-[14px] text-text">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ background: SERIES_COLORS[i % SERIES_COLORS.length] }} />
             {c.name}
             {selectedSlugs.length > 1 && (
               <button
                 type="button"
                 onClick={() => router.push(buildHref(selectedSlugs.filter((s) => s !== c.slug)), { scroll: false })}
-                className="ml-0.5 w-5 h-5 rounded-full text-textMuted hover:text-white hover:bg-border"
+                className="w-8 h-8 rounded-full text-[16px] text-textMuted hover:text-accent hover:bg-border"
                 aria-label={`Remove ${c.name}`}
               >
                 ×
@@ -52,7 +52,7 @@ export default function CountrySelector({
             value=""
             onChange={(e) => e.target.value && router.push(buildHref([...selectedSlugs, e.target.value]), { scroll: false })}
             aria-label="Add a country"
-            className="rounded-full border border-dashed border-border bg-transparent px-3 py-1 text-[12px] text-textSecondary"
+            className="rounded-full border border-dashed border-borderStrong bg-transparent px-3.5 h-10 text-[14px] text-textSecondary"
           >
             <option value="">+ Add country</option>
             {available.map((c) => (

@@ -3,79 +3,31 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-const GROUPS: { title: string; items: { label: string; href: string }[] }[] = [
-  {
-    title: 'Explore',
-    items: [
-      { label: 'Overview', href: '/' },
-      { label: 'Indicators', href: '/indicateurs' },
-      { label: 'Map', href: '/carte' },
-      { label: 'Countries', href: '/pays' },
-    ],
-  },
-  {
-    title: 'Compare',
-    items: [
-      { label: 'Comparisons', href: '/comparaisons' },
-      { label: 'Rankings', href: '/rankings' },
-      { label: 'Benchmark', href: '/benchmark' },
-    ],
-  },
-  {
-    title: 'Read',
-    items: [
-      { label: 'The Gazette', href: '/gazette' },
-      { label: 'Bibliography', href: '/bibliographie' },
-    ],
-  },
-  {
-    title: 'Data',
-    items: [{ label: 'Export & API', href: '/api-export' }],
-  },
+// Navigation principale (direction A : barre horizontale en haut)
+const ITEMS: { label: string; href: string; match: string[] }[] = [
+  { label: 'Overview', href: '/', match: ['Overview'] },
+  { label: 'Indicators', href: '/indicateurs', match: ['Indicators'] },
+  { label: 'Map', href: '/carte', match: ['Map'] },
+  { label: 'Countries', href: '/pays', match: ['Countries'] },
+  { label: 'Rankings', href: '/rankings', match: ['Rankings'] },
+  { label: 'Compare', href: '/comparaisons', match: ['Comparisons', 'Benchmark', 'Compare'] },
+  { label: 'The Gazette', href: '/gazette', match: ['The Gazette'] },
 ];
 
-function SearchBox({ onDone }: { onDone?: () => void }) {
+function SearchBox({ id, onDone }: { id: string; onDone?: () => void }) {
   return (
-    <form action="/search" method="get" onSubmit={onDone} role="search">
-      <label htmlFor="global-search" className="sr-only">
+    <form action="/search" method="get" onSubmit={onDone} role="search" className="w-full">
+      <label htmlFor={id} className="sr-only">
         Search
       </label>
       <input
-        id="global-search"
+        id={id}
         name="q"
         type="search"
-        placeholder="Search countries, indicators…"
-        className="w-full bg-panel2 border border-border rounded-lg px-3 py-2 text-[13px] text-text placeholder:text-textMuted outline-none focus:border-accent"
+        placeholder="Search a country or indicator"
+        className="w-full h-11 lg:h-10 rounded-lg border border-borderStrong bg-panel px-3.5 text-[14px] text-text placeholder:text-textMuted outline-none focus:border-accent"
       />
     </form>
-  );
-}
-
-function Links({ active, onNavigate }: { active: string; onNavigate?: () => void }) {
-  return (
-    <nav aria-label="Main">
-      {GROUPS.map((g) => (
-        <div key={g.title} className="mb-4">
-          <div className="px-3 mb-1 text-[10px] uppercase tracking-[0.12em] text-textMuted">{g.title}</div>
-          {g.items.map((item) => {
-            const isActive = item.label === active;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onNavigate}
-                aria-current={isActive ? 'page' : undefined}
-                className={`block rounded-md px-3 py-2 text-[13px] transition-colors ${
-                  isActive ? 'bg-panel2 text-white font-medium' : 'text-textSecondary hover:text-white hover:bg-panel2/60'
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-      ))}
-    </nav>
   );
 }
 
@@ -83,49 +35,82 @@ export default function Nav({ active }: { active: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <>
-      {/* Ordinateur : barre latérale fixe */}
-      <aside className="hidden lg:flex lg:flex-col w-[232px] shrink-0 border-r border-border bg-panel sticky top-0 h-screen">
-        <Link href="/" className="px-5 pt-5 pb-4 block">
-          <span className="font-serif text-[22px] text-white">Statlas</span>
-          <span className="block text-[11px] text-textMuted mt-0.5">Sourced world statistics</span>
+    <header className="sticky top-0 z-40 border-b border-border bg-bg/95 backdrop-blur">
+      <div className="mx-auto flex h-[64px] max-w-[1280px] items-center gap-6 px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="font-serif text-[24px] font-semibold tracking-tight text-text">
+          Statlas
         </Link>
-        <div className="px-4 mb-4">
-          <SearchBox />
-        </div>
-        <div className="px-2 overflow-y-auto flex-1">
-          <Links active={active} />
-        </div>
-        <div className="px-5 py-3 border-t border-border text-[11px] text-textMuted">
-          Data: IMF, World Bank, UNDP, OECD, UN
-        </div>
-      </aside>
 
-      {/* Mobile et tablette : en-tête + menu déroulant */}
-      <header className="lg:hidden sticky top-0 z-40 bg-panel/95 backdrop-blur border-b border-border">
-        <div className="flex items-center justify-between px-4 h-14">
-          <Link href="/" className="font-serif text-xl text-white">
-            Statlas
-          </Link>
-          <button
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            className="rounded-md border border-border px-3 py-1.5 text-[13px] text-textSecondary hover:text-white"
-          >
-            {open ? 'Close' : 'Menu'}
-          </button>
+        <nav aria-label="Main" className="hidden lg:flex flex-1 items-center gap-6 text-[14px]">
+          {ITEMS.map((item) => {
+            const isActive = item.match.includes(active);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isActive ? 'page' : undefined}
+                className={`py-1 border-b-2 transition-colors ${
+                  isActive ? 'border-text font-semibold text-text' : 'border-transparent text-textSecondary hover:text-text'
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="hidden lg:block w-[260px] shrink-0">
+          <SearchBox id="global-search" />
         </div>
-        {open && (
-          <div id="mobile-menu" className="px-3 pb-4 border-t border-border max-h-[80vh] overflow-y-auto">
-            <div className="py-3">
-              <SearchBox onDone={() => setOpen(false)} />
-            </div>
-            <Links active={active} onNavigate={() => setOpen(false)} />
+
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          className="lg:hidden ml-auto flex h-11 w-11 items-center justify-center rounded-lg border border-borderStrong bg-panel"
+        >
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {open ? (
+              <>
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+              </>
+            ) : (
+              <>
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="17" x2="20" y2="17" />
+              </>
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {open && (
+        <div id="mobile-menu" className="lg:hidden border-t border-border bg-bg px-4 pb-5 max-h-[80vh] overflow-y-auto">
+          <div className="py-4">
+            <SearchBox id="mobile-search" onDone={() => setOpen(false)} />
           </div>
-        )}
-      </header>
-    </>
+          <nav aria-label="Main">
+            {[...ITEMS, { label: 'Benchmark', href: '/benchmark', match: ['Benchmark'] }].map((item) => {
+              const isActive = item.label === 'Compare' ? active === 'Comparisons' || active === 'Compare' : item.match.includes(active);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`flex h-12 items-center border-b border-border text-[16px] ${isActive ? 'font-semibold text-text' : 'text-textSecondary'}`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      )}
+    </header>
   );
 }

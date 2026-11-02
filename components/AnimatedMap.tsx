@@ -48,11 +48,11 @@ export default function AnimatedMap({
             if (idx >= years.length - 1) setIdx(0);
             setPlaying((p) => !p);
           }}
-          className="rounded-md bg-accent px-3.5 py-1.5 text-[13px] font-medium text-white hover:bg-accent/90"
+          className="inline-flex h-11 items-center rounded-lg bg-accent px-4 text-[14px] font-medium text-white hover:bg-accent/90"
         >
           {playing ? 'Pause' : 'Play'}
         </button>
-        <div className="font-mono text-[22px] text-white w-[64px]">{year}</div>
+        <div className="font-mono text-[22px] text-text w-[64px]">{year}</div>
         <input
           type="range"
           min={0}
@@ -63,20 +63,20 @@ export default function AnimatedMap({
             setIdx(Number(e.target.value));
           }}
           aria-label="Year"
-          className="flex-1 min-w-[160px] accent-[#3B82F6]"
+          className="flex-1 min-w-[160px] accent-[#1F4FD1]"
         />
         <select
           value={speed}
           onChange={(e) => setSpeed(Number(e.target.value))}
           aria-label="Speed"
-          className="rounded-md border border-border bg-panel2 px-2 py-1.5 text-[12px] text-textSecondary"
+          className="h-11 rounded-lg border border-borderStrong bg-panel px-2 text-[14px] text-text"
         >
           <option value={1600}>Slow</option>
           <option value={900}>Normal</option>
           <option value={400}>Fast</option>
         </select>
       </div>
-      <div className="text-[12px] text-textMuted mb-2">
+      <div className="text-[13px] text-textMuted mb-2">
         {data.length} countries with data in {year}
         {data.some((d) => d.projection) ? ' · includes projections' : ''}
       </div>
