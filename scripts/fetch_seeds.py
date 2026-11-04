@@ -13,6 +13,7 @@ import io
 import json
 import sys
 import time
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -23,6 +24,7 @@ OUT = Path(__file__).resolve().parent.parent / "data" / "seeds" / "history"
 UA = "Statlas-seeds/1.0 (open data import)"
 TODAY = dt.date.today().isoformat()
 
+# Médaille Fields : Wikidata (lauréats, année, lieu de naissance)
 # slug Statlas : (graphiques OWID candidats, nom, catégorie, unité, higher_is_better, définition, éditeur d'origine, jeu d'origine)
 SETS = {
     "gdp-per-capita-maddison": (["gdp-per-capita-maddison-project-database", "gdp-per-capita-maddison", "gdp-per-capita-maddison-2020"],
@@ -156,14 +158,46 @@ def nobel(report):
     report["nobel"] = {"laureates_rows": len(df), "unmatched_countries": sorted(set(df.loc[df["iso2"].isna() & df["birth_country_now"].notna(), "birth_country_now"]))}
 
 
+def fields(report):
+    """Médaille Fields : lauréats, année et pays de naissance (frontières actuelles), via Wikidata."""
+    q = """SELECT ?p ?pLabel ?year ?cc WHERE {
+      ?p p:P166 ?st . ?st ps:P166 wd:Q28835 . OPTIONAL { ?st pq:P585 ?t . BIND(YEAR(?t) AS ?year) }
+      OPTIONAL { ?p wdt:P19 ?place . ?place wdt:P17 ?c . ?c wdt:P297 ?cc . }
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } }"""
+    url = "https://query.wikidata.org/sparql?format=json&query=" + urllib.parse.quote(q)
+    js = json.loads(get(url, accept="application/sparql-results+json"))
+    rows = {}
+    for b in js["results"]["bindings"]:
+        key = b["p"]["value"]
+        r = rows.setdefault(key, {"medalist": b["pLabel"]["value"], "year": None, "iso2": set()})
+        if "year" in b:
+            r["year"] = int(b["year"]["value"])
+        if "cc" in b:
+            r["iso2"].add(b["cc"]["value"])
+    df = pd.DataFrame([{"medalist": r["medalist"], "year": r["year"], "iso2": "/".join(sorted(r["iso2"])) or None} for r in rows.values()])
+    df.sort_values("year").to_csv(OUT / "fields-medalists.csv", index=False)
+    ok = df[df["iso2"].notna() & df["year"].notna() & ~df["iso2"].fillna("").str.contains("/")]   # pays de naissance ambigu : écarté
+    cum = []
+    for c, g in ok.groupby("iso2"):
+        counts = g.groupby("year").size().sort_index().cumsum()
+        cum += [(c, int(y), int(v), 0) for y, v in counts.items()]
+    write("fields-medalists-cumulative", ["Fields Medal laureates born in the country (current borders), cumulative — International Mathematical Union",
+                                          f"Retrieved {TODAY} from Wikidata (award received: Fields Medal, place of birth); count computed by Statlas Research",
+                                          "Unit: laureates; category: science; higher_is_better: None",
+                                          "Definition: Number of Fields Medal laureates born in the territory of today's country, cumulated up to the given year."], cum)
+    report["fields"] = {"medalists": int(len(df)), "counted": int(len(ok)),
+                        "excluded_unclear_birthplace": df.loc[~df.index.isin(ok.index), "medalist"].tolist()}
+
+
 def main():
     report = {}
     for slug, spec in SETS.items():
         owid(slug, spec, report)
-    try:
-        nobel(report)
-    except Exception as exc:
-        report["nobel"] = {"error": repr(exc)}
+    for fn, key in ((nobel, "nobel"), (fields, "fields")):
+        try:
+            fn(report)
+        except Exception as exc:
+            report[key] = {"error": repr(exc)}
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "report.json").write_text(json.dumps(report, indent=1, ensure_ascii=False))
     print(json.dumps(report, indent=1, ensure_ascii=False))
