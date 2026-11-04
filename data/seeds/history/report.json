@@ -98,9 +98,7 @@
  },
  "fields": {
   "medalists": 68,
-  "counted": 67,
-  "excluded_unclear_birthplace": [
-   "Elon Lindenstrauss"
-  ]
+  "counted": 68,
+  "excluded_unclear_birthplace": []
  }
 }
