@@ -9,19 +9,18 @@
   ],
   "projections": 0,
   "columns": [
-   "GDP per capita",
-   "GDP per capita (Annotations)"
+   "GDP per capita"
   ]
  },
  "population-un-wpp": {
   "chart": "population-with-un-projections",
-  "rows": 17538,
+  "rows": 35787,
   "countries": 237,
   "years": [
    1950,
-   2023
+   2100
   ],
-  "projections": 0,
+  "projections": 18249,
   "columns": [
    "Population",
    "Population (Projected)"
@@ -29,13 +28,13 @@
  },
  "median-age": {
   "chart": "median-age",
-  "rows": 17538,
+  "rows": 35787,
   "countries": 237,
   "years": [
    1950,
-   2023
+   2100
   ],
-  "projections": 0,
+  "projections": 18249,
   "columns": [
    "Median age",
    "Median age (Projected)"
@@ -51,8 +50,7 @@
   ],
   "projections": 0,
   "columns": [
-   "Electoral democracy index",
-   "World region according to OWID"
+   "Electoral democracy index"
   ]
  },
  "liberal-democracy-index": {
@@ -65,8 +63,7 @@
   ],
   "projections": 0,
   "columns": [
-   "Liberal democracy index",
-   "World region according to OWID"
+   "Liberal democracy index"
   ]
  },
  "conflict-deaths": {
@@ -92,15 +89,12 @@
   ],
   "projections": 0,
   "columns": [
-   "Military expenditure (% of GDP)",
-   "World region according to OWID"
+   "Military expenditure (% of GDP)"
   ]
  },
  "nobel": {
   "laureates_rows": 1036,
-  "unmatched_countries": [
-   "Guadeloupe, France"
-  ]
+  "unmatched_countries": []
  },
  "fields": {
   "medalists": 68,
