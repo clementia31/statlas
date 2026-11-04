@@ -1,0 +1,67 @@
+# Fields Medal laureates born in the country (current borders), cumulative — International Mathematical Union
+# Retrieved 2026-11-04 from Wikidata (award received: Fields Medal, place of birth); count computed by Statlas Research
+# Unit: laureates; category: science; higher_is_better: None
+# Definition: Number of Fields Medal laureates born in the territory of today's country, cumulated up to the given year.
+# iso2|year|value|projection
+AU|2006|1|0
+BE|1978|1|0
+BE|1994|2|0
+BR|2014|1|0
+CA|2014|1|0
+CH|2014|1|0
+CN|1982|1|0
+CN|2026|3|0
+DE|1966|1|0
+DE|1986|2|0
+DE|2006|3|0
+DE|2018|4|0
+FI|1936|1|0
+FR|1950|1|0
+FR|1954|2|0
+FR|1958|3|0
+FR|1982|4|0
+FR|1994|6|0
+FR|2002|7|0
+FR|2010|8|0
+FR|2022|9|0
+GB|1966|1|0
+GB|1970|2|0
+GB|1974|3|0
+GB|1986|4|0
+GB|1998|5|0
+GB|2022|6|0
+IN|2018|1|0
+IR|2014|1|0
+IR|2018|2|0
+IT|1974|1|0
+IT|2018|2|0
+JP|1954|1|0
+JP|1970|2|0
+JP|1990|3|0
+NO|1950|1|0
+NZ|1990|1|0
+PL|1958|1|0
+RU|1970|1|0
+RU|1978|2|0
+RU|1994|3|0
+RU|1998|4|0
+RU|2002|5|0
+RU|2006|7|0
+RU|2010|8|0
+RU|2026|9|0
+SE|1962|1|0
+UA|1990|1|0
+UA|2022|2|0
+US|1936|1|0
+US|1962|2|0
+US|1966|4|0
+US|1970|5|0
+US|1978|7|0
+US|1982|8|0
+US|1986|9|0
+US|1990|10|0
+US|1998|11|0
+US|2022|12|0
+US|2026|13|0
+VN|2010|1|0
+ZA|1998|1|0

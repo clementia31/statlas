@@ -1,0 +1,112 @@
+{
+ "gdp-per-capita-maddison": {
+  "chart": "gdp-per-capita-maddison-project-database",
+  "rows": 20934,
+  "countries": 165,
+  "years": [
+   1,
+   2022
+  ],
+  "projections": 0,
+  "columns": [
+   "GDP per capita",
+   "GDP per capita (Annotations)"
+  ]
+ },
+ "population-un-wpp": {
+  "chart": "population-with-un-projections",
+  "rows": 17538,
+  "countries": 237,
+  "years": [
+   1950,
+   2023
+  ],
+  "projections": 0,
+  "columns": [
+   "Population",
+   "Population (Projected)"
+  ]
+ },
+ "median-age": {
+  "chart": "median-age",
+  "rows": 17538,
+  "countries": 237,
+  "years": [
+   1950,
+   2023
+  ],
+  "projections": 0,
+  "columns": [
+   "Median age",
+   "Median age (Projected)"
+  ]
+ },
+ "electoral-democracy-index": {
+  "chart": "electoral-democracy-index",
+  "rows": 29676,
+  "countries": 177,
+  "years": [
+   1789,
+   2025
+  ],
+  "projections": 0,
+  "columns": [
+   "Electoral democracy index",
+   "World region according to OWID"
+  ]
+ },
+ "liberal-democracy-index": {
+  "chart": "liberal-democracy-index",
+  "rows": 28698,
+  "countries": 177,
+  "years": [
+   1789,
+   2025
+  ],
+  "projections": 0,
+  "columns": [
+   "Liberal democracy index",
+   "World region according to OWID"
+  ]
+ },
+ "conflict-deaths": {
+  "chart": "deaths-in-armed-conflicts-by-country",
+  "rows": 7524,
+  "countries": 198,
+  "years": [
+   1989,
+   2026
+  ],
+  "projections": 0,
+  "columns": [
+   "Deaths in armed conflicts based on where they occurred"
+  ]
+ },
+ "military-expenditure-gdp-sipri": {
+  "chart": "military-expenditure-share-gdp",
+  "rows": 8541,
+  "countries": 167,
+  "years": [
+   1949,
+   2025
+  ],
+  "projections": 0,
+  "columns": [
+   "Military expenditure (% of GDP)",
+   "World region according to OWID"
+  ]
+ },
+ "nobel": {
+  "laureates_rows": 1036,
+  "unmatched_countries": [
+   "Guadeloupe, France"
+  ]
+ },
+ "fields": {
+  "medalists": 68,
+  "counted": 67,
+  "excluded_unclear_birthplace": [
+   "Elon Lindenstrauss"
+  ]
+ }
+}
