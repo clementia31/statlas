@@ -98,7 +98,9 @@ def owid(slug, spec, report):
             continue
         vals = [c for c in df.columns if c not in ("Entity", "Code", "Year", "Day")]
         rows = []
-        proj_cols = [c for c in vals if "projection" in c.lower() or "medium" in c.lower()]
+        proj_cols = [c for c in vals if "project" in c.lower() or "medium" in c.lower()]
+        vals = [c for c in vals if "annotation" not in c.lower() and "region" not in c.lower()]
+        proj_cols = [c for c in proj_cols if c in vals]
         main = [c for c in vals if c not in proj_cols]
         for _, r in df.iterrows():
             i2 = iso2(r["Code"]) if isinstance(r["Code"], str) else None
@@ -141,7 +143,7 @@ def nobel(report):
     names.update({"USA": "US", "United Kingdom": "GB", "Russia": "RU", "the Netherlands": "NL", "South Korea": "KR",
                   "Iran": "IR", "Czech Republic": "CZ", "Taiwan": "TW", "Vietnam": "VN", "Bosnia and Herzegovina": "BA",
                   "Venezuela": "VE", "Bolivia": "BO", "Tanzania": "TZ", "Syria": "SY", "Moldova": "MD", "North Macedonia": "MK",
-                  "Scotland": "GB", "Northern Ireland": "GB", "Faroe Islands (Denmark)": "FO", "Guadeloupe Island": "GP",
+                  "Scotland": "GB", "Northern Ireland": "GB", "Faroe Islands (Denmark)": "FO", "Guadeloupe Island": "GP", "Guadeloupe, France": "GP",
                   "Democratic Republic of the Congo": "CD", "Republic of Macedonia": "MK", "East Timor": "TL", "Turkey": "TR"})
     df["iso2"] = df["birth_country_now"].map(lambda x: names.get(x) if isinstance(x, str) else None)
     p = OUT / "nobel-laureates.csv"
@@ -150,7 +152,8 @@ def nobel(report):
     cum = []
     for c, g in per.groupby("iso2"):
         counts = g.groupby("year").size().sort_index().cumsum()
-        cum += [(c, y, int(v), 0) for y, v in counts.items()]
+        counts = counts.reindex(range(int(counts.index.min()), dt.date.today().year + 1)).ffill()   # une valeur chaque année
+        cum += [(c, int(y), int(v), 0) for y, v in counts.items()]
     write("nobel-laureates-cumulative", ["Nobel laureates born in the country (current borders), cumulative — Nobel Foundation",
                                          f"Retrieved {TODAY} from api.nobelprize.org (v2.1); count computed by Statlas Research",
                                          "Unit: laureates; category: science; higher_is_better: None",
@@ -180,6 +183,8 @@ def fields(report):
     cum = []
     for c, g in ok.groupby("iso2"):
         counts = g.groupby("year").size().sort_index().cumsum()
+        counts.index = counts.index.astype(int)
+        counts = counts.reindex(range(int(counts.index.min()), dt.date.today().year + 1)).ffill()
         cum += [(c, int(y), int(v), 0) for y, v in counts.items()]
     write("fields-medalists-cumulative", ["Fields Medal laureates born in the country (current borders), cumulative — International Mathematical Union",
                                           f"Retrieved {TODAY} from Wikidata (award received: Fields Medal, place of birth); count computed by Statlas Research",
