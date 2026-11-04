@@ -58,6 +58,7 @@ export default async function ListPage({ params }: { params: { slug: string } })
                       <div className="text-[13px] text-textMuted">
                         {[i.subtitle, i.detail].filter(Boolean).join(' · ')}
                       </div>
+                      {i.note && <div className="text-[12.5px] italic text-textMuted">{i.note}</div>}
                     </div>
                   </div>
                 </td>

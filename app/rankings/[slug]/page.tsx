@@ -69,7 +69,7 @@ export default async function RankingPage({ params, searchParams }: { params: { 
         <div className="rounded-xl border border-border bg-panel p-4">
           <div className="text-[12px] text-textMuted">Method</div>
           <div className="text-[14px] text-text mt-1">{direction}</div>
-          <div className="text-[12px] text-textMuted mt-1">Score: 0 = worst, 100 = best in {year}</div>
+          {meta.higher_is_better !== null && <div className="text-[12px] text-textMuted mt-1">Score: 0 = worst, 100 = best in {year}</div>}
         </div>
       </div>
 
@@ -81,7 +81,7 @@ export default async function RankingPage({ params, searchParams }: { params: { 
           </a>
         }
       >
-        {ranked.length ? <RankingTable rows={ranked} unit={meta.unit} showScore linkable={!city} /> : <EmptyState title="No data for this year" />}
+        {ranked.length ? <RankingTable rows={ranked} unit={meta.unit} showScore={meta.higher_is_better !== null} linkable={!city} /> : <EmptyState title="No data for this year" />}
         <div className="mt-4">
           <SourceNote meta={meta} year={year} count={rows.length} />
         </div>
