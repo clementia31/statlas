@@ -10,6 +10,7 @@ const ITEMS: { label: string; href: string; match: string[] }[] = [
   { label: 'Map', href: '/carte', match: ['Map'] },
   { label: 'Countries', href: '/pays', match: ['Countries'] },
   { label: 'Rankings', href: '/rankings', match: ['Rankings'] },
+  { label: 'Lists', href: '/lists', match: ['Lists'] },
   { label: 'Compare', href: '/comparaisons', match: ['Comparisons', 'Benchmark', 'Compare'] },
   { label: 'The Gazette', href: '/gazette', match: ['The Gazette'] },
 ];

@@ -1,0 +1,28 @@
+insert into lists (slug,title,subtitle,category,value_label,unit,method,sources,updated_at) values ('best-selling-books','The best-selling books of all time','Single-volume books, estimated copies sold since first publication','Culture','Estimated copies sold (million)','copies million','No audited worldwide sales figures exist for books: every number here is a publisher or press estimate, and sources disagree. Religious, political and educational texts are excluded because their distribution cannot be tracked. Ties keep the order of the source list. Flag = nationality of the author.','Estimates compiled by James Clear from Wikipedia''s List of best-selling books, cross-checked with WorldAtlas',date '2026-11-04') on conflict (slug) do update set title=excluded.title, subtitle=excluded.subtitle, method=excluded.method, sources=excluded.sources, updated_at=excluded.updated_at;
+delete from list_items where list_id=(select id from lists where slug='best-selling-books');
+insert into list_items (list_id,rank,title,subtitle,country_iso,year,value,status,detail,note) values
+((select id from lists where slug='best-selling-books'),1,'Don Quixote','Miguel de Cervantes','ES',1605,500,'estimate','First published 1605','Exact sales unknown; widely repeated estimate'),
+((select id from lists where slug='best-selling-books'),2,'A Tale of Two Cities','Charles Dickens','GB',1859,200,'estimate','First published 1859',null),
+((select id from lists where slug='best-selling-books'),3,'The Lord of the Rings','J. R. R. Tolkien','GB',1954,150,'estimate','First published 1954',null),
+((select id from lists where slug='best-selling-books'),4,'The Little Prince','Antoine de Saint-Exupéry','FR',1943,142,'estimate','First published 1943','Other estimates: about 140 million'),
+((select id from lists where slug='best-selling-books'),5,'Harry Potter and the Philosopher''s Stone','J. K. Rowling','GB',1997,107,'estimate','First published 1997','Other estimates: up to 120 million'),
+((select id from lists where slug='best-selling-books'),6,'And Then There Were None','Agatha Christie','GB',1939,100,'estimate','First published 1939',null),
+((select id from lists where slug='best-selling-books'),7,'Dream of the Red Chamber','Cao Xueqin','CN',1791,100,'estimate','First published 1791',null),
+((select id from lists where slug='best-selling-books'),8,'The Hobbit','J. R. R. Tolkien','GB',1937,100,'estimate','First published 1937',null),
+((select id from lists where slug='best-selling-books'),9,'She: A History of Adventure','H. Rider Haggard','GB',1887,100,'estimate','First published 1887',null),
+((select id from lists where slug='best-selling-books'),10,'The Lion, the Witch and the Wardrobe','C. S. Lewis','GB',1950,85,'estimate','First published 1950',null),
+((select id from lists where slug='best-selling-books'),11,'The Da Vinci Code','Dan Brown','US',2003,80,'estimate','First published 2003',null),
+((select id from lists where slug='best-selling-books'),12,'Think and Grow Rich','Napoleon Hill','US',1937,70,'estimate','First published 1937',null),
+((select id from lists where slug='best-selling-books'),13,'Harry Potter and the Half-Blood Prince','J. K. Rowling','GB',2005,65,'estimate','First published 2005',null),
+((select id from lists where slug='best-selling-books'),14,'The Catcher in the Rye','J. D. Salinger','US',1951,65,'estimate','First published 1951',null),
+((select id from lists where slug='best-selling-books'),15,'The Alchemist','Paulo Coelho','BR',1988,65,'estimate','First published 1988',null),
+((select id from lists where slug='best-selling-books'),16,'Harry Potter and the Chamber of Secrets','J. K. Rowling','GB',1998,60,'estimate','First published 1998',null),
+((select id from lists where slug='best-selling-books'),17,'Harry Potter and the Prisoner of Azkaban','J. K. Rowling','GB',1999,55,'estimate','First published 1999',null),
+((select id from lists where slug='best-selling-books'),18,'Harry Potter and the Goblet of Fire','J. K. Rowling','GB',2000,55,'estimate','First published 2000',null),
+((select id from lists where slug='best-selling-books'),19,'Harry Potter and the Order of the Phoenix','J. K. Rowling','GB',2003,55,'estimate','First published 2003',null),
+((select id from lists where slug='best-selling-books'),20,'Harry Potter and the Deathly Hallows','J. K. Rowling','GB',2007,50,'estimate','First published 2007',null),
+((select id from lists where slug='best-selling-books'),21,'One Hundred Years of Solitude','Gabriel García Márquez','CO',1967,50,'estimate','First published 1967',null),
+((select id from lists where slug='best-selling-books'),22,'Lolita','Vladimir Nabokov','US',1955,50,'estimate','First published 1955',null),
+((select id from lists where slug='best-selling-books'),23,'Anne of Green Gables','Lucy Maud Montgomery','CA',1908,50,'estimate','First published 1908',null),
+((select id from lists where slug='best-selling-books'),24,'Charlotte''s Web','E. B. White','US',1952,50,'estimate','First published 1952',null),
+((select id from lists where slug='best-selling-books'),25,'Black Beauty','Anna Sewell','GB',1877,50,'estimate','First published 1877',null);

@@ -25,6 +25,11 @@ export function formatValue(value: number | null | undefined, unit?: string | nu
   if (u === 'children per woman') return nf(2).format(value);
   if (u.includes('per sq mi')) return nf(0).format(value) + ' /mi²';
   if (u.startsWith('t co2')) return nf(2).format(value) + ' t';
+  if (u === 'mt co2e') return nf(value < 10 ? 2 : value < 1000 ? 1 : 0).format(value) + ' Mt';
+  if (u === 'people per km2') return nf(value < 10 ? 1 : 0).format(value) + ' /km²';
+  if (u === 'km2') return abbreviateNumber(value) + ' km²';
+  if (u.startsWith('per ')) return nf(value < 10 ? 2 : 1).format(value);
+  if (u === 'µg/m3') return nf(1).format(value) + ' µg/m³';
   if (u.includes('dollar') || u === 'usd') return '$' + abbreviateNumber(value);
   return nf(Math.abs(value) < 10 ? 2 : 0).format(value);
 }
@@ -54,6 +59,12 @@ export function unitLabel(unit?: string | null): string {
   if (u === 'percent of labor force') return '% of labour force';
   if (u === 'percent') return '%';
   if (u === 'percent gross') return '% of official school-age population (gross)';
+  if (u.startsWith('percent of ')) return '% of ' + unit!.slice('percent of '.length);
+  if (u === 'mt co2e') return 'Million tonnes of CO2';
+  if (u === 'people per km2') return 'People per square kilometre';
+  if (u === 'km2') return 'Square kilometres';
+  if (u === 'µg/m3') return 'Micrograms per cubic metre';
+  if (u.startsWith('per ')) return unit!.charAt(0).toUpperCase() + unit!.slice(1);
   if (u.startsWith('t co2')) return 'Tonnes of CO2 per person';
   if (u === 'years') return 'Years';
   if (u === 'children per woman') return 'Children per woman';
@@ -66,7 +77,7 @@ export function unitLabel(unit?: string | null): string {
 // Les montants (PIB, population…) s'additionnent ; les ratios et indices non
 export function isAdditive(unit?: string | null): boolean {
   const u = (unit ?? '').toLowerCase();
-  return u === 'people' || u.endsWith('million');
+  return u === 'people' || u.endsWith('million') || u === 'km2' || u === 'mt co2e';
 }
 
 // Nom court d'une source pour les espaces étroits
