@@ -178,6 +178,9 @@ def fields(report):
         if "cc" in b:
             r["iso2"].add(b["cc"]["value"])
     df = pd.DataFrame([{"medalist": r["medalist"], "year": r["year"], "iso2": "/".join(sorted(r["iso2"])) or None} for r in rows.values()])
+    # pays de naissance ambigu dans Wikidata : on suit l'Union mathématique internationale (note de méthode)
+    IMU = {"Elon Lindenstrauss": "IL"}
+    df["iso2"] = [IMU.get(m, c) for m, c in zip(df["medalist"], df["iso2"])]
     df.sort_values("year").to_csv(OUT / "fields-medalists.csv", index=False)
     ok = df[df["iso2"].notna() & df["year"].notna() & ~df["iso2"].fillna("").str.contains("/")]   # pays de naissance ambigu : écarté
     cum = []
