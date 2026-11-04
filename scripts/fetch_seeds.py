@@ -143,9 +143,10 @@ def nobel(report):
     names.update({"USA": "US", "United Kingdom": "GB", "Russia": "RU", "the Netherlands": "NL", "South Korea": "KR",
                   "Iran": "IR", "Czech Republic": "CZ", "Taiwan": "TW", "Vietnam": "VN", "Bosnia and Herzegovina": "BA",
                   "Venezuela": "VE", "Bolivia": "BO", "Tanzania": "TZ", "Syria": "SY", "Moldova": "MD", "North Macedonia": "MK",
-                  "Scotland": "GB", "Northern Ireland": "GB", "Faroe Islands (Denmark)": "FO", "Guadeloupe Island": "GP", "Guadeloupe, France": "GP",
+                  "Scotland": "GB", "Northern Ireland": "GB", "Faroe Islands (Denmark)": "DK", "Guadeloupe Island": "FR", "Guadeloupe, France": "FR",
                   "Democratic Republic of the Congo": "CD", "Republic of Macedonia": "MK", "East Timor": "TL", "Turkey": "TR"})
     df["iso2"] = df["birth_country_now"].map(lambda x: names.get(x) if isinstance(x, str) else None)
+    # territoires rattachés à leur pays (nationalité) : Guadeloupe -> France, îles Féroé -> Danemark
     p = OUT / "nobel-laureates.csv"
     df.to_csv(p, index=False)
     per = df[df["kind"] == "person"].dropna(subset=["iso2"])
