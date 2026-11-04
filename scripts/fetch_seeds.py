@@ -1,0 +1,173 @@
+# -*- coding: utf-8 -*-
+"""
+Téléchargement des jeux de données ouverts pour Statlas, convertis au format des seeds :
+  data/seeds/<lot>/<slug>.psv   iso2|year|value|projection   (en-tête : source, document, date de récupération)
+  data/seeds/<lot>/report.json  ce qui a été récupéré ou non
+
+Sources : Our World in Data (qui redistribue Maddison, ONU WPP, V-Dem, UCDP, SIPRI avec la citation d'origine),
+et l'API officielle de la Fondation Nobel. Les agrégats (continents, monde, groupes de revenus) sont exclus :
+seuls les pays avec un code ISO sont gardés.
+"""
+import datetime as dt
+import io
+import json
+import sys
+import time
+import urllib.request
+from pathlib import Path
+
+import pandas as pd
+import pycountry
+
+OUT = Path(__file__).resolve().parent.parent / "data" / "seeds" / "history"
+UA = "Statlas-seeds/1.0 (open data import)"
+TODAY = dt.date.today().isoformat()
+
+# slug Statlas : (graphiques OWID candidats, nom, catégorie, unité, higher_is_better, définition, éditeur d'origine, jeu d'origine)
+SETS = {
+    "gdp-per-capita-maddison": (["gdp-per-capita-maddison-project-database", "gdp-per-capita-maddison", "gdp-per-capita-maddison-2020"],
+        "GDP per capita (Maddison, long run)", "history", "international-$ 2011", True,
+        "Real GDP per person in 2011 international dollars, reconstructed over centuries by the Maddison Project.",
+        "Maddison Project (University of Groningen)", "Maddison Project Database 2023"),
+    "population-un-wpp": (["population-with-un-projections", "population-long-run-with-projections"],
+        "Population (UN, with projections)", "demographics", "people", None,
+        "Total population at mid-year; values after the last observed year are the UN medium-variant projection.",
+        "United Nations, Population Division", "World Population Prospects 2024"),
+    "median-age": (["median-age"],
+        "Median age", "demographics", "years", None,
+        "Age that divides the population into two halves of equal size; includes UN medium-variant projections.",
+        "United Nations, Population Division", "World Population Prospects 2024"),
+    "electoral-democracy-index": (["electoral-democracy-index"],
+        "Electoral democracy index (V-Dem)", "politics", "index 0-1", True,
+        "Extent to which the ideal of electoral democracy is achieved: free and fair elections, freedom of expression and association, suffrage.",
+        "V-Dem Institute (University of Gothenburg)", "Varieties of Democracy (V-Dem) dataset"),
+    "liberal-democracy-index": (["liberal-democracy-index"],
+        "Liberal democracy index (V-Dem)", "politics", "index 0-1", True,
+        "Electoral democracy combined with protection of individual and minority rights, rule of law and checks on the executive.",
+        "V-Dem Institute (University of Gothenburg)", "Varieties of Democracy (V-Dem) dataset"),
+    "conflict-deaths": (["deaths-in-armed-conflicts-based-on-where-they-occurred", "deaths-in-armed-conflicts-by-country", "deaths-in-all-types-of-armed-conflicts-by-country"],
+        "Deaths in armed conflicts", "military", "deaths", False,
+        "Deaths of combatants and civilians from fighting in state-based, non-state and one-sided violence, counted in the country where they occurred.",
+        "Uppsala Conflict Data Program (UCDP)", "UCDP Georeferenced Event Dataset"),
+    "military-expenditure-gdp-sipri": (["military-expenditure-share-gdp", "military-spending-as-a-share-of-gdp-sipri"],
+        "Military expenditure (SIPRI, long run)", "military", "percent of gdp", None,
+        "Military expenditure as a share of GDP, from 1949 where available.",
+        "Stockholm International Peace Research Institute (SIPRI)", "SIPRI Military Expenditure Database"),
+}
+
+
+def get(url, accept=None):
+    h = {"User-Agent": UA}
+    if accept:
+        h["Accept"] = accept
+    for k in range(3):
+        try:
+            return urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=120).read()
+        except Exception as exc:
+            last = exc
+            time.sleep(5 * (k + 1))
+    raise last
+
+
+def iso2(code):
+    c = pycountry.countries.get(alpha_3=str(code))
+    if c:
+        return c.alpha_2
+    return {"XKX": "XK", "OWID_KOS": "XK"}.get(str(code))
+
+
+def write(slug, header, rows):
+    p = OUT / f"{slug}.psv"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with open(p, "w") as f:
+        f.write("".join(f"# {h}\n" for h in header))
+        f.write("# iso2|year|value|projection\n")
+        for r in rows:
+            f.write("|".join(str(x) for x in r) + "\n")
+
+
+def owid(slug, spec, report):
+    charts, name, cat, unit, hib, defin, publisher, dataset = spec
+    for ch in charts:
+        try:
+            df = pd.read_csv(io.BytesIO(get(f"https://ourworldindata.org/grapher/{ch}.csv?v=1&csvType=full&useColumnShortNames=false")))
+        except Exception as exc:
+            report[slug] = {"chart": ch, "error": repr(exc)}
+            continue
+        vals = [c for c in df.columns if c not in ("Entity", "Code", "Year", "Day")]
+        rows = []
+        proj_cols = [c for c in vals if "projection" in c.lower() or "medium" in c.lower()]
+        main = [c for c in vals if c not in proj_cols]
+        for _, r in df.iterrows():
+            i2 = iso2(r["Code"]) if isinstance(r["Code"], str) else None
+            if not i2:
+                continue
+            y = int(r["Year"])
+            v = r[main[0]] if main else float("nan")
+            proj = 0
+            if (v != v) and proj_cols:
+                v, proj = r[proj_cols[0]], 1
+            if v == v:
+                rows.append((i2, y, round(float(v), 6), proj))
+        try:
+            meta = json.loads(get(f"https://ourworldindata.org/grapher/{ch}.metadata.json"))
+            cite = (meta.get("chart", {}).get("citation") or "")[:400]
+        except Exception:
+            cite = ""
+        write(slug, [f"{name} — {publisher}, {dataset}", f"Retrieved {TODAY} via Our World in Data (grapher/{ch})",
+                     f"Citation: {cite}" if cite else "Citation: see original publisher",
+                     f"Unit: {unit}; category: {cat}; higher_is_better: {hib}", f"Definition: {defin}"], rows)
+        report[slug] = {"chart": ch, "rows": len(rows), "countries": len({r[0] for r in rows}),
+                        "years": [min(r[1] for r in rows), max(r[1] for r in rows)] if rows else None,
+                        "projections": sum(r[3] for r in rows), "columns": vals}
+        return
+    print(f"[{slug}] aucun graphique trouvé")
+
+
+def nobel(report):
+    js = json.loads(get("https://api.nobelprize.org/2.1/laureates?limit=1500&format=json", accept="application/json"))
+    rows = []
+    for l in js.get("laureates", []):
+        birth = (l.get("birth") or {}).get("place") or {}
+        cn = (birth.get("countryNow") or {}).get("en")
+        for p in l.get("nobelPrizes", []):
+            rows.append({"laureate": (l.get("knownName") or l.get("orgName") or {}).get("en"), "year": int(p["awardYear"]),
+                         "category": (p.get("category") or {}).get("en"), "birth_country_now": cn,
+                         "kind": "organization" if "orgName" in l else "person"})
+    df = pd.DataFrame(rows)
+    names = {c.name: c.alpha_2 for c in pycountry.countries}
+    names.update({"USA": "US", "United Kingdom": "GB", "Russia": "RU", "the Netherlands": "NL", "South Korea": "KR",
+                  "Iran": "IR", "Czech Republic": "CZ", "Taiwan": "TW", "Vietnam": "VN", "Bosnia and Herzegovina": "BA",
+                  "Venezuela": "VE", "Bolivia": "BO", "Tanzania": "TZ", "Syria": "SY", "Moldova": "MD", "North Macedonia": "MK",
+                  "Scotland": "GB", "Northern Ireland": "GB", "Faroe Islands (Denmark)": "FO", "Guadeloupe Island": "GP",
+                  "Democratic Republic of the Congo": "CD", "Republic of Macedonia": "MK", "East Timor": "TL", "Turkey": "TR"})
+    df["iso2"] = df["birth_country_now"].map(lambda x: names.get(x) if isinstance(x, str) else None)
+    p = OUT / "nobel-laureates.csv"
+    df.to_csv(p, index=False)
+    per = df[df["kind"] == "person"].dropna(subset=["iso2"])
+    cum = []
+    for c, g in per.groupby("iso2"):
+        counts = g.groupby("year").size().sort_index().cumsum()
+        cum += [(c, y, int(v), 0) for y, v in counts.items()]
+    write("nobel-laureates-cumulative", ["Nobel laureates born in the country (current borders), cumulative — Nobel Foundation",
+                                         f"Retrieved {TODAY} from api.nobelprize.org (v2.1); count computed by Statlas Research",
+                                         "Unit: laureates; category: science; higher_is_better: None",
+                                         "Definition: Number of individual Nobel Prize laureates born in the territory of today's country, cumulated up to the given year (organisations excluded)."], cum)
+    report["nobel"] = {"laureates_rows": len(df), "unmatched_countries": sorted(set(df.loc[df["iso2"].isna() & df["birth_country_now"].notna(), "birth_country_now"]))}
+
+
+def main():
+    report = {}
+    for slug, spec in SETS.items():
+        owid(slug, spec, report)
+    try:
+        nobel(report)
+    except Exception as exc:
+        report["nobel"] = {"error": repr(exc)}
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / "report.json").write_text(json.dumps(report, indent=1, ensure_ascii=False))
+    print(json.dumps(report, indent=1, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()
