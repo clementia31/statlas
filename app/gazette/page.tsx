@@ -88,7 +88,27 @@ export default async function GazetteHome() {
                 {chartOfWeek ? (
                   <div className="mt-3">
                     <div className="font-headline text-[22px] font-semibold leading-snug">{chartOfWeek.title}</div>
+                    {chartOfWeek.video_url && (
+                      <video
+                        className="mt-3 w-full border border-ruleStrong"
+                        src={chartOfWeek.video_url}
+                        poster={chartOfWeek.poster_url ?? undefined}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        controls
+                        preload="metadata"
+                        aria-label={chartOfWeek.title}
+                      />
+                    )}
                     {chartOfWeek.description && <p className="mt-2 font-serif text-[15px] leading-relaxed text-inkSoft">{chartOfWeek.description}</p>}
+                    {chartOfWeek.source && <p className="mt-2 font-sans text-[11px] uppercase tracking-[0.08em] text-inkMuted">Source: {chartOfWeek.source}</p>}
+                    {chartOfWeek.link_url && (
+                      <Link href={chartOfWeek.link_url} className="mt-2 inline-flex h-11 items-center font-sans text-[13px] font-semibold uppercase tracking-[0.06em] text-press hover:underline">
+                        Explore the full ranking on Statlas →
+                      </Link>
+                    )}
                   </div>
                 ) : (
                   <p className="mt-3 text-center font-serif italic text-[15px] text-inkMuted">The first figure of the week will appear here.</p>
