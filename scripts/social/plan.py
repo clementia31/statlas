@@ -31,7 +31,7 @@ PLAN = [
     dict(slug="satellites", data=S + "satellites-in-orbit.psv", countries="US,RU,CN,GB,JP,EU", names="EU=ESA (Europe)", start=1957, end=2026,
          title="Who owns the sky?", subtitle="Satellites in Earth orbit by owner country, active or not (end of year)", source="CelesTrak satellite catalog · count by Statlas Research"),
     dict(slug="football-world-cup", data=SP + "football-men-world-cup-titles.psv", top=5, start=1930, end=2026, fill0=True,
-         title="Who wins the World Cup?", subtitle="FIFA World Cup titles (men), since 1930", source="Statlas Research"),
+         title="Who wins the World Cup?", subtitle="FIFA World Cup titles (men), since 1930", source="FIFA · count by Statlas Research"),
     dict(slug="olympics-summer", data=SP + "olympics-summer-medals.psv", top=5, start=1896, end=2024, fill0=True,
          title="The Olympic superpowers", subtitle="Summer Olympic medals, all-time total (USSR counted with Russia, East & West Germany with Germany)", source="IOC results · count by Statlas Research"),
     dict(slug="tennis-men", data=SP + "tennis-grand-slam-men-titles.psv", top=5, start=1877, end=2026, fill0=True,
