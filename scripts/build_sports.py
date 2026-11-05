@@ -36,6 +36,7 @@ ALIAS = {
     "united kingdom of great britain and ireland": "GB", "weimar republic": "DE", "nazi germany": "DE",
     "socialist federal republic of yugoslavia": "RS", "federal republic of yugoslavia": "RS", "kingdom of yugoslavia": "RS",
     "russian federation": "RU", "rhodesia": "ZW", "union of south africa": "ZA", "northern ireland": "GB",
+    "west indies": None,   # équipe pluri-nationale des Caraïbes (cricket) : non attribuée à un pays
     "eun": "RU", "frg": "DE", "gdr": "DE", "ger": "DE", "fra": "FR", "ita": "IT", "esp": "ES", "aus": "AU",
 }
 
@@ -202,3 +203,82 @@ for slug, (_, title) in COMP.items():
     rows = [(c, y, int(cnt.loc[y, c])) for c in cnt.columns for y in cnt.index if cnt.loc[y, c] > 0]
     write_psv(f"{OUT}/{slug}-titles.psv", f"{title} — cumulative, by country", rows)
     print("  ", slug, y0, y1, cnt.iloc[-1].sort_values(ascending=False).head(5).to_dict())
+
+
+# ---------- Lot 2 (bonus) : compétitions continentales, cricket, ski, Ballon d'Or féminin, clubs
+def team_final(f, idx_hint=("Year",), win=("Winners", "Champion", "Champions")):
+    for t in pd.read_html(f):
+        cols = [" ".join(map(str, c)) if isinstance(c, tuple) else str(c) for c in t.columns]
+        t.columns = cols
+        yc = next((c for c in cols if c.split()[0] in idx_hint), None)
+        wc = next((c for c in cols if c.startswith("Final") and c.split()[-1] in win), None)
+        if yc and wc and len(t) >= 8:
+            out = []
+            for y, w in zip(t[yc], t[wc]):
+                m = re.search(r"(18|19|20)\d{2}", str(y))
+                if m and str(w) not in ("nan", "") and "TBD" not in str(w) and "Future" not in str(w):
+                    w = re.split(r"\s\d", re.sub(r"\[.*?\]", "", str(w)))[0].strip()   # « Australia 253/5 (50 overs) » → Australia
+                    out.append((int(m.group(0)), w))
+            return out
+    return []
+
+
+def flag_column(f, words, col):
+    t = table_with(f, words); out = []
+    head = [c.get_text(" ", strip=True) for c in t.select("tr")[0].find_all(["th", "td"])]
+    j = next(i for i, h in enumerate(head) if h.startswith(col))
+    for tr in t.select("tr")[1:]:
+        cells = tr.find_all(["td", "th"])
+        if len(cells) <= j: continue
+        m = re.match(r"\s*((?:18|19|20)\d{2})", cells[0].get_text(" ", strip=True))
+        if m: out += [(int(m.group(1)), n) for n in flags(cells[j])[:1]]
+    return out
+
+
+def ucl():
+    t = [t for t in pd.read_html(f"{RAW}/ucl.html") if "Country" in map(str, t.columns) and "Winners" in map(str, t.columns)][0]
+    return [(int(str(s)[:4]) + 1, c) for s, c in zip(t["Season"], t["Country"]) if re.match(r"\d{4}", str(s)) and str(c) != "nan"]
+
+
+LOT2 = {
+    "football-euro": (lambda: team_final(f"{RAW}/euro.html"), "UEFA European Championship titles"),
+    "football-copa-america": (lambda: team_final(f"{RAW}/copa.html"), "Copa América titles"),
+    "football-champions-league-clubs": (ucl, "European Cup / Champions League titles, by the winning club's country"),
+    "cricket-world-cup": (lambda: team_final(f"{RAW}/cricket.html"), "Cricket World Cup titles (men)"),
+    "ski-world-cup-men": (lambda: flag_column(f"{RAW}/ski_men.html", ["Year", "Overall", "Slalom"], "Overall"), "Alpine Ski World Cup overall titles (men)"),
+    "ski-world-cup-women": (lambda: flag_column(f"{RAW}/ski_women.html", ["Year", "Overall", "Downhill"], "Overall"), "Alpine Ski World Cup overall titles (women)"),
+    "ballon-dor-feminin": (lambda: per_row(f"{RAW}/ballon_dor_f.html", ["Year", "Rank", "Player"], 0, 2,
+                                           rank_filter=lambda r: r[1] is not None and r[1].get_text(strip=True).startswith("1")), "Ballon d'Or Féminin winners"),
+}
+for slug, (fn, title) in LOT2.items():
+    try:
+        w = sorted(set(fn()))
+    except Exception as e:
+        print("ECHEC", slug, e); continue
+    if not w: print("VIDE", slug); continue
+    pd.DataFrame(w, columns=["year", "winner"]).assign(iso=[iso(n) for _, n in w]).to_csv(f"{OUT}/{slug}-winners.csv", index=False)
+    ww = pd.read_csv(f"{OUT}/{slug}-winners.csv"); bad = ww[ww.iso.isin(["??"]) | ww.iso.isna()]
+    if len(bad): print("  non attribués", slug, bad.winner.unique()[:8])
+    ww = ww[~ww.iso.isin(["??"]) & ww.iso.notna()]
+    if ww.empty: continue
+    y0, y1 = int(ww.year.min()), int(ww.year.max())
+    cnt = ww.groupby(["year", "iso"]).size().unstack(fill_value=0).reindex(range(y0, y1 + 1), fill_value=0).cumsum()
+    write_psv(f"{OUT}/{slug}-titles.psv", f"{title} — cumulative, by country",
+              [(c, y, int(cnt.loc[y, c])) for c in cnt.columns for y in cnt.index if cnt.loc[y, c] > 0])
+    print(slug, len(w), y0, y1, cnt.iloc[-1].sort_values(ascending=False).head(5).to_dict())
+
+# ---------- Totaux à date seulement (pas d'historique année par année sur la source) : une ligne par pays pour l'année en cours
+Y = datetime.date.today().year
+def totals(f, cols_needed, value_col, slug, title):
+    t = [t for t in pd.read_html(f) if all(c in map(str, t.columns) for c in cols_needed)][0]
+    rows = []
+    for c, v in zip(t["Country"], t[value_col]):
+        i = iso(c); v = pd.to_numeric(re.sub(r"\[.*?\]", "", str(v)), errors="coerce")
+        if i and i != "??" and v == v and v > 0: rows.append((i, Y, int(v)))
+    agg = pd.DataFrame(rows, columns=["i", "y", "v"]).groupby(["i", "y"]).v.sum().reset_index()
+    write_psv(f"{OUT}/{slug}-total.psv", f"{title} — all-time total by country, as of {Y}", list(agg.itertuples(index=False, name=None)))
+    print(slug, agg.sort_values("v", ascending=False).head(5).values.tolist())
+
+totals(f"{RAW}/motogp.html", ["Country", "MotoGP/500cc"], "MotoGP/500cc", "motogp-riders", "MotoGP / 500cc riders' world titles")
+totals(f"{RAW}/golf_men.html", ["Country", "Masters", "Total"], "Total", "golf-majors-men", "Men's golf major championships")
+totals(f"{RAW}/davis.html", ["Country", "Titles", "First"], "Titles", "davis-cup", "Davis Cup titles")
