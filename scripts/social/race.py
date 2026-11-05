@@ -47,7 +47,8 @@ def country_name(iso):
         import pycountry
         c = pycountry.countries.get(alpha_2=iso)
         return {"GB": "United Kingdom", "US": "United States", "KR": "South Korea", "RU": "Russia",
-                "IR": "Iran", "TW": "Taiwan", "VN": "Vietnam"}.get(iso, getattr(c, "common_name", None) or c.name)
+                "IR": "Iran", "TW": "Taiwan", "VN": "Vietnam", "CD": "DR Congo", "AE": "UAE", "HK": "Hong Kong",
+                "CZ": "Czechia", "SY": "Syria", "VE": "Venezuela", "BO": "Bolivia", "TZ": "Tanzania", "LA": "Laos"}.get(iso, getattr(c, "common_name", None) or c.name)
     except Exception:
         return iso
 
@@ -88,12 +89,23 @@ class Race:
         self.a = a; self.T = T = THEMES[a.theme]
         d = pd.read_csv(a.data, sep="|", comment="#", names=["iso", "year", "v", "p"])
         d = d[(d.year >= a.start) & (d.year <= a.end) & (d.iso.str.len() == 2)]
+        # projections : colonne p = 1 (fichiers OWID) ou --proj-from (fichiers sans colonne)
+        pf = d.loc[d.p == 1, "year"].min() if d.p.notna().any() else np.nan
+        self.proj = a.proj_from or (int(pf) if pf == pf else None)
+        pool = d[~d.iso.isin([x for x in a.exclude.split(",") if x])]
+        if a.minpop:   # exclut les micro-États (population ONU de l'année de classement ou la plus proche)
+            pop = pd.read_csv(os.path.join(os.path.dirname(a.data), "..", "history", "population-un-wpp.psv") if not os.path.exists(a.minpop_file) else a.minpop_file,
+                              sep="|", comment="#", names=["iso", "year", "v", "p"])
+            py = min(a.rank_year or 2025, 2025)
+            big = set(pop[(pop.year == py) & (pop.v >= a.minpop)].iso)
+            pool = pool[pool.iso.isin(big)]
         if a.countries:
             isos = a.countries.split(",")
         else:   # top N à la dernière année disponible
-            last = d[d.year == d.year.max()].copy()
+            ry = a.rank_year or pool.year.max()
+            last = pool[pool.year == ry].copy()
             # égalité : le pays arrivé le premier à une valeur non nulle passe devant (ex. Suède 1903 avant Japon 1949)
-            first = d[d.v > 0].groupby("iso").year.min()
+            first = pool[pool.v > 0].groupby("iso").year.min()
             last["first"] = last.iso.map(first).fillna(9999)
             isos = list(last.sort_values(["v", "first"], ascending=[False, True]).iso.head(a.top))
         d = d[d.iso.isin(isos)].pivot(index="year", columns="iso", values="v").sort_index()
@@ -127,7 +139,8 @@ class Race:
         fig.text(0.5, 0.812, a.subtitle, ha="center", fontproperties=T["sub"], fontsize=15.5, color=T["muted"])
         ax = fig.add_axes([0.10, 0.235, 0.855, 0.545], facecolor=T["bg"])
         hist = d.loc[:np.floor(t)]; cur = self.val(t)
-        target = max(a.ymin_top, np.nanmax(cur.values) * 1.18)
+        seen = np.nanmax(hist.values) if len(hist) else 0          # l'axe couvre tout l'historique déjà tracé
+        target = max(a.ymin_top, np.nanmax(cur.values) * 1.18, seen * 1.06)
         self.ymax = target if self.ymax is None else self.ymax + (target - self.ymax) * 0.08
         xr = t + max(7, (t - self.y0) * 0.40)
         ax.set_xlim(self.y0, xr); ax.set_ylim(0, self.ymax)
@@ -143,11 +156,20 @@ class Race:
         for lab in ax.get_xticklabels() + ax.get_yticklabels():
             lab.set_fontproperties(T["tick"]); lab.set_fontsize(14)
         live = [i for i in self.isos if not np.isnan(cur[i])]
+        P = self.proj
+        if P and t > P:
+            ax.axvspan(P, t, color=T["grid"], alpha=.35, lw=0)
+            ax.text(P + 0.5, self.ymax * 0.985, "PROJECTION", fontproperties=T["tick"], fontsize=12, color=T["muted"], va="top")
         for iso in live:
-            xs = list(hist.index) + [t]; ys = list(hist[iso]) + [cur[iso]]
-            if T["dark"]:
-                ax.plot(xs, ys, color=self.col[iso], lw=12, alpha=.12, solid_capstyle="round")
-            ax.plot(xs, ys, color=self.col[iso], lw=4.6, solid_capstyle="round")
+            xs = np.array(list(hist.index) + [t], float); ys = np.array(list(hist[iso]) + [cur[iso]], float)
+            segs = [(xs, ys, "-")]
+            if P and t > P:
+                k = xs <= P
+                segs = [(xs[k], ys[k], "-"), (np.r_[xs[k][-1:], xs[~k]], np.r_[ys[k][-1:], ys[~k]], (0, (2, 1.6)))]
+            for sx, sy, ls in segs:
+                if T["dark"]:
+                    ax.plot(sx, sy, color=self.col[iso], lw=12, alpha=.12, solid_capstyle="round", ls=ls)
+                ax.plot(sx, sy, color=self.col[iso], lw=4.6, solid_capstyle="round", dash_capstyle="round", ls=ls)
         order = sorted(live, key=lambda i: cur[i])
         gap = self.ymax * 0.09 * self.k; pos = {}; last = -1e18
         for iso in order:
@@ -196,7 +218,17 @@ if __name__ == "__main__":
     p.add_argument("--title", required=True); p.add_argument("--subtitle", default="")
     p.add_argument("--source", required=True); p.add_argument("--unit", default="")
     p.add_argument("--yps", type=float, default=3.0); p.add_argument("--ymin-top", dest="ymin_top", type=float, default=10)
+    p.add_argument("--rank-year", dest="rank_year", type=int, default=0, help="année du classement top N (défaut : dernière)")
+    p.add_argument("--exclude", default="", help="codes ISO2 à exclure")
+    p.add_argument("--minpop", type=float, default=0, help="population minimale (ex. 1e6) pour le top N")
+    p.add_argument("--minpop-file", dest="minpop_file", default="data/seeds/history/population-un-wpp.psv")
+    p.add_argument("--proj-from", dest="proj_from", type=int, default=0, help="année de début des projections (pointillés)")
+    p.add_argument("--still", action="store_true", help="aperçu PNG de l'image finale")
     p.add_argument("--fill0", action="store_true", help="avant la première donnée, compter 0 (séries cumulées)")
     p.add_argument("--out", required=True)
     a = p.parse_args()
-    Race(a).render(a.out, a.yps)
+    r = Race(a)
+    if a.still:   # aperçu : image finale seulement
+        r.draw(r.y1); r.fig.savefig(a.out, facecolor=r.T["bg"])
+    else:
+        r.render(a.out, a.yps)
