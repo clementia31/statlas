@@ -91,15 +91,17 @@ class Race:
         if a.countries:
             isos = a.countries.split(",")
         else:   # top N à la dernière année disponible
-            last = d[d.year == d.year.max()]
-            isos = list(last.sort_values("v", ascending=False).iso.head(a.top))
+            last = d[d.year == d.year.max()].copy()
+            # égalité : le pays arrivé le premier à une valeur non nulle passe devant (ex. Suède 1903 avant Japon 1949)
+            first = d[d.v > 0].groupby("iso").year.min()
+            last["first"] = last.iso.map(first).fillna(9999)
+            isos = list(last.sort_values(["v", "first"], ascending=[False, True]).iso.head(a.top))
         d = d[d.iso.isin(isos)].pivot(index="year", columns="iso", values="v").sort_index()
         d = d.loc[a.start:a.end].interpolate(limit_area="inside").ffill().fillna(0 if a.fill0 else np.nan)
         self.integer = bool(np.allclose(d.fillna(0).values, np.round(d.fillna(0).values)))
         self.d = d.dropna(how="all"); self.isos = [i for i in isos if i in self.d]
         self.y0, self.y1 = int(self.d.index.min()), int(self.d.index.max())
-        final = self.d.iloc[-1].sort_values(ascending=False)
-        self.col = {iso: T["palette"][k % len(T["palette"])] for k, iso in enumerate(final.index)}
+        self.col = {iso: T["palette"][k % len(T["palette"])] for k, iso in enumerate(self.isos)}
         ring = (13, 27, 42, 255) if T["dark"] else (255, 255, 255, 255)
         self.flags = {i: flag(i, ring) for i in self.isos}
         self.ymax = None
