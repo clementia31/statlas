@@ -160,7 +160,7 @@ class Race:
         P = self.proj
         if P and t > P:
             ax.axvspan(P, t, color=T["grid"], alpha=.35, lw=0)
-            ax.text(P + 0.5, self.ymax * 0.985, "PROJECTION", fontproperties=T["tick"], fontsize=12, color=T["muted"], va="top")
+            ax.text(P + 0.5, self.ymax * 0.985, a.proj_label, fontproperties=T["tick"], fontsize=12, color=T["muted"], va="top")
         for iso in live:
             xs = np.array(list(hist.index) + [t], float); ys = np.array(list(hist[iso]) + [cur[iso]], float)
             segs = [(xs, ys, "-")]
@@ -224,6 +224,7 @@ if __name__ == "__main__":
     p.add_argument("--minpop", type=float, default=0, help="population minimale (ex. 1e6) pour le top N")
     p.add_argument("--minpop-file", dest="minpop_file", default="data/seeds/history/population-un-wpp.psv")
     p.add_argument("--proj-from", dest="proj_from", type=int, default=0, help="année de début des projections (pointillés)")
+    p.add_argument("--proj-label", dest="proj_label", default="PROJECTION", help="texte de la zone projetée (ex. AWARDED)")
     p.add_argument("--names", default="", help="noms affichés imposés, ex. EU=ESA (Europe)")
     p.add_argument("--still", action="store_true", help="aperçu PNG de l'image finale")
     p.add_argument("--fill0", action="store_true", help="avant la première donnée, compter 0 (séries cumulées)")

@@ -38,6 +38,14 @@ PLAN = [
          title="The kings of Grand Slam", subtitle="Men's singles Grand Slam titles by player nationality, since 1877", source="Grand Slam results · count by Statlas Research"),
     dict(slug="formula1", data=SP + "formula1-drivers-titles.psv", top=5, start=1950, end=2025, fill0=True,
          title="Who rules Formula One?", subtitle="Drivers' world championships by driver nationality, since 1950", source="FIA · count by Statlas Research"),
+    dict(slug="hosts-world-cup", data=SP + "hosts-football-world-cup.psv", top=5, rank_year=2026, start=1930, end=2034, fill0=True, proj_label="AWARDED", ymin_top=4,
+         title="Who hosts the World Cup?", subtitle="FIFA World Cups hosted (men), co-hosts count once each — 2030 and 2034 already awarded", source="FIFA · count by Statlas Research"),
+    dict(slug="hosts-summer-olympics", data=SP + "hosts-olympics-summer.psv", top=5, rank_year=2024, start=1896, end=2032, fill0=True, proj_label="AWARDED", ymin_top=4,
+         title="Who hosts the Summer Olympics?", subtitle="Summer Games hosted, by country — 2028 and 2032 already awarded", source="IOC · count by Statlas Research"),
+    dict(slug="hosts-winter-olympics", data=SP + "hosts-olympics-winter.psv", top=5, rank_year=2026, start=1924, end=2034, fill0=True, proj_label="AWARDED", ymin_top=4,
+         title="Who hosts the Winter Olympics?", subtitle="Winter Games hosted, by country — 2030 and 2034 already awarded", source="IOC · count by Statlas Research"),
+    dict(slug="hosts-mega-events", data=SP + "hosts-mega-events.psv", top=10, rank_year=2026, start=1896, end=2034, fill0=True, proj_label="AWARDED", ymin_top=4,
+         title="The world's favourite hosts", subtitle="World Cups + Summer and Winter Olympics hosted, by country — future editions already awarded", source="FIFA, IOC · count by Statlas Research"),
     dict(slug="richest-top10", data=H + "gdp-per-capita-maddison.psv", top=10, rank_year=2022, minpop=1e6, start=1950, end=2022, unit="$", ymin_top=1000,
          title="The richest countries", subtitle="GDP per capita, 2011 international dollars — countries over 1 million people", source="Maddison Project Database 2023"),
 ]
@@ -45,7 +53,7 @@ PLAN = [
 
 def args(c, out, still):
     a = ["python3", "scripts/social/race.py", "--theme", c.get("theme", "statlas"), "--out", out]
-    for k in ("names", "data", "countries", "top", "start", "end", "unit", "title", "subtitle", "source", "rank_year", "minpop", "proj_from", "ymin_top", "exclude"):
+    for k in ("proj_label", "names", "data", "countries", "top", "start", "end", "unit", "title", "subtitle", "source", "rank_year", "minpop", "proj_from", "ymin_top", "exclude"):
         if k in c:
             a += ["--" + k.replace("_", "-"), str(c[k])]
     if c.get("fill0"): a.append("--fill0")
