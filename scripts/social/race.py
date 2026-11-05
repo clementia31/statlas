@@ -1,0 +1,192 @@
+"""Statlas — vidéo « course de courbes » pour X / Instagram (1080x1350, MP4).
+
+Identités validées (5 nov. 2026) :
+  statlas : fond nuit, nom et accents dorés, police Space Grotesk
+  gazette : fond beige éditorial, titres Fraunces, filets rouges
+Vitesse validée : 3 années par seconde, chaque année affichée, image finale tenue 4 s.
+
+Exemple :
+  python3 scripts/social/race.py --data data/seeds/history/nobel-laureates-cumulative.psv \
+      --countries US,GB,DE,FR --start 1901 --end 2025 --theme statlas \
+      --title "Who wins the Nobel Prize?" \
+      --subtitle "Laureates born in each country (current borders), cumulative since 1901" \
+      --source "Nobel Foundation" --out nobel.mp4
+"""
+import argparse, io, os, subprocess
+import numpy as np, pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+from matplotlib.font_manager import FontProperties as FP
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+from matplotlib.patches import Circle, Ellipse, Rectangle
+from PIL import Image, ImageDraw
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+F = lambda n: FP(fname=f"{HERE}/fonts/{n}.ttf")
+
+THEMES = {
+    "statlas": dict(
+        brand="STATLAS", bg="#0D1B2A", ink="#F2F4F8", muted="#8FA3BF", grid="#1E3048", accent="#F5B83D",
+        logo_col="#F5B83D", palette=["#F5B83D", "#4CC9F0", "#7BE0A6", "#FF6B6B", "#C77DFF", "#F4F1DE"],
+        logo=F("space-grotesk-700-normal"), title=F("space-grotesk-700-normal"), sub=F("space-grotesk-400-normal"),
+        label=F("space-grotesk-700-normal"), num=F("space-grotesk-600-normal"), tick=F("space-grotesk-400-normal"),
+        year=F("space-grotesk-700-normal"), foot=F("space-grotesk-600-normal"), dark=True, year_style="box"),
+    "gazette": dict(
+        brand="THE GAZETTE", bg="#F3EEE4", ink="#1A1A1A", muted="#6E675C", grid="#E2DACB", accent="#B3261E",
+        logo_col="#1A1A1A", palette=["#B3261E", "#1F3A93", "#2E7D5B", "#C98A0B", "#6A3D9A", "#4A4A4A"],
+        logo=F("fraunces-900-normal"), title=F("fraunces-800-normal"), sub=F("ibm-plex-sans-400-italic"),
+        label=F("ibm-plex-sans-700-normal"), num=F("ibm-plex-mono-600-normal"), tick=F("ibm-plex-mono-400-normal"),
+        year=F("fraunces-900-normal"), foot=F("ibm-plex-sans-600-normal"), dark=False, year_style="rule"),
+}
+
+
+def country_name(iso):
+    try:
+        import pycountry
+        c = pycountry.countries.get(alpha_2=iso)
+        return {"GB": "United Kingdom", "US": "United States", "KR": "South Korea", "RU": "Russia",
+                "IR": "Iran", "TW": "Taiwan", "VN": "Vietnam"}.get(iso, getattr(c, "common_name", None) or c.name)
+    except Exception:
+        return iso
+
+
+def flag(iso, ring):
+    import cairosvg
+    png = cairosvg.svg2png(url=f"{HERE}/flags/{iso.lower()}.svg", output_width=128, output_height=128)
+    im = Image.open(io.BytesIO(png)).convert("RGBA")
+    m = Image.new("L", (128, 128), 0); ImageDraw.Draw(m).ellipse((5, 5, 123, 123), fill=255)
+    out = Image.new("RGBA", (128, 128), (0, 0, 0, 0)); out.paste(im, (0, 0), m)
+    ImageDraw.Draw(out).ellipse((3, 3, 125, 125), outline=ring, width=6)
+    return np.asarray(out)
+
+
+def globe(fig, x, y, r, col, lw=2.2):
+    """Marque Statlas : globe en méridiens traversé par une courbe."""
+    a = fig.add_axes([x - r, y - r * 1.0, 2 * r, 2 * r * 1.25], facecolor="none")
+    a.set_xlim(-1.1, 1.1); a.set_ylim(-1.1, 1.1); a.set_aspect("equal"); a.axis("off")
+    a.add_patch(Circle((0, 0), 1, fill=False, ec=col, lw=lw))
+    for w in (0.38, 0.75):
+        a.add_patch(Ellipse((0, 0), 2 * w, 2, fill=False, ec=col, lw=lw * .7))
+    for h in (-0.5, 0, 0.5):
+        half = np.sqrt(1 - h * h); a.plot([-half, half], [h, h], color=col, lw=lw * .7)
+    xs = np.linspace(-0.85, 0.85, 30)
+    a.plot(xs, -0.15 + 0.45 * np.tanh(2.2 * xs), color=col, lw=lw * 1.4, solid_capstyle="round")
+
+
+def fmt(v, unit, integer=False):
+    if integer: v = round(v)
+    a = abs(v)
+    s = f"{v/1e12:.2f}T" if a >= 1e12 else f"{v/1e9:.1f}B" if a >= 1e9 else f"{v/1e6:.1f}M" if a >= 1e6 \
+        else f"{v:,.0f}" if a >= 100 else f"{v:.0f}" if v == round(v) else f"{v:.1f}"
+    return f"{unit}{s}" if unit in ("$", "€", "£") else (f"{s} {unit}" if unit else s)
+
+
+class Race:
+    def __init__(self, a):
+        self.a = a; self.T = T = THEMES[a.theme]
+        d = pd.read_csv(a.data, sep="|", comment="#", names=["iso", "year", "v", "p"])
+        isos = a.countries.split(",")
+        d = d[d.iso.isin(isos)].pivot(index="year", columns="iso", values="v").sort_index()
+        d = d.loc[a.start:a.end].interpolate(limit_area="inside").ffill().fillna(0 if a.fill0 else np.nan)
+        self.integer = bool(np.allclose(d.fillna(0).values, np.round(d.fillna(0).values)))
+        self.d = d.dropna(how="all"); self.isos = [i for i in isos if i in self.d]
+        self.y0, self.y1 = int(self.d.index.min()), int(self.d.index.max())
+        final = self.d.iloc[-1].sort_values(ascending=False)
+        self.col = {iso: T["palette"][k % len(T["palette"])] for k, iso in enumerate(final.index)}
+        ring = (13, 27, 42, 255) if T["dark"] else (255, 255, 255, 255)
+        self.flags = {i: flag(i, ring) for i in self.isos}
+        self.names = {i: country_name(i) for i in self.isos}
+        self.ymax = None
+        self.fig = plt.figure(figsize=(10.8, 13.5), dpi=100)
+
+    def val(self, t):
+        d = self.d
+        i = np.interp(t, d.index.values, np.arange(len(d)))
+        lo = int(np.floor(i)); hi = min(lo + 1, len(d) - 1); w = i - lo
+        return d.iloc[lo] * (1 - w) + d.iloc[hi] * w
+
+    def draw(self, t):
+        T, fig, a, d = self.T, self.fig, self.a, self.d
+        fig.clear(); fig.set_facecolor(T["bg"])
+        brand = T["brand"]; gx = 0.5 - 0.0165 * len(brand) - 0.03
+        globe(fig, gx, 0.952, 0.032, T["accent"])
+        fig.text(gx + 0.05, 0.952, brand, fontproperties=T["logo"], fontsize=46, color=T["logo_col"], va="center")
+        fig.add_artist(Rectangle((0.44, 0.903), 0.12, 0.004, transform=fig.transFigure, color=T["accent"]))
+        fig.text(0.5, 0.848, a.title, ha="center", fontproperties=T["title"], fontsize=44 if len(a.title) < 30 else 36, color=T["ink"])
+        fig.text(0.5, 0.812, a.subtitle, ha="center", fontproperties=T["sub"], fontsize=15.5, color=T["muted"])
+        ax = fig.add_axes([0.10, 0.235, 0.855, 0.545], facecolor=T["bg"])
+        hist = d.loc[:np.floor(t)]; cur = self.val(t)
+        target = max(a.ymin_top, np.nanmax(cur.values) * 1.18)
+        self.ymax = target if self.ymax is None else self.ymax + (target - self.ymax) * 0.08
+        xr = t + max(7, (t - self.y0) * 0.40)
+        ax.set_xlim(self.y0, xr); ax.set_ylim(0, self.ymax)
+        for s in ("top", "right", "left"): ax.spines[s].set_visible(False)
+        ax.spines["bottom"].set_color(T["muted"]); ax.spines["bottom"].set_linewidth(1.2)
+        ax.grid(axis="y", color=T["grid"], lw=1.1); ax.set_axisbelow(True)
+        ax.tick_params(colors=T["muted"], length=0, pad=8)
+        span = t - self.y0
+        step = 1 if span < 8 else 2 if span < 16 else 5 if span < 35 else 10 if span < 70 else 20 if span < 120 else 25 if span < 160 else 50
+        ax.set_xticks([x for x in range(self.y0 - self.y0 % step, self.y1 + 1, step) if self.y0 <= x <= t])
+        ax.yaxis.set_major_locator(mticker.MaxNLocator(5))
+        ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: fmt(v, a.unit if a.unit in ("$", "€", "£") else "")))
+        for lab in ax.get_xticklabels() + ax.get_yticklabels():
+            lab.set_fontproperties(T["tick"]); lab.set_fontsize(14)
+        live = [i for i in self.isos if not np.isnan(cur[i])]
+        for iso in live:
+            xs = list(hist.index) + [t]; ys = list(hist[iso]) + [cur[iso]]
+            if T["dark"]:
+                ax.plot(xs, ys, color=self.col[iso], lw=12, alpha=.12, solid_capstyle="round")
+            ax.plot(xs, ys, color=self.col[iso], lw=4.6, solid_capstyle="round")
+        order = sorted(live, key=lambda i: cur[i])
+        gap = self.ymax * 0.09; pos = {}; last = -1e18
+        for iso in order:
+            pos[iso] = max(cur[iso], last + gap); last = pos[iso]
+        over = last - self.ymax * 0.97
+        if over > 0:
+            for iso in pos: pos[iso] -= over
+        dx = (xr - self.y0) * 0.042
+        for iso in order:
+            col = self.col[iso]
+            if abs(pos[iso] - cur[iso]) > gap * 0.15:
+                ax.plot([t, t + dx * 0.55], [cur[iso], pos[iso]], color=col, lw=1.2, alpha=.6)
+            ax.plot([t], [cur[iso]], "o", color=col, ms=10, mec=T["bg"], mew=2)
+            ax.add_artist(AnnotationBbox(OffsetImage(self.flags[iso], zoom=0.34), (t + dx, pos[iso]), frameon=False, annotation_clip=False))
+            ax.text(t + dx * 1.9, pos[iso] + gap * 0.18, self.names[iso], color=col, fontproperties=T["label"], fontsize=17, va="center")
+            ax.text(t + dx * 1.9, pos[iso] - gap * 0.22, fmt(cur[iso], a.unit, self.integer), color=T["ink"], fontproperties=T["num"], fontsize=18, va="center")
+        fig.text(0.5, 0.183, f"Source: {a.source}", ha="center", fontproperties=T["sub"], fontsize=13.5, color=T["muted"])
+        yr = f"{int(np.floor(t + 1e-9))}"
+        if T["year_style"] == "rule":
+            fig.text(0.5, 0.112, yr, ha="center", va="center", fontproperties=T["year"], fontsize=72, color=T["ink"])
+            fig.add_artist(Rectangle((0.40, 0.068), 0.20, 0.003, transform=fig.transFigure, color=T["accent"]))
+        else:
+            fig.text(0.5, 0.112, yr, ha="center", va="center", fontproperties=T["year"], fontsize=64, color=T["accent"],
+                     bbox=dict(boxstyle="round,pad=0.28,rounding_size=0.6", fc="none", ec=T["accent"], lw=2.5))
+        fig.text(0.5, 0.035, "S T A T L A S   R E S E A R C H", ha="center", va="center", fontproperties=T["foot"], fontsize=14, color=T["ink"])
+        fig.canvas.draw()
+
+    def render(self, out, yps=3.0, fps=30, hold=4):
+        n = max(2, int((self.y1 - self.y0) / yps * fps))
+        ts = list(np.linspace(self.y0, self.y1, n)) + [self.y1] * (fps * hold)
+        ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgba", "-s", "1080x1350",
+                               "-r", str(fps), "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
+                               "-movflags", "+faststart", out], stdin=subprocess.PIPE)
+        for t in ts:
+            self.draw(t); ff.stdin.write(self.fig.canvas.buffer_rgba().tobytes())
+        ff.stdin.close(); ff.wait()
+        self.fig.savefig(out.rsplit(".", 1)[0] + "_cover.png", facecolor=self.T["bg"])   # image finale = vignette
+
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument("--data", required=True); p.add_argument("--countries", required=True)
+    p.add_argument("--start", type=int, default=0); p.add_argument("--end", type=int, default=9999)
+    p.add_argument("--theme", default="statlas", choices=list(THEMES))
+    p.add_argument("--title", required=True); p.add_argument("--subtitle", default="")
+    p.add_argument("--source", required=True); p.add_argument("--unit", default="")
+    p.add_argument("--yps", type=float, default=3.0); p.add_argument("--ymin-top", dest="ymin_top", type=float, default=10)
+    p.add_argument("--fill0", action="store_true", help="avant la première donnée, compter 0 (séries cumulées)")
+    p.add_argument("--out", required=True)
+    a = p.parse_args()
+    Race(a).render(a.out, a.yps)

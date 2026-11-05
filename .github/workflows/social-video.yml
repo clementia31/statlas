@@ -1,0 +1,46 @@
+name: Social video
+
+on:
+  workflow_dispatch:
+    inputs:
+      data: {description: "Fichier .psv (data/seeds/history/...)", required: true}
+      countries: {description: "Codes pays ISO2 séparés par des virgules (ex. US,GB,DE,FR)", required: true}
+      start: {description: "Année de début", default: "0"}
+      end: {description: "Année de fin", default: "9999"}
+      theme: {description: "statlas ou gazette", default: "statlas"}
+      title: {description: "Titre", required: true}
+      subtitle: {description: "Sous-titre", default: ""}
+      source: {description: "Source affichée", required: true}
+      unit: {description: "Unité ($, %, years...)", default: ""}
+      fill0: {description: "Série cumulée : compter 0 avant la première donnée", type: boolean, default: false}
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: pip install -q numpy pandas matplotlib pillow cairosvg pycountry
+      - name: Render
+        env:
+          DATA: ${{ inputs.data }}
+          COUNTRIES: ${{ inputs.countries }}
+          START: ${{ inputs.start }}
+          END: ${{ inputs.end }}
+          THEME: ${{ inputs.theme }}
+          TITLE: ${{ inputs.title }}
+          SUBTITLE: ${{ inputs.subtitle }}
+          SOURCE: ${{ inputs.source }}
+          UNIT: ${{ inputs.unit }}
+          FILL0: ${{ inputs.fill0 }}
+        run: |
+          mkdir -p out
+          extra=""; [ "$FILL0" = "true" ] && extra="--fill0"
+          python3 scripts/social/race.py --data "$DATA" --countries "$COUNTRIES" --start "$START" --end "$END" \
+            --theme "$THEME" --title "$TITLE" --subtitle "$SUBTITLE" --source "$SOURCE" --unit "$UNIT" $extra \
+            --out out/statlas_video.mp4
+      - uses: actions/upload-artifact@v4
+        with: {name: social-video, path: out/, retention-days: 30}
