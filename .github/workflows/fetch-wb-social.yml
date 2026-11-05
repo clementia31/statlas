@@ -1,0 +1,25 @@
+# Télécharge des séries Banque mondiale pour les vidéos réseaux sociaux (data/seeds/social).
+name: Fetch World Bank (social)
+on:
+  workflow_dispatch:
+    inputs:
+      items:
+        description: "CODE=nom séparés par des espaces"
+        default: "SP.DYN.CBRT.IN=birth-rate GB.XPD.RSDV.GD.ZS=rd-expenditure-gdp NV.IND.TOTL.ZS=industry-share-gdp NV.SRV.TOTL.ZS=services-share-gdp EN.GHG.CO2.MT.CE.AR5=co2-emissions-total NY.GDP.PCAP.CD=gdp-per-capita-usd SP.POP.TOTL=population-wb"
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - env: {ITEMS: "${{ inputs.items }}"}
+        run: python scripts/fetch_wb_social.py $ITEMS
+      - run: |
+          git config user.name "seed-bot"
+          git config user.email "seed-bot@users.noreply.github.com"
+          git add data/seeds/social
+          git commit -m "Seeds : séries Banque mondiale pour les vidéos" || echo "Rien de nouveau"
+          git pull --rebase -X theirs && git push
