@@ -6,7 +6,7 @@ import os, subprocess, sys
 
 H = "data/seeds/history/"; S = "data/seeds/social/"
 PLAN = [
-    dict(slug="debt", data=S + "gross-debt-imf.psv", countries="JP,IT,US,FR,GB", start=1990, end=2030, unit="%",
+    dict(slug="debt", data=S + "gross-debt-imf.psv", countries="JP,IT,US,FR,GB", start=2001, end=2030, unit="%",
          title="The weight of debt", subtitle="Government gross debt, % of GDP (2025–2030: IMF projections)", source="IMF, World Economic Outlook"),
     dict(slug="wealth-200y", data=H + "gdp-per-capita-maddison.psv", countries="US,GB,FR,JP,CN", start=1820, end=2022, unit="$", ymin_top=1000,
          title="200 years of wealth", subtitle="GDP per capita, international dollars at 2011 prices", source="Maddison Project Database 2023"),
