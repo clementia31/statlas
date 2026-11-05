@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       data: {description: "Fichier .psv (data/seeds/history/...)", required: true}
-      countries: {description: "Codes pays ISO2 séparés par des virgules (ex. US,GB,DE,FR)", required: true}
+      countries: {description: "Codes pays ISO2 (ex. US,GB,DE,FR,SE) — vide = top automatique", default: ""}
+      top: {description: "Top automatique : 3, 5 ou 10", default: "5"}
       start: {description: "Année de début", default: "0"}
       end: {description: "Année de fin", default: "9999"}
       theme: {description: "statlas ou gazette", default: "statlas"}
@@ -28,6 +29,7 @@ jobs:
         env:
           DATA: ${{ inputs.data }}
           COUNTRIES: ${{ inputs.countries }}
+          TOP: ${{ inputs.top }}
           START: ${{ inputs.start }}
           END: ${{ inputs.end }}
           THEME: ${{ inputs.theme }}
@@ -39,7 +41,7 @@ jobs:
         run: |
           mkdir -p out
           extra=""; [ "$FILL0" = "true" ] && extra="--fill0"
-          python3 scripts/social/race.py --data "$DATA" --countries "$COUNTRIES" --start "$START" --end "$END" \
+          python3 scripts/social/race.py --data "$DATA" --countries "$COUNTRIES" --top "$TOP" --start "$START" --end "$END" \
             --theme "$THEME" --title "$TITLE" --subtitle "$SUBTITLE" --source "$SOURCE" --unit "$UNIT" $extra \
             --out out/statlas_video.mp4
       - uses: actions/upload-artifact@v4

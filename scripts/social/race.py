@@ -29,13 +29,13 @@ F = lambda n: FP(fname=f"{HERE}/fonts/{n}.ttf")
 THEMES = {
     "statlas": dict(
         brand="STATLAS", bg="#0D1B2A", ink="#F2F4F8", muted="#8FA3BF", grid="#1E3048", accent="#F5B83D",
-        logo_col="#F5B83D", palette=["#F5B83D", "#4CC9F0", "#7BE0A6", "#FF6B6B", "#C77DFF", "#F4F1DE"],
+        logo_col="#F5B83D", palette=["#F5B83D", "#4CC9F0", "#7BE0A6", "#FF6B6B", "#C77DFF", "#F4F1DE", "#FF9F43", "#2EC4B6", "#F78FB3", "#A3B18A"],
         logo=F("space-grotesk-700-normal"), title=F("space-grotesk-700-normal"), sub=F("space-grotesk-400-normal"),
         label=F("space-grotesk-700-normal"), num=F("space-grotesk-600-normal"), tick=F("space-grotesk-400-normal"),
         year=F("space-grotesk-700-normal"), foot=F("space-grotesk-600-normal"), dark=True, year_style="box"),
     "gazette": dict(
         brand="THE GAZETTE", bg="#F3EEE4", ink="#1A1A1A", muted="#6E675C", grid="#E2DACB", accent="#B3261E",
-        logo_col="#1A1A1A", palette=["#B3261E", "#1F3A93", "#2E7D5B", "#C98A0B", "#6A3D9A", "#4A4A4A"],
+        logo_col="#1A1A1A", palette=["#B3261E", "#1F3A93", "#2E7D5B", "#C98A0B", "#6A3D9A", "#4A4A4A", "#D35400", "#117A8B", "#8E3B5E", "#7A6A2F"],
         logo=F("fraunces-900-normal"), title=F("fraunces-800-normal"), sub=F("ibm-plex-sans-400-italic"),
         label=F("ibm-plex-sans-700-normal"), num=F("ibm-plex-mono-600-normal"), tick=F("ibm-plex-mono-400-normal"),
         year=F("fraunces-900-normal"), foot=F("ibm-plex-sans-600-normal"), dark=False, year_style="rule"),
@@ -87,7 +87,12 @@ class Race:
     def __init__(self, a):
         self.a = a; self.T = T = THEMES[a.theme]
         d = pd.read_csv(a.data, sep="|", comment="#", names=["iso", "year", "v", "p"])
-        isos = a.countries.split(",")
+        d = d[(d.year >= a.start) & (d.year <= a.end) & (d.iso.str.len() == 2)]
+        if a.countries:
+            isos = a.countries.split(",")
+        else:   # top N à la dernière année disponible
+            last = d[d.year == d.year.max()]
+            isos = list(last.sort_values("v", ascending=False).iso.head(a.top))
         d = d[d.iso.isin(isos)].pivot(index="year", columns="iso", values="v").sort_index()
         d = d.loc[a.start:a.end].interpolate(limit_area="inside").ffill().fillna(0 if a.fill0 else np.nan)
         self.integer = bool(np.allclose(d.fillna(0).values, np.round(d.fillna(0).values)))
@@ -97,8 +102,10 @@ class Race:
         self.col = {iso: T["palette"][k % len(T["palette"])] for k, iso in enumerate(final.index)}
         ring = (13, 27, 42, 255) if T["dark"] else (255, 255, 255, 255)
         self.flags = {i: flag(i, ring) for i in self.isos}
-        self.names = {i: country_name(i) for i in self.isos}
         self.ymax = None
+        self.names = {i: country_name(i) for i in self.isos}
+        n = len(self.isos)
+        self.k = 1.0 if n <= 5 else 0.78          # échelle des étiquettes pour un top 10
         self.fig = plt.figure(figsize=(10.8, 13.5), dpi=100)
 
     def val(self, t):
@@ -140,7 +147,7 @@ class Race:
                 ax.plot(xs, ys, color=self.col[iso], lw=12, alpha=.12, solid_capstyle="round")
             ax.plot(xs, ys, color=self.col[iso], lw=4.6, solid_capstyle="round")
         order = sorted(live, key=lambda i: cur[i])
-        gap = self.ymax * 0.09; pos = {}; last = -1e18
+        gap = self.ymax * 0.09 * self.k; pos = {}; last = -1e18
         for iso in order:
             pos[iso] = max(cur[iso], last + gap); last = pos[iso]
         over = last - self.ymax * 0.97
@@ -152,9 +159,9 @@ class Race:
             if abs(pos[iso] - cur[iso]) > gap * 0.15:
                 ax.plot([t, t + dx * 0.55], [cur[iso], pos[iso]], color=col, lw=1.2, alpha=.6)
             ax.plot([t], [cur[iso]], "o", color=col, ms=10, mec=T["bg"], mew=2)
-            ax.add_artist(AnnotationBbox(OffsetImage(self.flags[iso], zoom=0.34), (t + dx, pos[iso]), frameon=False, annotation_clip=False))
-            ax.text(t + dx * 1.9, pos[iso] + gap * 0.18, self.names[iso], color=col, fontproperties=T["label"], fontsize=17, va="center")
-            ax.text(t + dx * 1.9, pos[iso] - gap * 0.22, fmt(cur[iso], a.unit, self.integer), color=T["ink"], fontproperties=T["num"], fontsize=18, va="center")
+            ax.add_artist(AnnotationBbox(OffsetImage(self.flags[iso], zoom=0.34 * self.k), (t + dx, pos[iso]), frameon=False, annotation_clip=False))
+            ax.text(t + dx * 1.9 * self.k ** .5, pos[iso] + gap * 0.18, self.names[iso], color=col, fontproperties=T["label"], fontsize=17 * self.k, va="center")
+            ax.text(t + dx * 1.9 * self.k ** .5, pos[iso] - gap * 0.22, fmt(cur[iso], a.unit, self.integer), color=T["ink"], fontproperties=T["num"], fontsize=18 * self.k, va="center")
         fig.text(0.5, 0.183, f"Source: {a.source}", ha="center", fontproperties=T["sub"], fontsize=13.5, color=T["muted"])
         yr = f"{int(np.floor(t + 1e-9))}"
         if T["year_style"] == "rule":
@@ -180,7 +187,8 @@ class Race:
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("--data", required=True); p.add_argument("--countries", required=True)
+    p.add_argument("--data", required=True); p.add_argument("--countries", default="")
+    p.add_argument("--top", type=int, default=5, help="si --countries est vide : top 3, 5 ou 10 à la dernière année")
     p.add_argument("--start", type=int, default=0); p.add_argument("--end", type=int, default=9999)
     p.add_argument("--theme", default="statlas", choices=list(THEMES))
     p.add_argument("--title", required=True); p.add_argument("--subtitle", default="")
