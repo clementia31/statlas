@@ -28,6 +28,8 @@ PLAN = [
          title="Who emits the most CO2?", subtitle="CO2 emissions, million tonnes per year", source="World Bank (EDGAR)"),
     dict(slug="world-2100", data=H + "population-un-wpp.psv", top=5, rank_year=2100, start=1950, end=2100,
          title="The world in 2100", subtitle="Population — top 5 in 2100 (2024–2100: UN projections)", source="United Nations, World Population Prospects 2024"),
+    dict(slug="satellites", data=S + "satellites-in-orbit.psv", top=5, start=1957, end=2026,
+         title="Who owns the sky?", subtitle="Satellites in Earth orbit by owner country, active or not (end of year)", source="CelesTrak satellite catalog · count by Statlas Research"),
     dict(slug="richest-top10", data=H + "gdp-per-capita-maddison.psv", top=10, rank_year=2022, minpop=1e6, start=1950, end=2022, unit="$", ymin_top=1000,
          title="The richest countries", subtitle="GDP per capita, 2011 international dollars — countries over 1 million people", source="Maddison Project Database 2023"),
 ]
