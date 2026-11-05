@@ -26,8 +26,12 @@ const FAMILIES: { name: string; prefixes: string[] }[] = [
 ];
 
 export default async function SportPage() {
-  const { data } = await supabase.from('indicator_catalog').select('*').in('category_slug', ['sport', 'space']);
-  const catalog = ((data ?? []) as IndicatorMeta[]).sort((a, b) => a.name.localeCompare(b.name));
+  // Sélection par préfixe d'indicateur (indépendant de la façon dont la vue expose la catégorie)
+  const { data } = await supabase.from('indicator_catalog').select('*');
+  const prefixes = FAMILIES.flatMap((f) => f.prefixes);
+  const catalog = ((data ?? []) as IndicatorMeta[])
+    .filter((m) => prefixes.some((p) => m.slug.startsWith(p)))
+    .sort((a, b) => a.name.localeCompare(b.name));
   if (!catalog.length) {
     return (
       <AppShell active="Sport">

@@ -31,6 +31,8 @@ export function formatValue(value: number | null | undefined, unit?: string | nu
   if (u.startsWith('per ')) return nf(value < 10 ? 2 : 1).format(value);
   if (u === 'µg/m3') return nf(1).format(value) + ' µg/m³';
   if (u.includes('dollar') || u === 'usd') return '$' + abbreviateNumber(value);
+  // Comptages (titres, médailles, lauréats, satellites…) : toujours des entiers
+  if (['titles', 'medals', 'awards', 'wins', 'laureates', 'satellites'].includes(u)) return nf(0).format(value);
   return nf(Math.abs(value) < 10 ? 2 : 0).format(value);
 }
 
