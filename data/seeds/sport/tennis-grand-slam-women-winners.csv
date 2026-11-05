@@ -1,0 +1,493 @@
+year,winner,iso
+1884,United Kingdom,GB
+1885,United Kingdom,GB
+1886,United Kingdom,GB
+1887,United Kingdom,GB
+1887,United States,US
+1888,United Kingdom,GB
+1888,United States,US
+1889,United Kingdom,GB
+1889,United States,US
+1890,United Kingdom of Great Britain and Ireland,GB
+1890,United States,US
+1891,United Kingdom,GB
+1891,United Kingdom,GB
+1892,United Kingdom,GB
+1892,United Kingdom,GB
+1893,United Kingdom,GB
+1893,United States,US
+1894,United Kingdom,GB
+1894,United States,US
+1895,United Kingdom,GB
+1895,United States,US
+1896,United Kingdom,GB
+1896,United States,US
+1897,France,FR
+1897,United Kingdom,GB
+1897,United States,US
+1898,France,FR
+1898,United Kingdom,GB
+1898,United States,US
+1899,France,FR
+1899,United Kingdom,GB
+1899,United States,US
+1900,France,FR
+1900,United Kingdom,GB
+1900,United States,US
+1901,France,FR
+1901,United Kingdom,GB
+1901,United States,US
+1902,France,FR
+1902,United Kingdom,GB
+1902,United States,US
+1903,France,FR
+1903,United Kingdom,GB
+1903,United States,US
+1904,France,FR
+1904,United Kingdom,GB
+1904,United States,US
+1905,France,FR
+1905,United States,US
+1905,United States,US
+1906,France,FR
+1906,United Kingdom,GB
+1906,United States,US
+1907,France,FR
+1907,United States,US
+1907,United States,US
+1908,France,FR
+1908,United Kingdom,GB
+1908,United States,US
+1909,France,FR
+1909,United Kingdom,GB
+1909,United States,US
+1910,France,FR
+1910,United Kingdom,GB
+1910,United States,US
+1911,France,FR
+1911,United Kingdom,GB
+1911,United States,US
+1912,France,FR
+1912,United Kingdom,GB
+1912,United States,US
+1913,France,FR
+1913,United Kingdom,GB
+1913,United States,US
+1914,France,FR
+1914,United Kingdom,GB
+1914,United States,US
+1915,Norway,NO
+1916,Norway,NO
+1917,Norway,NO
+1918,Norway,NO
+1919,France,FR
+1919,United States,US
+1920,France,FR
+1920,France,FR
+1920,United States,US
+1921,France,FR
+1921,France,FR
+1921,United States,US
+1922,Australia,AU
+1922,France,FR
+1922,France,FR
+1922,United States,US
+1923,Australia,AU
+1923,France,FR
+1923,France,FR
+1923,United States,US
+1924,Australia,AU
+1924,France,FR
+1924,United Kingdom,GB
+1924,United States,US
+1925,Australia,AU
+1925,France,FR
+1925,France,FR
+1925,United States,US
+1926,Australia,AU
+1926,France,FR
+1926,United Kingdom,GB
+1926,United States,US
+1927,Australia,AU
+1927,Netherlands,NL
+1927,United States,US
+1927,United States,US
+1928,Australia,AU
+1928,United States,US
+1928,United States,US
+1928,United States,US
+1929,Australia,AU
+1929,United States,US
+1929,United States,US
+1929,United States,US
+1930,Australia,AU
+1930,United States,US
+1930,United States,US
+1930,United Kingdom,GB
+1931,Australia,AU
+1931,Weimar Republic,DE
+1931,Weimar Republic,DE
+1931,United States,US
+1932,Australia,AU
+1932,United States,US
+1932,United States,US
+1932,United States,US
+1933,Australia,AU
+1933,United Kingdom,GB
+1933,United States,US
+1933,United States,US
+1934,Australia,AU
+1934,United Kingdom,GB
+1934,United Kingdom,GB
+1934,United States,US
+1935,United Kingdom,GB
+1935,Denmark,DK
+1935,United States,US
+1935,United States,US
+1936,Australia,AU
+1936,Denmark,DK
+1936,United States,US
+1936,United States,US
+1937,Australia,AU
+1937,Denmark,DK
+1937,United Kingdom,GB
+1937,Chile,CL
+1938,United States,US
+1938,France,FR
+1938,United States,US
+1938,United States,US
+1939,Australia,AU
+1939,France,FR
+1939,United States,US
+1939,United States,US
+1940,Australia,AU
+1940,United States,US
+1941,Luxembourg,LU
+1941,United States,US
+1942,Luxembourg,LU
+1942,United States,US
+1943,France,FR
+1943,United States,US
+1944,France,FR
+1944,United States,US
+1945,Switzerland,CH
+1945,United States,US
+1946,Australia,AU
+1946,United States,US
+1946,United States,US
+1946,United States,US
+1947,Australia,AU
+1947,United States,US
+1947,United States,US
+1947,United States,US
+1948,Australia,AU
+1948,France,FR
+1948,United States,US
+1948,United States,US
+1949,United States,US
+1949,United States,US
+1949,United States,US
+1949,United States,US
+1950,United States,US
+1950,United States,US
+1950,United States,US
+1950,United States,US
+1951,Australia,AU
+1951,United States,US
+1951,United States,US
+1951,United States,US
+1952,Australia,AU
+1952,United States,US
+1952,United States,US
+1952,United States,US
+1953,United States,US
+1953,United States,US
+1953,United States,US
+1953,United States,US
+1954,Australia,AU
+1954,United States,US
+1954,United States,US
+1954,United States,US
+1955,Australia,AU
+1955,United Kingdom,GB
+1955,United States,US
+1955,United States,US
+1956,Australia,AU
+1956,United States,US
+1956,United States,US
+1956,United States,US
+1957,United States,US
+1957,United Kingdom,GB
+1957,United States,US
+1957,United States,US
+1958,United Kingdom,GB
+1958,Hungary,HU
+1958,United States,US
+1958,United States,US
+1959,Australia,AU
+1959,United Kingdom,GB
+1959,Brazil,BR
+1959,Brazil,BR
+1960,Australia,AU
+1960,United States,US
+1960,Brazil,BR
+1960,United States,US
+1961,Australia,AU
+1961,United Kingdom,GB
+1961,United Kingdom,GB
+1961,United States,US
+1962,Australia,AU
+1962,Australia,AU
+1962,United States,US
+1962,Australia,AU
+1963,Australia,AU
+1963,Australia,AU
+1963,Australia,AU
+1963,Brazil,BR
+1964,Australia,AU
+1964,Australia,AU
+1964,Brazil,BR
+1964,Brazil,BR
+1965,Australia,AU
+1965,Australia,AU
+1965,Australia,AU
+1965,Australia,AU
+1966,Australia,AU
+1966,United Kingdom,GB
+1966,United States,US
+1966,Brazil,BR
+1967,United States,US
+1967,France,FR
+1967,United States,US
+1967,United States,US
+1968,United States,US
+1969,Australia,AU
+1969,Australia,AU
+1969,United Kingdom,GB
+1969,Australia,AU
+1970,Australia,AU
+1970,Australia,AU
+1970,Australia,AU
+1970,Australia,AU
+1971,Australia,AU
+1971,Australia,AU
+1971,Australia,AU
+1971,United States,US
+1972,United Kingdom,GB
+1972,United States,US
+1972,United States,US
+1972,United States,US
+1973,Australia,AU
+1973,Australia,AU
+1973,United States,US
+1973,Australia,AU
+1974,Australia,AU
+1974,United States,US
+1974,United States,US
+1974,United States,US
+1975,Australia,AU
+1975,United States,US
+1975,United States,US
+1975,United States,US
+1976,Australia,AU
+1976,United Kingdom,GB
+1976,United States,US
+1976,United States,US
+1977,Australia,AU
+1977,Socialist Federal Republic of Yugoslavia,RS
+1977,United Kingdom,GB
+1977,United States,US
+1978,Australia,AU
+1978,Romania,RO
+1978,United States,US
+1978,United States,US
+1979,United States,US
+1979,United States,US
+1979,United States,US
+1979,United States,US
+1980,Czechoslovakia,CZ
+1980,United States,US
+1980,Australia,AU
+1980,United States,US
+1981,United States,US
+1981,Czechoslovakia,CZ
+1981,United States,US
+1981,United States,US
+1982,United States,US
+1982,United States,US
+1982,United States,US
+1982,United States,US
+1983,United States,US
+1983,United States,US
+1983,United States,US
+1983,United States,US
+1984,United States,US
+1984,United States,US
+1984,United States,US
+1984,United States,US
+1985,United States,US
+1985,United States,US
+1985,United States,US
+1985,Czechoslovakia,CZ
+1986,United States,US
+1986,United States,US
+1986,United States,US
+1987,Czechoslovakia,CZ
+1987,West Germany,DE
+1987,United States,US
+1987,United States,US
+1988,West Germany,DE
+1988,West Germany,DE
+1988,West Germany,DE
+1988,West Germany,DE
+1989,West Germany,DE
+1989,Spain,ES
+1989,West Germany,DE
+1989,West Germany,DE
+1990,West Germany,DE
+1990,Socialist Federal Republic of Yugoslavia,RS
+1990,United States,US
+1990,Argentina,AR
+1991,Socialist Federal Republic of Yugoslavia,RS
+1991,Socialist Federal Republic of Yugoslavia,RS
+1991,Germany,DE
+1991,Socialist Federal Republic of Yugoslavia,RS
+1992,Socialist Federal Republic of Yugoslavia,RS
+1992,Federal Republic of Yugoslavia,RS
+1992,Germany,DE
+1992,Federal Republic of Yugoslavia,RS
+1993,Federal Republic of Yugoslavia,RS
+1993,Germany,DE
+1993,Germany,DE
+1993,Germany,DE
+1994,Germany,DE
+1994,Spain,ES
+1994,Spain,ES
+1994,Spain,ES
+1995,France,FR
+1995,Germany,DE
+1995,Germany,DE
+1995,Germany,DE
+1996,United States,US
+1996,Germany,DE
+1996,Germany,DE
+1996,Germany,DE
+1997,Switzerland,CH
+1997,Croatia,HR
+1997,Switzerland,CH
+1997,Switzerland,CH
+1998,Switzerland,CH
+1998,Spain,ES
+1998,Czech Republic,CZ
+1998,United States,US
+1999,Switzerland,CH
+1999,Germany,DE
+1999,United States,US
+1999,United States,US
+2000,United States,US
+2000,France,FR
+2000,United States,US
+2000,United States,US
+2001,United States,US
+2001,United States,US
+2001,United States,US
+2001,United States,US
+2002,United States,US
+2002,United States,US
+2002,United States,US
+2002,United States,US
+2003,United States,US
+2003,Belgium,BE
+2003,United States,US
+2003,Belgium,BE
+2004,Belgium,BE
+2004,Russia,RU
+2004,Russia,RU
+2004,Russia,RU
+2005,United States,US
+2005,Belgium,BE
+2005,United States,US
+2005,Belgium,BE
+2006,France,FR
+2006,Belgium,BE
+2006,France,FR
+2006,Russia,RU
+2007,United States,US
+2007,Belgium,BE
+2007,United States,US
+2007,Belgium,BE
+2008,Russia,RU
+2008,Serbia,RS
+2008,United States,US
+2008,United States,US
+2009,United States,US
+2009,Russia,RU
+2009,United States,US
+2009,Belgium,BE
+2010,United States,US
+2010,Italy,IT
+2010,United States,US
+2010,Belgium,BE
+2011,Belgium,BE
+2011,China,CN
+2011,Czech Republic,CZ
+2011,Australia,AU
+2012,Belarus,BY
+2012,Russia,RU
+2012,United States,US
+2012,United States,US
+2013,Belarus,BY
+2013,United States,US
+2013,France,FR
+2013,United States,US
+2014,China,CN
+2014,Russia,RU
+2014,Czech Republic,CZ
+2014,United States,US
+2015,United States,US
+2015,United States,US
+2015,United States,US
+2015,Italy,IT
+2016,Germany,DE
+2016,Spain,ES
+2016,United States,US
+2016,Germany,DE
+2017,United States,US
+2017,Latvia,LV
+2017,Spain,ES
+2017,United States,US
+2018,Denmark,DK
+2018,Romania,RO
+2018,Germany,DE
+2018,Japan,JP
+2019,Japan,JP
+2019,Australia,AU
+2019,Romania,RO
+2019,Canada,CA
+2020,United States,US
+2020,Poland,PL
+2020,Japan,JP
+2021,Japan,JP
+2021,Czech Republic,CZ
+2021,Australia,AU
+2021,United Kingdom,GB
+2022,Australia,AU
+2022,Poland,PL
+2022,Kazakhstan,KZ
+2022,Poland,PL
+2023,,GB
+2023,Poland,PL
+2023,Czech Republic,CZ
+2023,United States,US
+2024,,GB
+2024,Poland,PL
+2024,Czech Republic,CZ
+2024,,GB
+2025,United States,US
+2025,United States,US
+2025,Poland,PL
+2025,,GB
+2026,Kazakhstan,KZ
+2026,,GB
+2026,Czech Republic,CZ
+2026,Kazakhstan,KZ

@@ -4,7 +4,7 @@ usage : python3 scripts/social/plan.py still|video <dossier_sortie> [slug ...]
 """
 import os, subprocess, sys
 
-H = "data/seeds/history/"; S = "data/seeds/social/"
+H = "data/seeds/history/"; S = "data/seeds/social/"; SP = "data/seeds/sport/"
 PLAN = [
     dict(slug="debt", data=S + "gross-debt-imf.psv", countries="JP,IT,US,FR,GB", start=2001, end=2030, unit="%",
          title="The weight of debt", subtitle="Government gross debt, % of GDP (2025–2030: IMF projections)", source="IMF, World Economic Outlook"),
@@ -28,8 +28,16 @@ PLAN = [
          title="Who emits the most CO2?", subtitle="CO2 emissions, million tonnes per year", source="World Bank (EDGAR)"),
     dict(slug="world-2100", data=H + "population-un-wpp.psv", top=5, rank_year=2100, start=1950, end=2100,
          title="The world in 2100", subtitle="Population — top 5 in 2100 (2024–2100: UN projections)", source="United Nations, World Population Prospects 2024"),
-    dict(slug="satellites", data=S + "satellites-in-orbit.psv", top=5, start=1957, end=2026,
+    dict(slug="satellites", data=S + "satellites-in-orbit.psv", countries="US,RU,CN,GB,JP,EU", names="EU=ESA (Europe)", start=1957, end=2026,
          title="Who owns the sky?", subtitle="Satellites in Earth orbit by owner country, active or not (end of year)", source="CelesTrak satellite catalog · count by Statlas Research"),
+    dict(slug="football-world-cup", data=SP + "football-men-world-cup-titles.psv", top=5, start=1930, end=2026, fill0=True,
+         title="Who wins the World Cup?", subtitle="FIFA World Cup titles (men), since 1930", source="FIFA · count by Statlas Research"),
+    dict(slug="olympics-summer", data=SP + "olympics-summer-medals.psv", top=5, start=1896, end=2024, fill0=True,
+         title="The Olympic superpowers", subtitle="Summer Olympic medals, all-time total (USSR counted with Russia, East & West Germany with Germany)", source="IOC results · count by Statlas Research"),
+    dict(slug="tennis-men", data=SP + "tennis-grand-slam-men-titles.psv", top=5, start=1877, end=2026, fill0=True,
+         title="The kings of Grand Slam", subtitle="Men's singles Grand Slam titles by player nationality, since 1877", source="Grand Slam results · count by Statlas Research"),
+    dict(slug="formula1", data=SP + "formula1-drivers-titles.psv", top=5, start=1950, end=2025, fill0=True,
+         title="Who rules Formula One?", subtitle="Drivers' world championships by driver nationality, since 1950", source="FIA · count by Statlas Research"),
     dict(slug="richest-top10", data=H + "gdp-per-capita-maddison.psv", top=10, rank_year=2022, minpop=1e6, start=1950, end=2022, unit="$", ymin_top=1000,
          title="The richest countries", subtitle="GDP per capita, 2011 international dollars — countries over 1 million people", source="Maddison Project Database 2023"),
 ]
@@ -37,7 +45,7 @@ PLAN = [
 
 def args(c, out, still):
     a = ["python3", "scripts/social/race.py", "--theme", c.get("theme", "statlas"), "--out", out]
-    for k in ("data", "countries", "top", "start", "end", "unit", "title", "subtitle", "source", "rank_year", "minpop", "proj_from", "ymin_top", "exclude"):
+    for k in ("names", "data", "countries", "top", "start", "end", "unit", "title", "subtitle", "source", "rank_year", "minpop", "proj_from", "ymin_top", "exclude"):
         if k in c:
             a += ["--" + k.replace("_", "-"), str(c[k])]
     if c.get("fill0"): a.append("--fill0")

@@ -3,7 +3,7 @@
 Sorties (data/seeds/social/) :
   satellites-in-orbit.psv : charges utiles (PAY) en orbite terrestre au 31 déc. de chaque année (actives ou non), 1957 → année en cours
   satellites-active.psv   : charges utiles actives aujourd'hui (OPS_STATUS + P B S X), une ligne par pays pour l'année en cours
-Organisations multinationales (ESA, Intelsat, SES, Eutelsat...) exclues, comme la plupart des classements par pays.
+ESA comptée à part (code EU) ; autres organisations multinationales (Intelsat, SES, Eutelsat...) exclues, comme la plupart des classements par pays.
 """
 import datetime, pandas as pd
 
@@ -17,6 +17,8 @@ MAP = {"US": "US", "CIS": "RU", "PRC": "CN", "UK": "GB", "JPN": "JP", "FR": "FR"
        "ECU": "EC", "EST": "EE", "BGD": "BD", "AB": "SA", "IM": "GB"}
 # AB = Arabsat (Riyad), IM = Inmarsat (Londres) : opérateurs nationaux de fait ; FGER (RFA) regroupé avec GER
 MAP["FGER"] = "DE"
+# Agence spatiale européenne : gardée comme entité propre (code « EU », affichée « ESA ») pour la comparer aux pays
+MAP["ESA"] = "EU"; MAP["ESRO"] = "EU"
 
 d = pd.read_csv("data/seeds/raw/satcat.csv", dtype=str)
 p = d[(d.OBJECT_TYPE == "PAY") & (d.ORBIT_CENTER == "EA") & d.OWNER.isin(MAP)].copy()
@@ -29,7 +31,7 @@ for y in range(1957, Y + 1):
     alive = p[(p.L <= end) & (p.D.isna() | (p.D > end))]
     for iso, n in alive.groupby("iso").size().items():
         rows.append((iso, y, int(n), 0))
-head = f"# Satellites (payloads) in Earth orbit by owner country, active or not, at 31 Dec — CelesTrak SATCAT\n# Retrieved {today.date()}; multinational operators excluded; count by Statlas Research\n"
+head = f"# Satellites (payloads) in Earth orbit by owner country, active or not, at 31 Dec — CelesTrak SATCAT\n# Retrieved {today.date()}; ESA counted as its own entity (EU); other multinational operators excluded; count by Statlas Research\n"
 open("data/seeds/social/satellites-in-orbit.psv", "w").write(head + "".join(f"{a}|{b}|{c}|{e}\n" for a, b, c, e in sorted(rows)))
 act = p[p.OPS_STATUS_CODE.isin(["+", "P", "B", "S", "X"])].groupby("iso").size()
 open("data/seeds/social/satellites-active.psv", "w").write(

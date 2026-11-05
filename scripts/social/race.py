@@ -117,7 +117,8 @@ class Race:
         ring = (13, 27, 42, 255) if T["dark"] else (255, 255, 255, 255)
         self.flags = {i: flag(i, ring) for i in self.isos}
         self.ymax = None
-        self.names = {i: country_name(i) for i in self.isos}
+        over = dict(x.split("=", 1) for x in a.names.split(";") if "=" in x)
+        self.names = {i: over.get(i) or country_name(i) for i in self.isos}
         n = len(self.isos)
         self.k = 1.0 if n <= 5 else 0.78          # échelle des étiquettes pour un top 10
         self.fig = plt.figure(figsize=(10.8, 13.5), dpi=100)
@@ -223,6 +224,7 @@ if __name__ == "__main__":
     p.add_argument("--minpop", type=float, default=0, help="population minimale (ex. 1e6) pour le top N")
     p.add_argument("--minpop-file", dest="minpop_file", default="data/seeds/history/population-un-wpp.psv")
     p.add_argument("--proj-from", dest="proj_from", type=int, default=0, help="année de début des projections (pointillés)")
+    p.add_argument("--names", default="", help="noms affichés imposés, ex. EU=ESA (Europe)")
     p.add_argument("--still", action="store_true", help="aperçu PNG de l'image finale")
     p.add_argument("--fill0", action="store_true", help="avant la première donnée, compter 0 (séries cumulées)")
     p.add_argument("--out", required=True)
