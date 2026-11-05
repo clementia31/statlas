@@ -1,0 +1,23 @@
+name: Fetch IMF (social)
+on:
+  workflow_dispatch:
+    inputs:
+      items: {description: "CODE=nom ... puis première année de projection", default: "GGXWDG_NGDP=gross-debt-imf 2025"}
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -q pycountry
+      - env: {ITEMS: "${{ inputs.items }}"}
+        run: python scripts/fetch_imf_social.py $ITEMS
+      - run: |
+          git config user.name "seed-bot"
+          git config user.email "seed-bot@users.noreply.github.com"
+          git add data/seeds/social
+          git commit -m "Seeds : séries FMI pour les vidéos" || echo "Rien de nouveau"
+          git pull --rebase -X theirs && git push
