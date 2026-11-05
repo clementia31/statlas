@@ -92,7 +92,18 @@ export async function getArchiveArticles(filters: { year?: string; domain?: stri
   return data ?? [];
 }
 
+// Figure de la semaine : la dernière dont la date de début (un vendredi) est passée.
+// Une figure programmée pour le vendredi suivant prend sa place automatiquement.
 export async function getActiveChartOfWeek() {
+  const now = new Date().toISOString();
+  const { data: scheduled } = await supabase
+    .from('chart_of_the_week')
+    .select('*')
+    .lte('starts_at', now)
+    .order('starts_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (scheduled) return scheduled;
   const { data } = await supabase
     .from('chart_of_the_week')
     .select('*')
