@@ -6,8 +6,8 @@ import os, subprocess, sys
 
 H = "data/seeds/history/"; S = "data/seeds/social/"
 PLAN = [
-    dict(slug="debt", data="data/seeds/net-debt-undp.psv", countries="JP,IT,FR,US,GB", start=1990, end=2027, proj_from=2025, unit="%",
-         title="The weight of debt", subtitle="Net public debt, % of GDP (2025–2027: projections)", source="UNDP Human Development Data Center"),
+    dict(slug="debt", data=S + "gross-debt-imf.psv", countries="JP,IT,US,FR,GB", start=1990, end=2030, unit="%",
+         title="The weight of debt", subtitle="Government gross debt, % of GDP (2025–2030: IMF projections)", source="IMF, World Economic Outlook"),
     dict(slug="wealth-200y", data=H + "gdp-per-capita-maddison.psv", countries="US,GB,FR,JP,CN", start=1820, end=2022, unit="$", ymin_top=1000,
          title="200 years of wealth", subtitle="GDP per capita, international dollars at 2011 prices", source="Maddison Project Database 2023"),
     dict(slug="oldest", data=H + "median-age.psv", top=5, rank_year=2025, minpop=1e6, start=1950, end=2100,
