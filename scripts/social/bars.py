@@ -79,10 +79,10 @@ if __name__ == "__main__":
         return [(c, cnt[c], " · ".join(str(y) for y in sorted(years[c]))) for c in order]
 
     note = "Co-hosts count once each · host city's current country · editions already played (to 2026)"
-    render(table([FOOT], 5), "Who hosts the World Cup?", "FIFA World Cups hosted (men), by country", "FIFA · count by Statlas Research", f"{out}/hosts-world-cup-bars.png", note="Co-hosts count once each · editions already played (to 2026)\nNext: Spain, Morocco & Portugal 2030 · Saudi Arabia 2034")
-    render(table([SUMMER], 5), "Who hosts the Summer Olympics?", "Summer Olympic Games hosted, by country", "IOC · count by Statlas Research", f"{out}/hosts-summer-bars.png", note="Editions already played · next: Los Angeles 2028, Brisbane 2032")
-    render(table([WINTER], 5), "Who hosts the Winter Olympics?", "Winter Olympic Games hosted, by country", "IOC · count by Statlas Research", f"{out}/hosts-winter-bars.png", note="Editions already played (to Milan-Cortina 2026) · next: French Alps 2030, Salt Lake City 2034")
+    render(table([FOOT], 5), "Who hosts the World Cup?", "FIFA World Cups hosted (men), by country", "Statlas Research", f"{out}/hosts-world-cup-bars.png", note="Co-hosts count once each · editions already played (to 2026)\nNext: Spain, Morocco & Portugal 2030 · Saudi Arabia 2034")
+    render(table([SUMMER], 5), "Who hosts the Summer Olympics?", "Summer Olympic Games hosted, by country", "Statlas Research", f"{out}/hosts-summer-bars.png", note="Editions already played · next: Los Angeles 2028, Brisbane 2032")
+    render(table([WINTER], 5), "Who hosts the Winter Olympics?", "Winter Olympic Games hosted, by country", "Statlas Research", f"{out}/hosts-winter-bars.png", note="Editions already played (to Milan-Cortina 2026) · next: French Alps 2030, Salt Lake City 2034")
     rows = table([FOOT, SUMMER, WINTER], 10)
     rows = [(c, v, "") for c, v, _ in rows]
-    render(rows, "The world's favourite hosts", "World Cups + Summer and Winter Olympics hosted, by country", "FIFA, IOC · count by Statlas Research", f"{out}/hosts-mega-bars.png", note="Editions already played (to 2026) · co-hosts count once each")
+    render(rows, "The world's favourite hosts", "World Cups + Summer and Winter Olympics hosted, by country", "Statlas Research", f"{out}/hosts-mega-bars.png", note="Editions already played (to 2026) · co-hosts count once each")
     print("ok")
