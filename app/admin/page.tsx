@@ -45,6 +45,7 @@ export default async function AdminPage() {
     <main className="mx-auto max-w-[920px] px-4 py-10 text-stone-900">
       <p className="text-xs uppercase tracking-[0.15em] text-stone-500">Statlas · espace admin</p>
       <h1 className="mt-1 font-serif text-4xl font-bold">Rédaction</h1>
+      <a href="/admin/contenus" className="mt-3 inline-flex h-11 items-center rounded bg-stone-900 px-4 text-sm text-white">Contenus & calendrier des publications →</a>
       <p className="mt-2 text-stone-600">Articles en préparation pour The Gazette, toutes langues. Les brouillons s'éditent dans leur document ; le site public n'affiche que les articles publiés.</p>
       <div className="mt-5 flex flex-wrap gap-2">
         {counts.map(([label, n]) => (
