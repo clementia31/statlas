@@ -3,7 +3,7 @@ import { getCatalog, getCountries } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
-const BASE = 'https://statlas-inky.vercel.app';
+const BASE = 'https://www.statlasresearch.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [catalog, countries] = await Promise.all([getCatalog(), getCountries()]);

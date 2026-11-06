@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://statlas-inky.vercel.app'),
+  metadataBase: new URL('https://www.statlasresearch.com'),
   title: {
     default: 'Statlas — Sourced world statistics',
     template: '%s',
