@@ -40,12 +40,12 @@ THEMES = {
         label=F("ibm-plex-sans-700-normal"), num=F("ibm-plex-mono-600-normal"), tick=F("ibm-plex-mono-400-normal"),
         year=F("fraunces-900-normal"), foot=F("ibm-plex-sans-600-normal"), dark=False, year_style="rule"),
     "investa": dict(
-        brand="INVESTA", bg="#0E1B33", ink="#F2F5F9", muted="#8C9DB5", grid="#1E3256", accent="#2FBF71",
-        logo_col="#F2F5F9", palette=["#2FBF71", "#4CC9F0", "#F5B83D", "#FF6B6B", "#C77DFF", "#F4F1DE", "#FF9F43", "#2EC4B6", "#F78FB3", "#A3B18A"],
-        logo=F("space-grotesk-700-normal"), title=F("space-grotesk-700-normal"), sub=F("space-grotesk-400-normal"),
+        brand="INVESTA", bg="#0B1120", ink="#F2F5F2", muted="#8C9AB0", grid="#1A2438", accent="#4CAF50",
+        logo_col="#F2F5F2", palette=["#4CAF50", "#4CC9F0", "#F5B83D", "#FF6B6B", "#C77DFF", "#F4F1DE", "#FF9F43", "#2EC4B6", "#F78FB3", "#A3B18A"],
+        logo=F("montserrat-600-normal"), title=F("space-grotesk-700-normal"), sub=F("space-grotesk-400-normal"),
         label=F("space-grotesk-700-normal"), num=F("space-grotesk-600-normal"), tick=F("space-grotesk-400-normal"),
-        year=F("space-grotesk-700-normal"), foot=F("space-grotesk-600-normal"), dark=True, year_style="box",
-        mark="building", foot_text="I N V E S T A   ·   G E S T I O N   P A T R I M O N I A L E", lang="fr"),
+        year=F("space-grotesk-700-normal"), foot=F("montserrat-500-normal"), dark=True, year_style="box",
+        mark="investa", foot_text="M Y I N V E S T A . F R", lang="fr"),
 }
 
 
@@ -94,6 +94,27 @@ def building(fig, x, y, r, col, lw=2.2):
         for wy in (0.2, -0.15):
             a.add_patch(Rectangle((wx, wy), 0.12, 0.17, color=col))
     a.add_patch(Rectangle((-0.1, -0.7), 0.2, 0.3, color=col))
+
+
+INVESTA_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 270"><path fill="#4CAF50" fill-rule="evenodd" '
+               'd="M0 0H156V270H117V218.4L105.5 211H102.5V270H77V168L55 182V210.5L40.5 218.4V270H0Z '
+               'M11 12V258H32V212.4L47 203.5V180.4L76 156.5L107 180.4V201.5L125 212.4V258H145V12Z"/></svg>')
+
+
+def investa_logo(fig, T):
+    """Logo officiel Investa : symbole vert + INVESTA (Montserrat) + « GESTION PATRIMONIALE »."""
+    import cairosvg
+    png = cairosvg.svg2png(bytestring=INVESTA_SVG.encode(), output_width=156 * 2, output_height=270 * 2)
+    im = np.asarray(Image.open(io.BytesIO(png)).convert("RGBA"))
+    h = 0.072; w = h * 156 / 270 * 1350 / 1080
+    x0 = 0.335
+    a = fig.add_axes([x0, 0.905, w, h]); a.imshow(im); a.axis("off")
+    sp = "\u2009"
+    fig.text(x0 + w + 0.022, 0.955, sp.join("INVESTA"), fontproperties=T["logo"], fontsize=40, color=T["logo_col"], va="center")
+    fig.text(x0 + w + 0.062, 0.917, sp.join("GESTION") + "  " + sp.join("PATRIMONIALE"), fontproperties=T["foot"],
+             fontsize=10.5, color=T["muted"], va="center")
+    for xx in (x0 + w + 0.024, x0 + w + 0.302):
+        fig.add_artist(Rectangle((xx, 0.9155), 0.026, 0.0028, transform=fig.transFigure, color=T["accent"]))
 
 
 def badge(label, color, ring):
@@ -169,9 +190,12 @@ class Race:
         T, fig, a, d = self.T, self.fig, self.a, self.d
         fig.clear(); fig.set_facecolor(T["bg"])
         brand = T["brand"]; gx = 0.5 - 0.0165 * len(brand) - 0.03
-        (building if T.get("mark") == "building" else globe)(fig, gx, 0.952, 0.032, T["accent"])
-        fig.text(gx + 0.05, 0.952, brand, fontproperties=T["logo"], fontsize=46, color=T["logo_col"], va="center")
-        fig.add_artist(Rectangle((0.44, 0.903), 0.12, 0.004, transform=fig.transFigure, color=T["accent"]))
+        if T.get("mark") == "investa":
+            investa_logo(fig, T)
+        else:
+            (building if T.get("mark") == "building" else globe)(fig, gx, 0.952, 0.032, T["accent"])
+            fig.text(gx + 0.05, 0.952, brand, fontproperties=T["logo"], fontsize=46, color=T["logo_col"], va="center")
+            fig.add_artist(Rectangle((0.44, 0.903), 0.12, 0.004, transform=fig.transFigure, color=T["accent"]))
         fig.text(0.5, 0.848, a.title, ha="center", fontproperties=T["title"], fontsize=44 if len(a.title) < 30 else 36, color=T["ink"])
         fig.text(0.5, 0.812, a.subtitle, ha="center", fontproperties=T["sub"], fontsize=15.5, color=T["muted"])
         ax = fig.add_axes([0.10, 0.235, 0.855, 0.545], facecolor=T["bg"])
