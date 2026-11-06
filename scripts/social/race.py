@@ -40,7 +40,7 @@ THEMES = {
         label=F("ibm-plex-sans-700-normal"), num=F("ibm-plex-mono-600-normal"), tick=F("ibm-plex-mono-400-normal"),
         year=F("fraunces-900-normal"), foot=F("ibm-plex-sans-600-normal"), dark=False, year_style="rule"),
     "investa": dict(
-        brand="INVESTA", bg="#0B1120", ink="#F2F5F2", muted="#8C9AB0", grid="#1A2438", accent="#4CAF50",
+        brand="MYINVESTA", bg="#0B1120", ink="#F2F5F2", muted="#8C9AB0", grid="#1A2438", accent="#4CAF50",
         logo_col="#F2F5F2", palette=["#4CAF50", "#4CC9F0", "#F5B83D", "#FF6B6B", "#C77DFF", "#F4F1DE", "#FF9F43", "#2EC4B6", "#F78FB3", "#A3B18A"],
         logo=F("montserrat-600-normal"), title=F("space-grotesk-700-normal"), sub=F("space-grotesk-400-normal"),
         label=F("space-grotesk-700-normal"), num=F("space-grotesk-600-normal"), tick=F("space-grotesk-400-normal"),
@@ -102,18 +102,21 @@ INVESTA_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 270"><p
 
 
 def investa_logo(fig, T):
-    """Logo officiel Investa : symbole vert + INVESTA (Montserrat) + « GESTION PATRIMONIALE »."""
+    """Logo officiel MyInvesta : symbole vert + MYINVESTA (Montserrat) + « GESTION PATRIMONIALE »."""
     import cairosvg
     png = cairosvg.svg2png(bytestring=INVESTA_SVG.encode(), output_width=156 * 2, output_height=270 * 2)
     im = np.asarray(Image.open(io.BytesIO(png)).convert("RGBA"))
-    h = 0.072; w = h * 156 / 270 * 1350 / 1080
-    x0 = 0.335
-    a = fig.add_axes([x0, 0.905, w, h]); a.imshow(im); a.axis("off")
+    h = 0.072; w = h * 156 / 270 * 1350 / 1080; gap = 0.022
     sp = "\u2009"
-    fig.text(x0 + w + 0.022, 0.955, sp.join("INVESTA"), fontproperties=T["logo"], fontsize=40, color=T["logo_col"], va="center")
-    fig.text(x0 + w + 0.062, 0.917, sp.join("GESTION") + "  " + sp.join("PATRIMONIALE"), fontproperties=T["foot"],
-             fontsize=10.5, color=T["muted"], va="center")
-    for xx in (x0 + w + 0.024, x0 + w + 0.302):
+    t = fig.text(0, 0.955, sp.join(T["brand"]), fontproperties=T["logo"], fontsize=36, color=T["logo_col"], va="center")
+    r = fig.canvas.get_renderer(); tw = t.get_window_extent(r).width / fig.bbox.width
+    x0 = 0.5 - (w + gap + tw) / 2                      # symbole + texte centrés
+    a = fig.add_axes([x0, 0.905, w, h]); a.imshow(im); a.axis("off")
+    xt = x0 + w + gap; t.set_x(xt)
+    b = fig.text(xt + tw / 2, 0.917, sp.join("GESTION") + "  " + sp.join("PATRIMONIALE"), fontproperties=T["foot"],
+                 fontsize=10.5, color=T["muted"], va="center", ha="center")
+    bw = b.get_window_extent(r).width / fig.bbox.width
+    for xx in (xt + tw / 2 - bw / 2 - 0.036, xt + tw / 2 + bw / 2 + 0.01):
         fig.add_artist(Rectangle((xx, 0.9155), 0.026, 0.0028, transform=fig.transFigure, color=T["accent"]))
 
 
