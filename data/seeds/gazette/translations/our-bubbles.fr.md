@@ -1,0 +1,56 @@
+Aucun de nous ne lit l'actualité de nulle part. Bien avant d'ouvrir un journal ou de faire défiler un fil, on nous a raconté une histoire du monde : à la maison, à l'école, dans les livres qu'on nous a donnés et dans les anniversaires qu'on nous a appris à commémorer. Chaque pays, et chaque famille en son sein, porte son propre récit collectif. Nous l'absorbons enfants et le remarquons rarement adultes.
+
+Ce récit ne nous rend pas fautifs. Il nous donne des points d'ancrage : les événements qui nous semblent évidents, les héros que nous reconnaissons, les dates qui se passent d'explication. Quand une information nouvelle arrive, nous la rattachons instinctivement à ces ancrages. Deux personnes peuvent lire les mêmes faits et en tirer des conclusions différentes, non parce que l'une serait moins intelligente ou moins honnête, mais parce qu'elles sont ancrées à des endroits différents.
+
+C'est ce que nous appelons nos bulles. Le possessif compte : une bulle n'est pas un endroit où vivent les autres. C'est la position subjective depuis laquelle chacun de nous, sans exception, regarde le monde.
+
+## Une guerre, plusieurs victoires
+
+Prenons l'événement le plus étudié du XXe siècle. Demandez à un Américain qui a libéré l'Europe, et la réponse commence souvent sur les plages de Normandie en juin 1944. Demandez à un Russe, et la réponse est la Grande Guerre patriotique : le front de l'Est, où l'Allemagne a subi l'essentiel de ses pertes militaires, et un bilan soviétique couramment estimé à environ 27 millions de morts. Même le calendrier diffère : l'Europe de l'Ouest célèbre la victoire le 8 mai, la Russie le 9 mai.
+
+Demandez au reste de l'Europe, et l'histoire change encore. Chaque pays se place parmi les vainqueurs grâce à ses propres actes de résistance. En France, la mémoire se concentre sur la Résistance et la Libération de Paris en août 1944. En Pologne, elle se concentre sur l'État clandestin polonais et l'insurrection de Varsovie du même été, une histoire que les décennies d'après-guerre ont rendue difficile à raconter ouvertement. Au Royaume-Uni, la mémoire est celle d'un pays resté seul en Europe après la chute de la France en 1940, qui a tenu sous le Blitz et n'a jamais cédé : du point de vue britannique, l'île qui a refusé de se rendre est la raison pour laquelle la guerre pouvait encore être gagnée.
+
+Aucun de ces récits n'est inventé. Chacun sélectionne, dans la même guerre, la part que sa propre société a vécue et a choisi de retenir. Et la sélection peut évoluer. En mai 1945, un sondage français de l'IFOP demandait quelle nation avait le plus contribué à la défaite de l'Allemagne : 57 % répondaient l'Union soviétique et 20 % les États-Unis. Quand la question a été reposée en 1994 et en 2004, 58 % ont répondu les États-Unis. La guerre n'avait pas changé ; la bulle autour d'elle, si. Entre-temps, les Français avaient grandi avec la guerre froide, avec les films et les séries américaines, et avec un Hollywood qui racontait sans cesse la guerre du point de vue américain. Il est difficile de séparer ce glissement du poids du soft power américain. Un récit historique qui n'a pas changé peut être lu très différemment une génération plus tard, selon qui raconte l'histoire le plus souvent et le plus fort. En 2018, un sondage YouGov montrait que la moitié des Britanniques citaient la Grande-Bretagne comme le pays qui avait le plus contribué à vaincre l'Allemagne nazie.
+
+## Ce qui existe déjà, et où cela s'arrête
+
+L'idée que l'émotion et l'identité façonnent la manière dont les nations se voient n'est pas nouvelle. Dans La Géopolitique de l'émotion (2008), Dominique Moïsi décrivait le monde à travers trois émotions dominantes : la peur en Occident, l'humiliation dans une grande partie du monde arabe et musulman, et l'espoir dans l'Asie émergente. Le cadre est frappant, mais il fonctionne à l'échelle de civilisations entières. Il dit peu de choses sur la raison pour laquelle deux Européens de la même génération peuvent lire le même événement de façon opposée.
+
+Les bulles de filtres d'Eli Pariser (2011) décrivent un autre mécanisme : l'environnement personnalisé que les algorithmes construisent autour de nous en ligne. Ces bulles-là sont fabriquées pour nous, clic après clic. Les bulles que nous décrivons ici sont plus anciennes et plus profondes : nous naissons dedans.
+
+Notre modèle s'appuie sur une longue tradition de travaux. Maurice Halbwachs a montré dans les années 1920 que la mémoire est collective, encadrée par les groupes auxquels nous appartenons. Benedict Anderson a décrit les nations comme des communautés imaginées, tenues ensemble par des récits partagés. L'habitus de Pierre Bourdieu a saisi la façon dont notre position sociale façonne notre manière de percevoir et de juger. Ce que nous proposons, c'est de combiner ces couches et, surtout, de les mesurer.
+
+## Trois bulles
+
+La bulle linguistique. La langue décide des journaux que nous lisons, des débats qui nous parviennent et des voix que nous entendons en premier. L'anglais est de loin la plus grande bulle, avec environ 1,53 milliard de locuteurs selon Ethnologue, et elle en chevauche d'autres : l'espagnol aux États-Unis et en Amérique latine, le français au Canada. Ce qui se passe hors de notre langue nous parvient souvent en retard, filtré, ou pas du tout.
+
+La mondialisation n'a pas rendu les bulles linguistiques égales. La bulle anglophone s'est diffusée dans les autres par les films, la musique, internet et les plateformes nées aux États-Unis. La Chine, à l'inverse, a une bulle économique qui ne cesse de grandir, mais sa bulle linguistique voyage beaucoup moins : ses réseaux sociaux sont largement domestiques et écrits en chinois, et ils pèsent beaucoup moins sur les débats dans les autres langues. X, anciennement Twitter, est bloqué en Chine continentale ; les voix chinoises qu'on y entend viennent surtout de Taïwan, de Hong Kong et de la diaspora.
+
+Twitter a été le premier réseau social à mêler langues et nations sur une même place publique. La traduction automatique pousse désormais cela beaucoup plus loin. Depuis mars 2026, X, propriété d'Elon Musk depuis 2022, traduit par défaut les posts dans la langue de chaque lecteur grâce à son IA Grok, alors qu'il fallait auparavant cliquer sur un bouton de traduction post par post. Des posts écrits en japonais atteignent désormais les anglophones, dont les réponses reviennent traduites en japonais. Masahiko Shoji, professeur de sociologie des médias à l'université Musashi de Tokyo, a décrit le mur autour de la bulle japonophone comme « en train de commencer à s'effriter », tout en avertissant que la traduction ne transporte pas le contexte culturel. Un lecteur français peut désormais tomber sur une dispute entre internautes japonais et chinois sans quitter sa propre langue. Le Japon et la Chine partagent une mer et des siècles d'histoire, et ils lisent pourtant la même histoire différemment.
+
+La bulle historique. Chaque nation se souvient d'événements différents, ou des mêmes événements avec un poids différent. Les guerres napoléoniennes restent une référence en Espagne, où elles font partie du récit national, alors qu'elles occupent une place plus lointaine dans la mémoire française. L'héritage des années Franco reste une question vive du débat public espagnol, mais il entre rarement dans le regard que l'Europe du Nord porte sur l'Espagne. La Seconde Guerre mondiale est une référence constante de la vie publique américaine, d'une manière qu'elle n'est pas dans tous les pays qui l'ont faite.
+
+La bulle économique. Nos revenus et la sphère d'influence dans laquelle nous vivons façonnent ce que nous remarquons et ce que nous tenons pour acquis : les sphères américaine, européenne ou chinoise, chacune avec ses liens commerciaux, ses exportations culturelles et son soft power. Deux personnes qui partagent une langue mais pas un revenu ne vivent pas la même actualité de la même manière.
+
+## Là où les bulles se rencontrent
+
+Ces bulles ne sont pas séparées. Chacun de nous se trouve à l'intersection de plusieurs d'entre elles, et cette intersection est notre point d'ancrage. Un Espagnol et un Français au même salaire partagent une bulle économique, mais ni une langue ni une mémoire, et ils lisent donc la même histoire différemment.
+
+Les bulles elles-mêmes ne sont pas inégales ; ce qu'elles produisent, ce sont des asymétries. Sur un sujet donné, une bulle peut s'y intéresser intensément pendant que sa voisine le remarque à peine. Les Falkland, les Malouines pour les Argentins, sont un sujet récurrent des médias britanniques et argentins. Ailleurs, l'attention qu'elles reçoivent dépend de qui y vit. La communauté argentine est bien plus nombreuse en Espagne qu'en France, si bien qu'un journal espagnol qui couvre les îles trouvera plus de lecteurs, et plus de clics, qu'un journal français. Au sein d'une même bulle, une minorité peut commencer à orienter ce qu'une partie de la majorité voit. Il y a des bulles dans les bulles. Ces asymétries d'attention et de perception sont là où se trouvent les questions les plus intéressantes, et c'est ce que cette série étudiera.
+
+## Mesurer au lieu d'affirmer
+
+Un modèle de la subjectivité peut facilement devenir subjectif lui-même. Nos propres bulles façonnent ce que nous nous attendons à trouver, et le biais national est le plus difficile à voir de l'intérieur. C'est pourquoi chaque affirmation de cette série sera traitée comme une hypothèse, pas comme une conclusion, et testée avec des données.
+
+Les bulles linguistiques peuvent se mesurer avec le nombre de locuteurs d'Ethnologue et des recensements nationaux. Les bulles historiques peuvent se mesurer par la fréquence à laquelle un événement apparaît dans la presse de chaque pays au fil du temps, grâce à des archives comme la base GDELT, par les programmes scolaires, et par des sondages d'opinion comme ceux cités plus haut. Les bulles économiques peuvent se mesurer par les flux de commerce et d'investissement, et par des indices de soft power.
+
+Plusieurs des exemples de cet article sont encore des intuitions. Certaines seront confirmées par les chiffres ; d'autres non. Publier les résultats dans les deux cas, c'est tout l'enjeu.
+
+> Chacun a droit à ses propres opinions, mais pas à ses propres faits.
+— Daniel Patrick Moynihan
+
+## La suite
+
+Chaque article de cette série prendra un événement et le regardera depuis plusieurs bulles, avec les chiffres qui mesurent l'écart entre elles. Parmi nos sujets : des territoires disputés comme les Malouines, la mémoire de Napoléon de part et d'autre des Pyrénées, et l'ombre portée des années Franco. Surtout, il y aura les deux guerres mondiales : les deux derniers événements véritablement mondiaux, qui ont façonné le monde d'aujourd'hui et notre inconscient collectif plus que tout autre. Une carte interactive des bulles, construite à partir des données, accompagnera la série.
+
+La statistique est notre façon de sortir de notre propre bulle, au moins en partie. Les chiffres viennent eux aussi de quelque part, et nous dirons toujours d'où. Mais ils donnent à chaque lecteur, quelle que soit sa bulle, les mêmes faits sur lesquels débattre. Dites-nous où se situe votre bulle, et où vous pensez que se situe la nôtre.

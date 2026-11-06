@@ -26,14 +26,25 @@ export type Draft = {
   published_slug: string | null;
   notes: string | null;
   updated_at: string;
+  subtitle?: string | null;
+  body?: string | null;
+  key_findings?: string[] | null;
+  translation_key?: string | null;
 };
+
+export async function getDraft(lang: string, slug: string): Promise<Draft | null> {
+  const db = adminClient();
+  if (!db) return null;
+  const { data } = await db.from('article_drafts').select('*').eq('lang', lang).eq('slug', slug).maybeSingle();
+  return (data as Draft) ?? null;
+}
 
 export async function getDrafts(): Promise<{ drafts: Draft[]; error: string | null }> {
   const db = adminClient();
   if (!db) return { drafts: [], error: 'Clé de service manquante : ajoute SUPABASE_SERVICE_ROLE_KEY dans Vercel.' };
   const { data, error } = await db
     .from('article_drafts')
-    .select('*')
+    .select('id, slug, title, lang, status, series, series_order, project, doc_url, published_slug, notes, updated_at, subtitle, translation_key')
     .order('series', { ascending: true, nullsFirst: false })
     .order('series_order', { ascending: true })
     .order('updated_at', { ascending: false });

@@ -21,6 +21,9 @@ function Row({ d }: { d: Draft }) {
       <span className="rounded px-2 py-0.5 font-mono text-xs bg-stone-200">{LANG[d.lang] ?? d.lang}</span>
       <span className="flex-1 min-w-[200px] font-serif text-[17px]">{d.title}</span>
       <span className={`rounded px-2 py-0.5 text-xs ${st.cls}`}>{st.label}</span>
+      {d.translation_key && d.lang !== 'en' && (
+        <a href={`/admin/brouillon/${d.lang}/${d.slug}`} className="text-sm underline hover:text-red-700">Lire</a>
+      )}
       {d.doc_url && (
         <a href={d.doc_url} target="_blank" rel="noopener" className="text-sm underline hover:text-red-700">Ouvrir le brouillon</a>
       )}
@@ -36,7 +39,7 @@ export default async function AdminPage() {
   const { drafts, error } = await getDrafts();
   const groups = new Map<string, Draft[]>();
   for (const d of drafts) {
-    const k = d.series ?? 'Articles isolés';
+    const k = d.series ?? (d.translation_key ? `Publié en anglais · /gazette/${d.translation_key}` : 'Articles isolés');
     groups.set(k, [...(groups.get(k) ?? []), d]);
   }
   const counts = Object.keys(STATUS).map((s) => [STATUS[s].label, drafts.filter((d) => d.status === s).length] as const);
@@ -56,7 +59,7 @@ export default async function AdminPage() {
       {Array.from(groups.entries()).map(([series, items]) => (
         <section key={series} className="mt-10">
           <h2 className="border-b-2 border-stone-900 pb-1 font-serif text-2xl font-semibold">{series}</h2>
-          <ul>{items.map((d) => <Row key={d.id} d={d} />)}</ul>
+          <ul>{[...items].sort((a, b) => ['en', 'fr', 'es'].indexOf(a.lang) - ['en', 'fr', 'es'].indexOf(b.lang)).map((d) => <Row key={d.id} d={d} />)}</ul>
         </section>
       ))}
       {!error && drafts.length === 0 && <p className="mt-10 italic text-stone-500">Aucun article en préparation.</p>}
