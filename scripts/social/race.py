@@ -39,6 +39,13 @@ THEMES = {
         logo=F("fraunces-900-normal"), title=F("fraunces-800-normal"), sub=F("ibm-plex-sans-400-italic"),
         label=F("ibm-plex-sans-700-normal"), num=F("ibm-plex-mono-600-normal"), tick=F("ibm-plex-mono-400-normal"),
         year=F("fraunces-900-normal"), foot=F("ibm-plex-sans-600-normal"), dark=False, year_style="rule"),
+    "investa": dict(
+        brand="INVESTA", bg="#0E1B33", ink="#F2F5F9", muted="#8C9DB5", grid="#1E3256", accent="#2FBF71",
+        logo_col="#F2F5F9", palette=["#2FBF71", "#4CC9F0", "#F5B83D", "#FF6B6B", "#C77DFF", "#F4F1DE", "#FF9F43", "#2EC4B6", "#F78FB3", "#A3B18A"],
+        logo=F("space-grotesk-700-normal"), title=F("space-grotesk-700-normal"), sub=F("space-grotesk-400-normal"),
+        label=F("space-grotesk-700-normal"), num=F("space-grotesk-600-normal"), tick=F("space-grotesk-400-normal"),
+        year=F("space-grotesk-700-normal"), foot=F("space-grotesk-600-normal"), dark=True, year_style="box",
+        mark="building", foot_text="I N V E S T A   ·   G E S T I O N   P A T R I M O N I A L E", lang="fr"),
 }
 
 
@@ -76,19 +83,48 @@ def globe(fig, x, y, r, col, lw=2.2):
     a.plot(xs, -0.15 + 0.45 * np.tanh(2.2 * xs), color=col, lw=lw * 1.4, solid_capstyle="round")
 
 
+def building(fig, x, y, r, col, lw=2.2):
+    """Marque Investa : cadre arrondi et immeuble."""
+    from matplotlib.patches import FancyBboxPatch
+    a = fig.add_axes([x - r, y - r * 1.0, 2 * r, 2 * r * 1.25], facecolor="none")
+    a.set_xlim(-1.1, 1.1); a.set_ylim(-1.1, 1.1); a.set_aspect("equal"); a.axis("off")
+    a.add_patch(FancyBboxPatch((-1, -1), 2, 2, boxstyle="round,pad=0,rounding_size=0.35", fill=False, ec=col, lw=lw * 1.2))
+    a.add_patch(Rectangle((-0.45, -0.7), 0.9, 1.25, fill=False, ec=col, lw=lw))
+    for wx in (-0.22, 0.12):
+        for wy in (0.2, -0.15):
+            a.add_patch(Rectangle((wx, wy), 0.12, 0.17, color=col))
+    a.add_patch(Rectangle((-0.1, -0.7), 0.2, 0.3, color=col))
+
+
+def badge(label, color, ring):
+    """Pastille ronde avec initiale (villes : pas de drapeau)."""
+    im = Image.new("RGBA", (128, 128), (0, 0, 0, 0)); dr = ImageDraw.Draw(im)
+    dr.ellipse((3, 3, 125, 125), fill=color, outline=ring, width=6)
+    from PIL import ImageFont
+    f = ImageFont.truetype(f"{HERE}/fonts/space-grotesk-700-normal.ttf", 64)
+    t = label[:1].upper(); w = dr.textlength(t, font=f)
+    dr.text(((128 - w) / 2, 26), t, font=f, fill=ring)
+    return np.asarray(im)
+
+
 def fmt(v, unit, integer=False):
     if integer: v = round(v)
     a = abs(v)
     s = f"{v/1e12:.2f}T" if a >= 1e12 else f"{v/1e9:.1f}B" if a >= 1e9 else f"{v/1e6:.1f}M" if a >= 1e6 \
         else f"{v:,.0f}" if a >= 100 else f"{v:.0f}" if v == round(v) else f"{v:.1f}"
-    return f"{unit}{s}" if unit in ("$", "€", "£") else (f"{s} {unit}" if unit else s)
+    if FR: s = s.replace(",", "\u202f").replace(".", ",")
+    return f"{unit}{s}" if unit in ("$", "£") or (unit == "€" and not FR) else (f"{s} {unit}" if unit else s)
+
+
+FR = False
 
 
 class Race:
     def __init__(self, a):
         self.a = a; self.T = T = THEMES[a.theme]
-        d = pd.read_csv(a.data, sep="|", comment="#", names=["iso", "year", "v", "p"])
-        d = d[(d.year >= a.start) & (d.year <= a.end) & (d.iso.str.len() == 2)]
+        global FR; FR = T.get("lang") == "fr"
+        d = pd.read_csv(a.data, sep="|", comment="#", names=["iso", "year", "v", "p"], dtype={"iso": str})
+        d = d[(d.year >= a.start) & (d.year <= a.end) & ((d.iso.str.len() == 2) | a.badges)]
         # projections : colonne p = 1 (fichiers OWID) ou --proj-from (fichiers sans colonne)
         pf = d.loc[d.p == 1, "year"].min() if d.p.notna().any() else np.nan
         self.proj = a.proj_from or (int(pf) if pf == pf else None)
@@ -115,10 +151,10 @@ class Race:
         self.y0, self.y1 = int(self.d.index.min()), int(self.d.index.max())
         self.col = {iso: T["palette"][k % len(T["palette"])] for k, iso in enumerate(self.isos)}
         ring = (19, 42, 82, 255) if T["dark"] else (255, 255, 255, 255)
-        self.flags = {i: flag(i, ring) for i in self.isos}
-        self.ymax = None
         over = dict(x.split("=", 1) for x in a.names.split(";") if "=" in x)
-        self.names = {i: over.get(i) or country_name(i) for i in self.isos}
+        self.names = {i: over.get(i) or (i if a.badges else country_name(i)) for i in self.isos}
+        self.flags = {i: badge(self.names[i], self.col[i], ring) if a.badges else flag(i, ring) for i in self.isos}
+        self.ymax = None
         n = len(self.isos)
         self.k = 1.0 if n <= 5 else 0.78          # échelle des étiquettes pour un top 10
         self.fig = plt.figure(figsize=(10.8, 13.5), dpi=100)
@@ -133,7 +169,7 @@ class Race:
         T, fig, a, d = self.T, self.fig, self.a, self.d
         fig.clear(); fig.set_facecolor(T["bg"])
         brand = T["brand"]; gx = 0.5 - 0.0165 * len(brand) - 0.03
-        globe(fig, gx, 0.952, 0.032, T["accent"])
+        (building if T.get("mark") == "building" else globe)(fig, gx, 0.952, 0.032, T["accent"])
         fig.text(gx + 0.05, 0.952, brand, fontproperties=T["logo"], fontsize=46, color=T["logo_col"], va="center")
         fig.add_artist(Rectangle((0.44, 0.903), 0.12, 0.004, transform=fig.transFigure, color=T["accent"]))
         fig.text(0.5, 0.848, a.title, ha="center", fontproperties=T["title"], fontsize=44 if len(a.title) < 30 else 36, color=T["ink"])
@@ -187,7 +223,7 @@ class Race:
             ax.add_artist(AnnotationBbox(OffsetImage(self.flags[iso], zoom=0.34 * self.k), (t + dx, pos[iso]), frameon=False, annotation_clip=False))
             ax.text(t + dx * 1.9 * self.k ** .5, pos[iso] + gap * 0.18, self.names[iso], color=col, fontproperties=T["label"], fontsize=17 * self.k, va="center")
             ax.text(t + dx * 1.9 * self.k ** .5, pos[iso] - gap * 0.22, fmt(cur[iso], a.unit, self.integer), color=T["ink"], fontproperties=T["num"], fontsize=18 * self.k, va="center")
-        fig.text(0.5, 0.183, f"Source: {a.source}", ha="center", fontproperties=T["sub"], fontsize=13.5, color=T["muted"])
+        fig.text(0.5, 0.183, f"Source{' :' if FR else ':'} {a.source}", ha="center", fontproperties=T["sub"], fontsize=13.5, color=T["muted"])
         yr = f"{int(np.floor(t + 1e-9))}"
         if T["year_style"] == "rule":
             fig.text(0.5, 0.112, yr, ha="center", va="center", fontproperties=T["year"], fontsize=72, color=T["ink"])
@@ -195,7 +231,7 @@ class Race:
         else:
             fig.text(0.5, 0.112, yr, ha="center", va="center", fontproperties=T["year"], fontsize=64, color=T["accent"],
                      bbox=dict(boxstyle="round,pad=0.28,rounding_size=0.6", fc="none", ec=T["accent"], lw=2.5))
-        fig.text(0.5, 0.035, "S T A T L A S   R E S E A R C H", ha="center", va="center", fontproperties=T["foot"], fontsize=14, color=T["ink"])
+        fig.text(0.5, 0.035, T.get("foot_text", "S T A T L A S   R E S E A R C H"), ha="center", va="center", fontproperties=T["foot"], fontsize=14, color=T["ink"])
         fig.canvas.draw()
 
     def render(self, out, yps=3.0, fps=30, hold=4):
@@ -228,6 +264,7 @@ if __name__ == "__main__":
     p.add_argument("--names", default="", help="noms affichés imposés, ex. EU=ESA (Europe)")
     p.add_argument("--still", action="store_true", help="aperçu PNG de l'image finale")
     p.add_argument("--fill0", action="store_true", help="avant la première donnée, compter 0 (séries cumulées)")
+    p.add_argument("--badges", action="store_true", help="codes libres (villes…) : pastille avec initiale au lieu du drapeau")
     p.add_argument("--out", required=True)
     a = p.parse_args()
     r = Race(a)
