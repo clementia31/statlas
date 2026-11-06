@@ -29,7 +29,7 @@ def render(rows, title, subtitle, source, out, theme="statlas", note="", unit=""
     n = len(rows); top, bottom = 0.775, 0.17
     h = (top - bottom) / n
     vmax = max(r[1] for r in rows)
-    ring = (13, 27, 42, 255) if T["dark"] else (255, 255, 255, 255)
+    ring = (19, 42, 82, 255) if T["dark"] else (255, 255, 255, 255)
     k = 1.0 if n <= 5 else 0.72
     x_bar0, x_bar1 = 0.30, 0.86
     for i, (iso, v, detail) in enumerate(rows):

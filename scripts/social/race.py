@@ -28,7 +28,7 @@ F = lambda n: FP(fname=f"{HERE}/fonts/{n}.ttf")
 
 THEMES = {
     "statlas": dict(
-        brand="STATLAS", bg="#0D1B2A", ink="#F2F4F8", muted="#8FA3BF", grid="#1E3048", accent="#F5B83D",
+        brand="STATLAS", bg="#132A52", ink="#F2F4F8", muted="#8FA3BF", grid="#24406E", accent="#F5B83D",
         logo_col="#F5B83D", palette=["#F5B83D", "#4CC9F0", "#7BE0A6", "#FF6B6B", "#C77DFF", "#F4F1DE", "#FF9F43", "#2EC4B6", "#F78FB3", "#A3B18A"],
         logo=F("space-grotesk-700-normal"), title=F("space-grotesk-700-normal"), sub=F("space-grotesk-400-normal"),
         label=F("space-grotesk-700-normal"), num=F("space-grotesk-600-normal"), tick=F("space-grotesk-400-normal"),
@@ -114,7 +114,7 @@ class Race:
         self.d = d.dropna(how="all"); self.isos = [i for i in isos if i in self.d]
         self.y0, self.y1 = int(self.d.index.min()), int(self.d.index.max())
         self.col = {iso: T["palette"][k % len(T["palette"])] for k, iso in enumerate(self.isos)}
-        ring = (13, 27, 42, 255) if T["dark"] else (255, 255, 255, 255)
+        ring = (19, 42, 82, 255) if T["dark"] else (255, 255, 255, 255)
         self.flags = {i: flag(i, ring) for i in self.isos}
         self.ymax = None
         over = dict(x.split("=", 1) for x in a.names.split(";") if "=" in x)

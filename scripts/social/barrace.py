@@ -19,7 +19,7 @@ def render(table, events, title, subtitle, source, out, theme="statlas", top=10,
     """table : {année: {iso: total cumulé}} pour chaque année ; events : {année: libellé de l'événement}."""
     T = THEMES[theme]
     years = sorted(table); y0, y1 = years[0], years[-1]
-    ring = (13, 27, 42, 255) if T["dark"] else (255, 255, 255, 255)
+    ring = (19, 42, 82, 255) if T["dark"] else (255, 255, 255, 255)
     first = {}
     for y in years:
         for c, v in table[y].items():
