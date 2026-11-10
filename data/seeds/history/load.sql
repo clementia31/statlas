@@ -46,8 +46,8 @@ begin
   and not exists (select 1 from source_documents where dataset_id_external = p_dataset);
   select id into v_doc from source_documents where dataset_id_external = p_dataset limit 1;
   delete from observations where indicator_id = (select id from indicators where slug = p_slug);
-  insert into observations (entity_id, indicator_id, value_number, raw_value, unit, period_start, source_document_id, status, is_projection)
-  select e.id, i.id, f[3]::numeric, f[3], p_unit, make_date(f[2]::int, 1, 1), v_doc, 'validated', f[4] = '1'
+  insert into observations (entity_id, indicator_id, value_number, raw_value, period_start, source_document_id, status, is_projection)
+  select e.id, i.id, f[3]::numeric, f[3], make_date(f[2]::int, 1, 1), v_doc, 'validated', f[4] = '1'
   from (
     select string_to_array(l, '|') as f
     from regexp_split_to_table((select content from http_get('https://raw.githubusercontent.com/clementia31/statlas/main/data/seeds/history/' || p_file)), E'\n') as l
