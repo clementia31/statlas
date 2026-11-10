@@ -7,7 +7,7 @@ const BASE = 'https://www.statlasresearch.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [catalog, countries] = await Promise.all([getCatalog(), getCountries()]);
-  const pages = ['', '/indicateurs', '/carte', '/pays', '/comparaisons', '/rankings', '/lists', '/benchmark', '/gazette', '/bibliographie', '/api-export'];
+  const pages = ['', '/indicateurs', '/carte', '/pays', '/comparaisons', '/rankings', '/sport', '/lists', '/benchmark', '/gazette', '/bibliographie', '/api-export'];
   return [
     ...pages.map((p) => ({ url: `${BASE}${p}`, changeFrequency: 'weekly' as const })),
     ...catalog.map((m) => ({ url: `${BASE}/rankings/${m.slug}`, changeFrequency: 'monthly' as const })),

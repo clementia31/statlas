@@ -1,41 +1,50 @@
-# Statlas — Vue globale (v0.1)
+# Statlas
 
-Premier écran du site codé en vrai (Next.js 14 + Supabase), à faire tourner en local ou déployer sur Vercel.
+Site de statistiques mondiales sourcées, avec The Gazette (articles) et le Studio (administration privée).
+En ligne : https://www.statlasresearch.com
 
-## Ce qui est déjà branché
-- La carte utilise les vraies frontières mondiales (Natural Earth via `world-atlas`), chargées côté client.
-- Les couleurs de la carte et la valeur mondiale moyenne de l'IDH viennent de **ta vraie base Supabase**.
-- Les 5 autres cartes d'indicateurs (PIB, population, dette, espérance de vie, Gini) sont encore des valeurs d'exemple codées en dur — à brancher de la même façon que l'IDH (voir `lib/supabase.ts`, fonction `getLatestObservationsByIndicator`).
+Next.js 14 (App Router) + Supabase, déployé sur Vercel à chaque envoi sur la branche `main`.
 
-## Mise en route en local
+## Ce que contient le dépôt
 
-1. Installe les dépendances :
-   ```
-   npm install
-   ```
-2. Copie `.env.local.example` en `.env.local` et remplis avec tes identifiants Supabase (Project Settings > API dans ton dashboard) :
-   ```
-   cp .env.local.example .env.local
-   ```
-3. Lance le serveur de développement :
-   ```
-   npm run dev
-   ```
-4. Ouvre http://localhost:3000
+| Dossier | Rôle |
+|---|---|
+| `app/` | Pages du site. Public : accueil, `indicateurs`, `carte`, `pays`, `rankings`, `sport`, `lists`, `comparaisons`, `benchmark`, `gazette`, `bibliographie`, `api-export`. Privé : `studio`, `admin`. |
+| `components/`, `lib/` | Composants et accès aux données. `lib/supabase-admin.ts` et `lib/studio.ts` ne s'exécutent que côté serveur. |
+| `middleware.ts` | Ferme `/studio` et `/admin` à qui n'a pas la clé `ADMIN_KEY`. |
+| `data/migrations/` | Modifications de la base, numérotées, dans l'ordre où elles ont été lancées. |
+| `data/seeds/` | Fichiers sources convertis et scripts SQL de chargement. |
+| `data/articles/` | Texte des articles de la Gazette. |
+| `scripts/social/` | Générateur de vidéos et d'images (thèmes Statlas, Gazette, MyInvesta). |
+| `scripts/offline/` | Fabrication de la copie hors ligne DuckDB. |
+| `.github/workflows/` | Collectes de données et rendu vidéo, lancés à la demande. |
 
-## Déployer sur Vercel
+## Règles de données
 
-1. Pousse ce dossier sur un dépôt GitHub (nouveau repo, ex: `statlas`)
-2. Sur vercel.com, "Add New Project" → importe ce repo
-3. Dans les réglages du projet Vercel, ajoute les mêmes variables d'environnement que dans `.env.local`
-4. Déploie — Vercel détecte Next.js automatiquement
+- Une source identifiée par indicateur.
+- Aucune donnée ni source inventée.
+- Les projections sont toujours signalées et séparées des valeurs observées.
+- « Statlas Research » dès que le chiffre est calculé ou croisé par nous.
+- Aucun pays mis en avant dans un visuel s'il ne figure pas dans le classement.
 
-## Point d'attention : correspondance des noms de pays
+## Base de données
 
-La carte (`world-atlas`) utilise des noms anglais officiels parfois différents des nôtres (ex: "United States of America" vs "United States" dans notre base). Un premier correctif est fait dans `app/page.tsx` (`NAME_OVERRIDES`) mais il faudra le compléter au fur et à mesure que des pays n'apparaissent pas correctement coloriés sur la carte.
+- Après un import, lancer `select public.refresh_statlas();` : sans cela le site garde les anciennes valeurs.
+- Chaque import et chaque recalcul est noté dans `common.import_log`.
+- Les tables privées (`article_drafts`, `social_posts`, `studio_metric_readings`) ne sont lisibles qu'avec la clé de service.
+- Toute modification de structure passe par un nouveau fichier dans `data/migrations/`, testé avant d'être lancé.
 
-## Prochaines étapes
+## Lancer en local
 
-- Brancher les 5 autres cartes KPI sur de vraies requêtes Supabase
-- Construire les pages Indicateur détaillé et Comparaison (mêmes maquettes que la vue globale, HTML déjà validé)
-- Ajouter le multilingue (table `translations` déjà prête côté base)
+```
+npm install
+cp .env.local.example .env.local   # puis remplir les quatre valeurs
+npm run dev
+```
+
+## Vérifier avant d'envoyer
+
+```
+npx tsc --noEmit
+npx next build
+```

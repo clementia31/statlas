@@ -38,7 +38,8 @@ export type YearInfo = { year: number; n_countries: number; is_projection: boole
 export const DEFAULT_INDICATOR = 'human-development-index';
 
 // Indicateurs qui portent sur des villes et non des pays : exclus des vues « pays »
-const CITY_INDICATORS = new Set(['population-density-urban']);
+// Aucun pour l'instant : l'ancien « population-density-urban » (source non conforme) a été retiré le 10 nov. 2026.
+const CITY_INDICATORS = new Set<string>();
 
 export function isCityIndicator(slug: string) {
   return CITY_INDICATORS.has(slug);

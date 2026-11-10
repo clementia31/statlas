@@ -17,10 +17,3 @@ export function percentileRank(values: number[], value: number, higherIsBetter: 
   if (!higherIsBetter) pct = 100 - pct;
   return Math.round(pct * 10) / 10;
 }
-
-export function baseHundred(values: { year: string; value: number }[]): { year: string; value: number }[] {
-  if (values.length === 0) return [];
-  const base = values[0].value;
-  if (base === 0) return values;
-  return values.map((v) => ({ year: v.year, value: Math.round((v.value / base) * 1000) / 10 }));
-}
