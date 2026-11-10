@@ -1,22 +1,24 @@
--- Etats disparus : Union sovietique et Yougoslavie, avec leur PIB par habitant historique (Maddison).
+-- Etats disparus : Union sovietique, Yougoslavie et Tchecoslovaquie, avec leur PIB par habitant historique (Maddison).
 -- Les etats disparus n'ont pas de code pays officiel actuel (iso_code reste vide, le site les distingue ainsi) :
 -- un code historique a part (hist_code) permet aux imports de les reconnaitre.
 begin;
 
 alter table public.entities add column if not exists hist_code text;
 create unique index if not exists entities_hist_code_key on public.entities (hist_code) where hist_code is not null;
-comment on column public.entities.hist_code is 'Code d''un etat disparu (ancien code ISO 3166, ex. SU, YU), utilise par les imports. iso_code reste vide pour ces etats';
+comment on column public.entities.hist_code is 'Code d''un etat disparu (ancien code ISO 3166, ex. SU, YU, CS), utilise par les imports. iso_code reste vide pour ces etats';
 
 insert into public.entities (slug, entity_type, name_default, iso_code, hist_code, valid_from, valid_to)
 select v.slug, 'country', v.name, null, v.code, v.vfrom::date, v.vto::date
 from (values ('soviet-union', 'Soviet Union', 'SU', '1922-12-30', '1991-12-26'),
-             ('yugoslavia', 'Yugoslavia', 'YU', '1918-12-01', '1992-04-27')) as v(slug, name, code, vfrom, vto)
+             ('yugoslavia', 'Yugoslavia', 'YU', '1918-12-01', '1992-04-27'),
+             ('czechoslovakia', 'Czechoslovakia', 'CS', '1918-10-28', '1992-12-31')) as v(slug, name, code, vfrom, vto)
 where not exists (select 1 from public.entities e where e.slug = v.slug);
 
 insert into public.entity_relations (predecessor_id, successor_id, relation_type, event_date, note)
 select p.id, s.id, 'dissolution', v.d::date, v.note
 from (values ('soviet-union', '1991-12-26', 'Dissolution of the Soviet Union', array['RU','UA','BY','UZ','KZ','GE','AZ','LT','MD','LV','KG','TJ','AM','TM','EE']),
-             ('yugoslavia', '1992-04-27', 'Breakup of Yugoslavia (successor states as they exist today)', array['SI','HR','BA','MK','RS','ME'])) as v(slug, d, note, codes)
+             ('yugoslavia', '1992-04-27', 'Breakup of Yugoslavia (successor states as they exist today)', array['SI','HR','BA','MK','RS','ME']),
+             ('czechoslovakia', '1993-01-01', 'Dissolution of Czechoslovakia', array['CZ','SK'])) as v(slug, d, note, codes)
 join public.entities p on p.slug = v.slug
 join public.entities s on s.iso_code = any(v.codes) and s.entity_type = 'country'
 where not exists (select 1 from public.entity_relations r where r.predecessor_id = p.id and r.successor_id = s.id);

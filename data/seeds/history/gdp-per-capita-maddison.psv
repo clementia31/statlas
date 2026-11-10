@@ -3,7 +3,7 @@
 # Citation: Bolt, Jutta and Jan Luiten van Zanden (2024), "Maddison style estimates of the evolution of the world economy: A new 2023 update", Journal of Economic Surveys, 1–41. DOI: 10.1111/joes.12618
 # For charts or subsets of fewer than 12 countries, also cite the original papers listed in the "Sources" sheet of the release file.
 # Value: real GDP per capita in 2011 international dollars.
-# Former states: the file's "Former USSR" and "Former Yugoslavia" series are loaded under the codes SU and YU, only for the years in which the state existed (1922-1991 and 1918-1991). Czechoslovakia is left out (no Statlas sheet yet).
+# Former states: the file's "Former USSR", "Former Yugoslavia" and "Czechoslovakia" series are loaded under the codes SU, YU and CS, only for the years in which the state existed (1922-1991, 1918-1991 and 1918-1992).
 # Unit: international-$ 2011; category: history; higher_is_better: True
 # iso2|year|value|projection
 AE|1950|25182|0
@@ -3438,6 +3438,69 @@ CR|2019|14775.2921|0
 CR|2020|13996.3894|0
 CR|2021|14931.956|0
 CR|2022|15496.8206|0
+CS|1920|3081|0
+CS|1921|3323|0
+CS|1922|3198|0
+CS|1923|3429|0
+CS|1924|3751|0
+CS|1925|4154|0
+CS|1926|4105|0
+CS|1927|4387|0
+CS|1928|4745|0
+CS|1929|4849|0
+CS|1930|4664|0
+CS|1931|4477|0
+CS|1932|4272|0
+CS|1933|4068|0
+CS|1934|3894|0
+CS|1935|3841|0
+CS|1936|4143|0
+CS|1937|4594|0
+CS|1948|4922|0
+CS|1949|5195|0
+CS|1950|5581|0
+CS|1951|5617|0
+CS|1952|5735|0
+CS|1953|5649|0
+CS|1954|5821|0
+CS|1955|6252|0
+CS|1956|6551|0
+CS|1957|6886|0
+CS|1958|7348|0
+CS|1959|7619|0
+CS|1960|8142|0
+CS|1961|8389|0
+CS|1962|8454|0
+CS|1963|8241|0
+CS|1964|8563|0
+CS|1965|8820|0
+CS|1966|9151|0
+CS|1967|9507|0
+CS|1968|9919|0
+CS|1969|10128|0
+CS|1970|10307|0
+CS|1971|10613|0
+CS|1972|10932|0
+CS|1973|11223|0
+CS|1974|11545|0
+CS|1975|11794|0
+CS|1976|11893|0
+CS|1977|12344|0
+CS|1978|12411|0
+CS|1979|12439|0
+CS|1980|12723|0
+CS|1981|12612|0
+CS|1982|12824|0
+CS|1983|12986|0
+CS|1984|13260|0
+CS|1985|13337|0
+CS|1986|13560|0
+CS|1987|13603|0
+CS|1988|13882|0
+CS|1989|13976|0
+CS|1990|13570|0
+CS|1991|11949.6328|0
+CS|1992|11742.9292|0
 CU|1690|295|0
 CU|1750|481|0
 CU|1775|526|0
