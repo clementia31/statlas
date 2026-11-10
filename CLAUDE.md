@@ -44,6 +44,6 @@
 
 - Le chargement des fichiers de `data/seeds/` et des migrations lit le dépôt sur GitHub sans s'identifier : à remplacer avant de passer ce dépôt en privé.
 - `population-total` mélange deux sources (OCDE et FMI) : à recharger depuis une seule.
-- 7 indicateurs sans donnée, 16 sources sans licence renseignée.
+- 7 indicateurs sans donnée, 17 sources sur 23 sans licence renseignée.
 - Mesures du Studio saisies à la main : aucun compteur de visites branché.
 - `studio.finalea.fr` : le code le gère, le domaine reste à brancher (Vercel + OVH).
