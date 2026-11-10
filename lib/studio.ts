@@ -66,3 +66,67 @@ export async function getReadings(): Promise<{ readings: Reading[]; error: strin
   const { data, error } = await db.from('studio_metric_readings').select('*').order('reading_date', { ascending: false }).limit(500);
   return { readings: (data as Reading[]) ?? [], error: error?.message ?? null };
 }
+
+// ---- Idées et sujets à traiter
+export type Idea = {
+  id: string;
+  title: string;
+  body: string | null;
+  kind: 'article' | 'chart' | 'topic';
+  project: Project;
+  status: 'open' | 'done';
+  draft_slug: string | null;
+  created_at: string;
+  updated_at: string;
+};
+export type IdeaItem = {
+  id: string;
+  idea_id: string;
+  kind: 'note' | 'file';
+  body: string | null;
+  file_path: string | null;
+  file_name: string | null;
+  mime: string | null;
+  size_bytes: number | null;
+  created_at: string;
+  url?: string | null;
+};
+export const IDEA_KINDS: Record<Idea['kind'], { label: string; color: string }> = {
+  article: { label: 'Article', color: '#8B1E1E' },
+  chart: { label: 'Chart', color: '#1F4FD1' },
+  topic: { label: 'Topic to dig', color: '#B4530F' },
+};
+export const BUCKET = 'studio';
+export const isUuid = (v: unknown): v is string => typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
+export const isIdeaKind = (v: unknown): v is Idea['kind'] => v === 'article' || v === 'chart' || v === 'topic';
+
+// Liens temporaires (1 h) vers les fichiers privés, créés côté serveur au moment d'afficher la page.
+async function withUrls(items: IdeaItem[]): Promise<IdeaItem[]> {
+  const db = adminClient();
+  const paths = items.filter((i) => i.kind === 'file' && i.file_path).map((i) => i.file_path!);
+  if (!db || paths.length === 0) return items;
+  const { data } = await db.storage.from(BUCKET).createSignedUrls(paths, 3600);
+  const byPath = new Map((data ?? []).map((d) => [d.path, d.signedUrl]));
+  return items.map((i) => (i.file_path ? { ...i, url: byPath.get(i.file_path) ?? null } : i));
+}
+
+export async function getIdeas(): Promise<{ ideas: Idea[]; items: IdeaItem[]; error: string | null }> {
+  const db = adminClient();
+  if (!db) return { ideas: [], items: [], error: MISSING };
+  const [a, b] = await Promise.all([
+    db.from('studio_ideas').select('*').order('created_at', { ascending: false }),
+    db.from('studio_idea_items').select('*').order('created_at', { ascending: true }),
+  ]);
+  return { ideas: (a.data as Idea[]) ?? [], items: await withUrls((b.data as IdeaItem[]) ?? []), error: a.error?.message ?? b.error?.message ?? null };
+}
+
+export async function getIdea(id: string): Promise<{ idea: Idea; items: IdeaItem[] } | null> {
+  const db = adminClient();
+  if (!db || !isUuid(id)) return null;
+  const [a, b] = await Promise.all([
+    db.from('studio_ideas').select('*').eq('id', id).maybeSingle(),
+    db.from('studio_idea_items').select('*').eq('idea_id', id).order('created_at', { ascending: true }),
+  ]);
+  if (!a.data) return null;
+  return { idea: a.data as Idea, items: await withUrls((b.data as IdeaItem[]) ?? []) };
+}

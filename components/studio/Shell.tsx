@@ -4,8 +4,9 @@ const NAV = [
   ['Calendar', '/studio'],
   ['Publications', '/studio/publications'],
   ['Metrics', '/studio/metrics'],
-  ['Organisation', '/studio/organisation'],
+  ['Ideas', '/studio/ideas'],
   ['Articles', '/studio/articles'],
+  ['Organisation', '/studio/organisation'],
 ] as const;
 
 export default function StudioShell({ active, children }: { active: string; children: React.ReactNode }) {

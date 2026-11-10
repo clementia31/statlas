@@ -34,7 +34,7 @@ function Card({ p }: { p: Post }) {
   );
 }
 
-export default async function PublicationsPage({ searchParams }: { searchParams: { p?: string } }) {
+export default async function PublicationsPage({ searchParams }: { searchParams: { p?: string; title?: string; project?: string } }) {
   const { posts, error } = await getPosts();
   const project = isProject(searchParams.p) ? searchParams.p : null;
   const shown = project ? posts.filter((x) => x.project === project) : posts;
@@ -74,10 +74,10 @@ export default async function PublicationsPage({ searchParams }: { searchParams:
         <h2 className="font-serif text-[22px] font-semibold">New publication</h2>
         <p className="mt-1 text-[13.5px] text-textMuted">The image or video must already be on the site. Give its path (for example /social/my-chart.jpg) or a full https address.</p>
         <form action={createPost} className="mt-4 grid gap-3 sm:grid-cols-2">
-          <label className="text-[13px] text-textSecondary sm:col-span-2">Title<input name="title" required className={`mt-1 ${field}`} /></label>
+          <label className="text-[13px] text-textSecondary sm:col-span-2">Title<input name="title" required defaultValue={searchParams.title ?? ''} className={`mt-1 ${field}`} /></label>
           <label className="text-[13px] text-textSecondary sm:col-span-2">Image or video path<input name="media_url" required placeholder="/social/…" className={`mt-1 font-mono ${field}`} /></label>
           <label className="text-[13px] text-textSecondary">Project
-            <select name="project" className={`mt-1 ${field}`}>{(Object.keys(PROJECTS) as (keyof typeof PROJECTS)[]).map((k) => <option key={k} value={k}>{PROJECTS[k].label}</option>)}</select>
+            <select name="project" defaultValue={isProject(searchParams.project) ? searchParams.project : 'statlas'} className={`mt-1 ${field}`}>{(Object.keys(PROJECTS) as (keyof typeof PROJECTS)[]).map((k) => <option key={k} value={k}>{PROJECTS[k].label}</option>)}</select>
           </label>
           <label className="text-[13px] text-textSecondary">Format
             <select name="format" defaultValue="chart" className={`mt-1 ${field}`}>{Object.entries(FORMATS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select>
