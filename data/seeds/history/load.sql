@@ -61,7 +61,7 @@ end $$;
 
 -- 5. Chargement (une ligne par jeu ; le nombre de valeurs chargées s'affiche)
 select * from (values
-  ('gdp-per-capita-maddison', public.import_psv('gdp-per-capita-maddison.psv','gdp-per-capita-maddison','international-$ 2011','maddison-project','Maddison Project Database 2023 (via Our World in Data)','maddison-2023','https://www.rug.nl/ggdc/historicaldevelopment/maddison/releases/maddison-project-database-2023','2024-04-26')),
+  ('gdp-per-capita-maddison', public.import_psv('gdp-per-capita-maddison.psv','gdp-per-capita-maddison','international-$ 2011','maddison-project','Maddison Project Database 2023','maddison-2023','https://www.rug.nl/ggdc/historicaldevelopment/maddison/releases/maddison-project-database-2023','2024-04-26')),
   ('population-un-wpp', public.import_psv('population-un-wpp.psv','population-un-wpp','people','un-population-division','World Population Prospects 2024, total population (via Our World in Data)','wpp2024-population','https://population.un.org/wpp/','2024-07-11')),
   ('median-age', public.import_psv('median-age.psv','median-age','years','un-population-division','World Population Prospects 2024, median age (via Our World in Data)','wpp2024-median-age','https://population.un.org/wpp/','2024-07-11')),
   ('electoral-democracy-index', public.import_psv('electoral-democracy-index.psv','electoral-democracy-index','index 0-1','v-dem','V-Dem dataset, electoral democracy index v2x_polyarchy (via Our World in Data)','vdem-polyarchy','https://www.v-dem.net/data/the-v-dem-dataset/','2026-03-01')),
