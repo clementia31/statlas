@@ -32,7 +32,8 @@ export async function getArticlesByDomain(domainSlug: string) {
     .from('articles')
     .select('slug, title, subtitle, article_type, author_name, published_at, reference_year, discipline_slug')
     .eq('domain_slug', domainSlug)
-    .order('published_at', { ascending: false });
+    .order('published_at', { ascending: false })
+    .order('reference_year', { ascending: false, nullsFirst: false });
   if (error) console.error('Erreur getArticlesByDomain:', error.message);
   return data ?? [];
 }
@@ -42,6 +43,7 @@ export async function getFeaturedAndLatest() {
     .from('articles')
     .select('slug, title, subtitle, article_type, domain_slug, author_name, published_at, reference_year, body')
     .order('published_at', { ascending: false })
+    .order('reference_year', { ascending: false, nullsFirst: false })
     .limit(9);
   if (error) console.error('Erreur getFeaturedAndLatest:', error.message);
   const all = data ?? [];
@@ -75,7 +77,8 @@ export async function getArchiveArticles(filters: { year?: string; domain?: stri
   let query = supabase
     .from('articles')
     .select('slug, title, subtitle, article_type, domain_slug, author_name, published_at, reference_year')
-    .order('published_at', { ascending: false });
+    .order('published_at', { ascending: false })
+    .order('reference_year', { ascending: false, nullsFirst: false });
 
   if (filters.domain) query = query.eq('domain_slug', filters.domain);
   if (filters.type) query = query.eq('article_type', filters.type);
