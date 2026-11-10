@@ -81,6 +81,18 @@ export function SectionLabel({ children }: { children: React.ReactNode }) {
   return <div className="font-sans text-[11px] font-semibold uppercase tracking-[0.16em]">{children}</div>;
 }
 
+// Fiches de référence : on affiche l'année de l'œuvre décrite ; sinon l'année de publication.
+export function articleYear(a: { published_at?: string | null; reference_year?: number | null }) {
+  return a.reference_year != null ? String(a.reference_year) : a.published_at?.slice(0, 4) ?? '';
+}
+
+export function articleDate(a: { published_at?: string | null; reference_year?: number | null }) {
+  if (a.reference_year != null) return String(a.reference_year);
+  if (!a.published_at) return '';
+  const d = new Date(`${a.published_at.slice(0, 10)}T00:00:00Z`);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+}
+
 export function typeLabel(t?: string | null) {
   if (!t) return '';
   return t.replace(/_/g, ' ');
@@ -89,14 +101,14 @@ export function typeLabel(t?: string | null) {
 export function ArticleList({
   articles,
 }: {
-  articles: { slug: string; title: string; article_type?: string | null; published_at?: string | null }[];
+  articles: { slug: string; title: string; article_type?: string | null; published_at?: string | null; reference_year?: number | null }[];
 }) {
   return (
     <ol className="border-t border-ink">
       {articles.map((a) => (
         <li key={a.slug} className="border-b border-rule">
           <Link href={`/gazette/${a.slug}`} className="flex min-h-[52px] items-baseline gap-4 py-3 hover:text-press">
-            <span className="w-12 shrink-0 font-mono text-[13px] text-press">{a.published_at?.slice(0, 4)}</span>
+            <span className="w-12 shrink-0 font-mono text-[13px] text-press">{articleYear(a)}</span>
             <span className="flex-1 font-headline text-[20px] font-semibold leading-snug">{a.title}</span>
             {a.article_type && (
               <span className="hidden sm:inline shrink-0 font-sans text-[11px] uppercase tracking-[0.14em] text-inkMuted">{typeLabel(a.article_type)}</span>

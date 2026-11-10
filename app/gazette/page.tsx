@@ -2,7 +2,7 @@ import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import { leadText } from '@/components/gazette/ArticleBody';
 import { getDomains, getDisciplines, getFeaturedAndLatest, getActiveChartOfWeek } from '@/lib/gazette';
-import { ArticleList, DoubleRule, GazettePage, Kicker, Masthead, Ornament, SectionLabel, typeLabel } from '@/components/gazette/Gazette';
+import { ArticleList, DoubleRule, GazettePage, Kicker, Masthead, Ornament, SectionLabel, articleDate, typeLabel } from '@/components/gazette/Gazette';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,7 +45,7 @@ export default async function GazetteHome() {
               )}
               <div className="mt-4 border-y border-ruleStrong py-2 font-sans text-[12px] uppercase tracking-[0.08em] text-inkMuted">
                 By {featured.author_name ?? 'Statlas Editorial'}
-                {featured.published_at ? ` · ${featured.published_at.slice(0, 4)}` : ''}
+                {articleDate(featured) ? ` · ${articleDate(featured)}` : ''}
               </div>
               {lead && (
                 <div className="mt-5 font-serif text-[17px] leading-[1.65] sm:columns-2 sm:gap-7 sm:[column-rule:1px_solid_#CFC5B0]">

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import ArticleBody from '@/components/gazette/ArticleBody';
-import { ArticleList, CompactMasthead, GazettePage, Kicker, Ornament, SectionLabel, typeLabel } from '@/components/gazette/Gazette';
+import { ArticleList, CompactMasthead, GazettePage, Kicker, Ornament, SectionLabel, articleDate, typeLabel } from '@/components/gazette/Gazette';
 import { getArticleBySlug } from '@/lib/supabase';
 import { getDomainBySlug, getArticlesByDomain, getDisciplines, getRelatedForArticle } from '@/lib/gazette';
 import { notFound } from 'next/navigation';
@@ -95,7 +95,7 @@ export default async function GazetteSlugPage({
             <h1 className="mt-3 font-headline text-[44px] sm:text-[68px] font-extrabold leading-none tracking-[-0.01em]">{article.title}</h1>
             {article.subtitle && <p className="mt-4 font-headline italic text-[21px] sm:text-[26px] leading-snug text-inkSoft">{article.subtitle}</p>}
             <div className="mt-6 border-y border-ink py-2.5 font-sans text-[12px] uppercase tracking-[0.1em] text-inkSoft">
-              By {article.author_name ?? 'Statlas Editorial'} · {minutes} min read
+              By {article.author_name ?? 'Statlas Editorial'}{articleDate(article) ? ` · ${articleDate(article)}` : ''} · {minutes} min read
             </div>
           </header>
 

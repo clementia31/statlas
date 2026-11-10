@@ -30,7 +30,7 @@ export async function getDomainBySlug(slug: string) {
 export async function getArticlesByDomain(domainSlug: string) {
   const { data, error } = await supabase
     .from('articles')
-    .select('slug, title, subtitle, article_type, author_name, published_at, discipline_slug')
+    .select('slug, title, subtitle, article_type, author_name, published_at, reference_year, discipline_slug')
     .eq('domain_slug', domainSlug)
     .order('published_at', { ascending: false });
   if (error) console.error('Erreur getArticlesByDomain:', error.message);
@@ -40,7 +40,7 @@ export async function getArticlesByDomain(domainSlug: string) {
 export async function getFeaturedAndLatest() {
   const { data, error } = await supabase
     .from('articles')
-    .select('slug, title, subtitle, article_type, domain_slug, author_name, published_at, body')
+    .select('slug, title, subtitle, article_type, domain_slug, author_name, published_at, reference_year, body')
     .order('published_at', { ascending: false })
     .limit(9);
   if (error) console.error('Erreur getFeaturedAndLatest:', error.message);
@@ -74,7 +74,7 @@ export async function getRelatedForArticle(countrySlugs: string[] | null, indica
 export async function getArchiveArticles(filters: { year?: string; domain?: string; type?: string }) {
   let query = supabase
     .from('articles')
-    .select('slug, title, subtitle, article_type, domain_slug, author_name, published_at')
+    .select('slug, title, subtitle, article_type, domain_slug, author_name, published_at, reference_year')
     .order('published_at', { ascending: false });
 
   if (filters.domain) query = query.eq('domain_slug', filters.domain);
@@ -134,7 +134,7 @@ export async function getDossierBySlug(slug: string) {
 
   const { data: articles } = await supabase
     .from('articles')
-    .select('slug, title, subtitle, article_type, published_at')
+    .select('slug, title, subtitle, article_type, published_at, reference_year')
     .eq('dossier_slug', slug)
     .order('published_at', { ascending: true });
 
