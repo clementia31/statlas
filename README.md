@@ -9,9 +9,9 @@ Next.js 14 (App Router) + Supabase, déployé sur Vercel à chaque envoi sur la 
 
 | Dossier | Rôle |
 |---|---|
-| `app/` | Pages du site. Public : accueil, `indicateurs`, `carte`, `pays`, `rankings`, `sport`, `lists`, `comparaisons`, `benchmark`, `gazette`, `bibliographie`, `api-export`. Privé : `studio`, `admin`. |
+| `app/` | Pages du site. Public : accueil, `indicateurs`, `carte`, `pays`, `rankings`, `sport`, `lists`, `comparaisons`, `benchmark`, `gazette`, `bibliographie`, `api-export`. Privé : `studio`. |
 | `components/`, `lib/` | Composants et accès aux données. `lib/supabase-admin.ts` et `lib/studio.ts` ne s'exécutent que côté serveur. |
-| `middleware.ts` | Ferme `/studio` et `/admin` à qui n'a pas la clé `ADMIN_KEY`. |
+| `middleware.ts` | Ferme `/studio` à qui n'a pas la clé `ADMIN_KEY`. |
 | `data/migrations/` | Modifications de la base, numérotées, dans l'ordre où elles ont été lancées. |
 | `data/seeds/` | Fichiers sources convertis et scripts SQL de chargement. |
 | `data/articles/` | Texte des articles de la Gazette. |

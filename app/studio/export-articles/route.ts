@@ -3,7 +3,7 @@ import { adminClient } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
-// Export JSON des articles publiés (admin seulement, protégé par le middleware) : sert aux traductions FR / ES.
+// Export JSON des articles publiés (Studio seulement, protégé par le middleware) : sert aux traductions FR / ES.
 export async function GET() {
   const db = adminClient();
   if (!db) return NextResponse.json({ error: 'no service key' }, { status: 503 });

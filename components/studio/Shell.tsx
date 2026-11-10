@@ -5,7 +5,7 @@ const NAV = [
   ['Publications', '/studio/publications'],
   ['Metrics', '/studio/metrics'],
   ['Organisation', '/studio/organisation'],
-  ['Articles', '/admin'],
+  ['Articles', '/studio/articles'],
 ] as const;
 
 export default function StudioShell({ active, children }: { active: string; children: React.ReactNode }) {
