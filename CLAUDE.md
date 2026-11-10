@@ -35,6 +35,8 @@
 - Après un import : `select public.refresh_statlas();` (obs_yearly, indicator_stats, indicator_catalog). Sans cela le site garde les anciennes valeurs.
 - Fonctions d'import : `import_worldbank`, `import_imf_weo`, `import_psv`, `import_psv_at`, `import_translations`. Chaque import s'inscrit dans `common.import_log`.
 - L'unité d'une valeur vient de `indicators.unit` (plus de colonne `unit` sur `observations`).
+- États disparus (Allemagne de l'Ouest et de l'Est, Union soviétique, Yougoslavie) : `iso_code` vide, ce qui les exclut des listes de pays du site ; `hist_code` (SU, YU) sert aux imports par fichier ; dates dans `valid_from` / `valid_to`, successeurs dans `entity_relations`.
+- Maddison : dès qu'un graphique montre ces données, citer aussi les travaux d'origine listés dans l'onglet Sources du fichier (condition de la source, on ne peut pas l'assouplir).
 - Espaces : `public` (Statlas, Gazette, tables du Studio), `common` (journal, `fx_annual`), `immo`, `finance`, `studio` (vides).
 - Tables privées dans `public` : `article_drafts`, `social_posts`, `studio_metric_readings`, `studio_ideas`, `studio_idea_items`. Protection par ligne sans règle + droits retirés au public : seule la clé de service les lit.
 - Fichiers privés du Studio : espace de stockage `studio` (20 Mo par fichier).
