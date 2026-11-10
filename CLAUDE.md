@@ -43,7 +43,8 @@
 ## Points ouverts connus
 
 - Le chargement des fichiers de `data/seeds/` et des migrations lit le dépôt sur GitHub sans s'identifier : à remplacer avant de passer ce dépôt en privé.
-- `population-total` mélange deux sources (OCDE et FMI) : à recharger depuis une seule.
-- 7 indicateurs sans donnée, 17 sources sur 23 sans licence renseignée.
+- 5 indicateurs sans donnée (âge médian, population ONU, PIB Maddison, deux indices V-Dem) : des fichiers existent dans `data/seeds/history/`, mais ils viennent d'Our World in Data, un intermédiaire. Charger depuis l'organisme d'origine, licence vérifiée.
+- 17 sources sur 23 sans licence renseignée.
+- Chaque indicateur a une fréquence de mise à jour (`update_frequency`) et la date de son dernier import (`last_checked_on`, tenue à jour par `refresh_statlas`).
 - Mesures du Studio saisies à la main : aucun compteur de visites branché.
 - `studio.finalea.fr` : le code le gère, le domaine reste à brancher (Vercel + OVH).
