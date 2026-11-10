@@ -74,9 +74,25 @@ begin
   return v_n;
 end $function$;
 
-select public.import_psv('gdp-per-capita-maddison.psv', 'gdp-per-capita-maddison', 'international-$ 2011', 'maddison-project',
-  'Maddison Project Database 2023', 'maddison-2023',
-  'https://www.rug.nl/ggdc/historicaldevelopment/maddison/releases/maddison-project-database-2023', '2024-04-26');
+-- PIB par habitant historique des trois etats (fichier Maddison officiel, version figee du depot) :
+-- on ajoute seulement leurs lignes, sans recharger tout l'indicateur.
+with src as (
+  select string_to_array(l, '|') as f
+  from regexp_split_to_table((select content from extensions.http_get(
+    'https://raw.githubusercontent.com/clementia31/statlas/9e536040636024825b73e1f68379b686125605d0/data/seeds/history/gdp-per-capita-maddison.psv')), E'\n') as l
+  where l <> '' and left(l, 1) <> '#'
+), added as (
+  insert into public.observations (entity_id, indicator_id, value_number, raw_value, period_start, source_document_id, status, is_projection)
+  select e.id, i.id, s.f[3]::numeric, s.f[3], make_date(s.f[2]::int, 1, 1),
+         (select id from public.source_documents where dataset_id_external = 'maddison-2023' limit 1), 'validated', false
+  from src s
+  join public.entities e on e.hist_code = s.f[1]
+  join public.indicators i on i.slug = 'gdp-per-capita-maddison'
+  where not exists (select 1 from public.observations o where o.entity_id = e.id and o.indicator_id = i.id)
+  returning 1
+)
+insert into common.import_log (action, indicator_slug, dataset, row_count)
+select 'import_former_states', 'gdp-per-capita-maddison', 'maddison-2023', count(*) from added;
 
 select public.refresh_statlas();
 
