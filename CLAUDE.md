@@ -36,6 +36,7 @@
 - Fonctions d'import : `import_worldbank`, `import_imf_weo`, `import_psv`, `import_psv_at`, `import_translations`. Chaque import s'inscrit dans `common.import_log`.
 - L'unité d'une valeur vient de `indicators.unit` (plus de colonne `unit` sur `observations`).
 - États disparus (Allemagne de l'Ouest et de l'Est, Union soviétique, Yougoslavie, Tchécoslovaquie) : `iso_code` vide, ce qui les exclut des listes de pays du site ; `hist_code` (SU, YU, CS) sert aux imports par fichier ; dates dans `valid_from` / `valid_to`, successeurs dans `entity_relations`.
+- Territoires : les 37 territoires couverts par l'ONU (Réunion, Groenland, Gibraltar…) sont des entités `country` avec fiche d'identité ; 237 pays et territoires au total.
 - Maddison : dès qu'un graphique montre ces données, citer aussi les travaux d'origine listés dans l'onglet Sources du fichier (condition de la source, on ne peut pas l'assouplir).
 - Espaces : `public` (Statlas, Gazette, tables du Studio), `common` (journal, `fx_annual`), `immo`, `finance`, `studio` (vides).
 - Tables privées dans `public` : `article_drafts`, `social_posts`, `studio_metric_readings`, `studio_ideas`, `studio_idea_items`. Protection par ligne sans règle + droits retirés au public : seule la clé de service les lit.
@@ -45,10 +46,10 @@
 ## Points ouverts connus
 
 - Le chargement des fichiers de `data/seeds/` et des migrations lit le dépôt sur GitHub sans s'identifier : à remplacer avant de passer ce dépôt en privé.
-- 2 indicateurs sans donnée (deux indices V-Dem) : des fichiers existent dans `data/seeds/history/`, mais ils viennent d'Our World in Data, un intermédiaire. Charger depuis l'organisme d'origine, licence vérifiée. Population et âge médian de l'ONU : chargés directement depuis le fichier officiel (World Population Prospects 2024, CC BY 3.0 IGO, migration 016).
-- 16 sources sur 22 sans licence renseignée.
+- Plus aucun indicateur vide. ONU (population, âge médian : World Population Prospects 2024, CC BY 3.0 IGO) et V-Dem (deux indices : jeu v16, CC BY-SA 4.0, partage à l'identique) sont chargés depuis l'organisme d'origine. V-Dem note séparément Cisjordanie et Gaza : aucune des deux n'est rattachée à la fiche « West Bank and Gaza ».
+- Licences : restent à vérifier CelesTrak (aucune licence de réutilisation publiée) et l'Union mathématique internationale. Les ouvrages cités dans la Gazette sont notés « Not applicable (bibliographic reference) ».
 - Figures de la semaine : « The price of war » (21 janv. 2027) montre des chiffres SIPRI (5 pays, usage limité autorisé à condition de nommer SIPRI) : le crédit SIPRI ne doit jamais être remplacé par « Statlas ». Les figures Maddison citent les travaux d'origine dans leur ligne de source ; sur le site, la ligne « Source » (`SourceNote`) déplie la liste complète (`data/credits/maddison-2023.json`).
-- `scripts/fetch_seeds.py` (collecte à la demande) ne récupère plus Maddison, UCDP ni SIPRI : ne pas les y remettre.
+- `scripts/fetch_seeds.py` (collecte à la demande) ne récupère plus Maddison, UCDP, SIPRI, ONU ni V-Dem : ne pas les y remettre.
 - Pas de vérification automatique du style de code (ESLint non configuré) : seuls `tsc` et `next build` font foi.
 - Chaque indicateur a une fréquence de mise à jour (`update_frequency`) et la date de son dernier import (`last_checked_on`, tenue à jour par `refresh_statlas`).
 - Mesures du Studio saisies à la main : aucun compteur de visites branché.
