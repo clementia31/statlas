@@ -45,9 +45,9 @@
 ## Points ouverts connus
 
 - Le chargement des fichiers de `data/seeds/` et des migrations lit le dépôt sur GitHub sans s'identifier : à remplacer avant de passer ce dépôt en privé.
-- 4 indicateurs sans donnée (âge médian, population ONU, deux indices V-Dem) : des fichiers existent dans `data/seeds/history/`, mais ils viennent d'Our World in Data, un intermédiaire. Charger depuis l'organisme d'origine, licence vérifiée.
-- 17 sources sur 23 sans licence renseignée.
-- Figures de la semaine déjà programmées qui posent problème : « The world in 2100 » (19 nov. 2026) et « The oldest countries on Earth » (31 déc.) renvoient vers des indicateurs encore vides (données ONU via Our World in Data) ; « The price of war » (21 janv. 2027) repose sur des données SIPRI et renvoie vers un indicateur supprimé.
+- 2 indicateurs sans donnée (deux indices V-Dem) : des fichiers existent dans `data/seeds/history/`, mais ils viennent d'Our World in Data, un intermédiaire. Charger depuis l'organisme d'origine, licence vérifiée. Population et âge médian de l'ONU : chargés directement depuis le fichier officiel (World Population Prospects 2024, CC BY 3.0 IGO, migration 016).
+- 16 sources sur 22 sans licence renseignée.
+- Figures de la semaine : « The price of war » (21 janv. 2027) montre des chiffres SIPRI (5 pays, usage limité autorisé à condition de nommer SIPRI) : le crédit SIPRI ne doit jamais être remplacé par « Statlas ». Les figures Maddison citent les travaux d'origine dans leur ligne de source ; la page du classement Maddison ne les affiche pas encore.
 - `scripts/fetch_seeds.py` (collecte à la demande) ne récupère plus Maddison, UCDP ni SIPRI : ne pas les y remettre.
 - Pas de vérification automatique du style de code (ESLint non configuré) : seuls `tsc` et `next build` font foi.
 - Chaque indicateur a une fréquence de mise à jour (`update_frequency`) et la date de son dernier import (`last_checked_on`, tenue à jour par `refresh_statlas`).
