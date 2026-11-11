@@ -4,12 +4,12 @@ Téléchargement des jeux de données ouverts pour Statlas, convertis au format 
   data/seeds/<lot>/<slug>.psv   iso2|year|value|projection   (en-tête : source, document, date de récupération)
   data/seeds/<lot>/report.json  ce qui a été récupéré ou non
 
-Sources : Our World in Data (qui redistribue ONU WPP et V-Dem avec la citation d'origine),
+Sources : Our World in Data (qui redistribue V-Dem avec la citation d'origine),
 et l'API officielle de la Fondation Nobel.
 
 Ne sont PLUS collectés ici (règle : charger depuis l'organisme d'origine, licence vérifiée) :
-- gdp-per-capita-maddison et conflict-deaths : fichiers construits à la main depuis les fichiers officiels
-  (Maddison Project Database 2023, UCDP Country-Year 26.1). Ce script ne doit pas les écraser.
+- gdp-per-capita-maddison, conflict-deaths, population-un-wpp et median-age : fichiers construits depuis les fichiers officiels
+  (Maddison Project Database 2023, UCDP Country-Year 26.1, ONU World Population Prospects 2024). Ce script ne doit pas les écraser.
 - military-expenditure-gdp-sipri : la licence SIPRI interdit l'import. Les agrégats (continents, monde, groupes de revenus) sont exclus :
 seuls les pays avec un code ISO sont gardés.
 """
@@ -32,14 +32,6 @@ TODAY = dt.date.today().isoformat()
 # Médaille Fields : Wikidata (lauréats, année, lieu de naissance)
 # slug Statlas : (graphiques OWID candidats, nom, catégorie, unité, higher_is_better, définition, éditeur d'origine, jeu d'origine)
 SETS = {
-    "population-un-wpp": (["population-with-un-projections", "population-long-run-with-projections"],
-        "Population (UN, with projections)", "demographics", "people", None,
-        "Total population at mid-year; values after the last observed year are the UN medium-variant projection.",
-        "United Nations, Population Division", "World Population Prospects 2024"),
-    "median-age": (["median-age"],
-        "Median age", "demographics", "years", None,
-        "Age that divides the population into two halves of equal size; includes UN medium-variant projections.",
-        "United Nations, Population Division", "World Population Prospects 2024"),
     "electoral-democracy-index": (["electoral-democracy-index"],
         "Electoral democracy index (V-Dem)", "politics", "index 0-1", True,
         "Extent to which the ideal of electoral democracy is achieved: free and fair elections, freedom of expression and association, suffrage.",

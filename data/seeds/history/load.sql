@@ -11,7 +11,7 @@ where not exists (select 1 from categories c where c.slug = v.slug);
 insert into sources (slug, name, source_type, url)
 select v.slug, v.name, (select source_type from sources where slug = 'world-bank' limit 1), v.url from (values
   ('maddison-project','Maddison Project (University of Groningen)','https://www.rug.nl/ggdc/historicaldevelopment/maddison/'),
-  ('un-population-division','United Nations, Population Division','https://population.un.org/wpp/'),
+  ('un-wpp','UN World Population Prospects','https://population.un.org/wpp/'),
   ('v-dem','V-Dem Institute (University of Gothenburg)','https://www.v-dem.net/'),
   ('ucdp','Uppsala Conflict Data Program (UCDP)','https://ucdp.uu.se/'),
   ('sipri','Stockholm International Peace Research Institute (SIPRI)','https://www.sipri.org/databases/milex'),
@@ -62,8 +62,8 @@ end $$;
 -- 5. Chargement (une ligne par jeu ; le nombre de valeurs chargées s'affiche)
 select * from (values
   ('gdp-per-capita-maddison', public.import_psv('gdp-per-capita-maddison.psv','gdp-per-capita-maddison','international-$ 2011','maddison-project','Maddison Project Database 2023','maddison-2023','https://www.rug.nl/ggdc/historicaldevelopment/maddison/releases/maddison-project-database-2023','2024-04-26')),
-  ('population-un-wpp', public.import_psv('population-un-wpp.psv','population-un-wpp','people','un-population-division','World Population Prospects 2024, total population (via Our World in Data)','wpp2024-population','https://population.un.org/wpp/','2024-07-11')),
-  ('median-age', public.import_psv('median-age.psv','median-age','years','un-population-division','World Population Prospects 2024, median age (via Our World in Data)','wpp2024-median-age','https://population.un.org/wpp/','2024-07-11')),
+  ('population-un-wpp', public.import_psv('population-un-wpp.psv','population-un-wpp','people','un-wpp','World Population Prospects 2024 — Total population, 1 July (medium variant)','wpp2024-population','https://population.un.org/wpp/downloads','2024-07-11')),
+  ('median-age', public.import_psv('median-age.psv','median-age','years','un-wpp','World Population Prospects 2024 — Median age (medium variant)','wpp2024-median-age','https://population.un.org/wpp/downloads','2024-07-11')),
   ('electoral-democracy-index', public.import_psv('electoral-democracy-index.psv','electoral-democracy-index','index 0-1','v-dem','V-Dem dataset, electoral democracy index v2x_polyarchy (via Our World in Data)','vdem-polyarchy','https://www.v-dem.net/data/the-v-dem-dataset/','2026-03-01')),
   ('liberal-democracy-index', public.import_psv('liberal-democracy-index.psv','liberal-democracy-index','index 0-1','v-dem','V-Dem dataset, liberal democracy index v2x_libdem (via Our World in Data)','vdem-libdem','https://www.v-dem.net/data/the-v-dem-dataset/','2026-03-01')),
   ('conflict-deaths', public.import_psv('conflict-deaths.psv','conflict-deaths','deaths','ucdp','UCDP Country-Year Dataset on Organized Violence within Country Borders, version 26.1','ucdp-organizedviolencecy-26.1','https://ucdp.uu.se/downloads/','2026-06-01')),
