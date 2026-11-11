@@ -1,3 +1,4 @@
+import OriginalWorks from '@/components/ui/OriginalWorks';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -131,6 +132,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
             height={240}
             fill
           />
+          {trendMeta && <OriginalWorks slug={trendMeta.slug} />}
         </Panel>
       </div>
 

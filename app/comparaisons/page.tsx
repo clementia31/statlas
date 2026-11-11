@@ -1,3 +1,4 @@
+import OriginalWorks from '@/components/ui/OriginalWorks';
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import PageHeader from '@/components/ui/PageHeader';
@@ -95,6 +96,7 @@ export default async function ComparisonsPage({ searchParams }: { searchParams: 
             unit={chartMeta.unit}
             height={320}
           />
+          <OriginalWorks slug={chartMeta.slug} />
         </Panel>
       )}
 
