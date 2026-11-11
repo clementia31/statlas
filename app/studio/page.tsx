@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import StudioShell, { Eyebrow, Notice } from '@/components/studio/Shell';
-import { FORMATS, NETWORKS, PROJECTS, Post, STATUS, dayKey, getPosts, isProject, todayKey } from '@/lib/studio';
+import { FORMATS, NETWORKS, PROJECTS, Post, STATUS, dayKey, downloadHref, getPosts, isProject, todayKey } from '@/lib/studio';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Calendar · Studio', robots: { index: false, follow: false } };
@@ -90,7 +90,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: { m
           </div>
           <div className="flex gap-2">
             <Link href={`/studio/publications/${p.id}`} className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium hover:border-text">Open</Link>
-            {p.media_url && <a href={p.media_url} download={p.media_name ?? undefined} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">↓ Download</a>}
+            {p.media_url && <a href={downloadHref(p.media_url, p.media_name)} download={p.media_name ?? undefined} className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">↓ Download</a>}
           </div>
         </div>
       ))}

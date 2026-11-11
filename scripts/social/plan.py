@@ -14,8 +14,6 @@ PLAN = [
          title="The oldest countries on Earth", subtitle="Median age in years — countries over 1 million people (2024–2100: UN projections)", source="United Nations, World Population Prospects 2024"),
     dict(slug="fields", data=H + "fields-medalists-cumulative.psv", top=5, start=1936, end=2026, fill0=True,
          title="Who wins the Fields Medal?", subtitle="Fields medalists born in each country (current borders), since 1936", source="International Mathematical Union"),
-    dict(slug="military", data=H + "military-expenditure-gdp-sipri.psv", top=5, rank_year=2025, minpop=1e6, start=1949, end=2025, unit="%",
-         title="The price of war", subtitle="Military expenditure, % of GDP — top 5 in 2025", source="SIPRI Military Expenditure Database"),
     dict(slug="nobel-top10", data=H + "nobel-laureates-cumulative.psv", top=10, start=1901, end=2025, fill0=True,
          title="Who wins the Nobel Prize?", subtitle="Top 10 countries by laureates born there (current borders), since 1901", source="Nobel Foundation"),
     dict(slug="births", data=S + "birth-rate.psv", countries="KR,CN,JP,IT,FR", start=1960, end=2024,

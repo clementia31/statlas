@@ -4,7 +4,7 @@ import StudioShell from '@/components/studio/Shell';
 import CopyButton from '@/components/studio/CopyButton';
 import MediaUploader from '@/components/studio/MediaUploader';
 import { savePost, setPublished } from '../../actions';
-import { FORMATS, NETWORKS, PROJECTS, STATUS, dayKey, getPost, timeOf } from '@/lib/studio';
+import { FORMATS, NETWORKS, PROJECTS, STATUS, dayKey, downloadHref, getPost, timeOf } from '@/lib/studio';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Publication · Studio', robots: { index: false, follow: false } };
@@ -58,7 +58,7 @@ export default async function PublicationPage({ params, searchParams }: { params
               <div className="flex flex-wrap items-start gap-2">
                 <MediaUploader postId={p.id} hasMedia={!!p.media_url} />
                 {p.media_url && (
-                  <a href={p.media_url} download={file} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">
+                  <a href={downloadHref(p.media_url, file)} download={file} className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">
                     ↓ Download {p.kind === 'video' ? 'video' : 'image'}
                   </a>
                 )}

@@ -38,6 +38,11 @@ export const FORMATS: Record<string, { label: string; color: string }> = {
   chart: { label: 'Chart', color: '#2E9C8F' },
 };
 export const NETWORKS: Record<string, string> = { instagram: 'Instagram', x: 'X', gazette: 'Gazette' };
+// Lien de téléchargement : un fichier du stockage privé est servi depuis une autre adresse que le site, où l'attribut
+// « download » du navigateur est ignoré ; on demande donc au stockage lui-même de l'envoyer comme fichier à enregistrer.
+export const downloadHref = (url: string, name?: string | null) =>
+  /\/storage\/v1\/object\/sign\//.test(url) ? `${url}${url.includes('?') ? '&' : '?'}download=${encodeURIComponent(name || 'file')}` : url;
+
 export const STATUS: Record<Post['status'], string> = { draft: 'Idea', scheduled: 'Ready', published: 'Published' };
 
 export const dayKey = (iso: string) => new Date(iso).toLocaleDateString('en-CA', { timeZone: TZ });

@@ -4,8 +4,13 @@ Téléchargement des jeux de données ouverts pour Statlas, convertis au format 
   data/seeds/<lot>/<slug>.psv   iso2|year|value|projection   (en-tête : source, document, date de récupération)
   data/seeds/<lot>/report.json  ce qui a été récupéré ou non
 
-Sources : Our World in Data (qui redistribue Maddison, ONU WPP, V-Dem, UCDP, SIPRI avec la citation d'origine),
-et l'API officielle de la Fondation Nobel. Les agrégats (continents, monde, groupes de revenus) sont exclus :
+Sources : Our World in Data (qui redistribue ONU WPP et V-Dem avec la citation d'origine),
+et l'API officielle de la Fondation Nobel.
+
+Ne sont PLUS collectés ici (règle : charger depuis l'organisme d'origine, licence vérifiée) :
+- gdp-per-capita-maddison et conflict-deaths : fichiers construits à la main depuis les fichiers officiels
+  (Maddison Project Database 2023, UCDP Country-Year 26.1). Ce script ne doit pas les écraser.
+- military-expenditure-gdp-sipri : la licence SIPRI interdit l'import. Les agrégats (continents, monde, groupes de revenus) sont exclus :
 seuls les pays avec un code ISO sont gardés.
 """
 import datetime as dt
@@ -27,10 +32,6 @@ TODAY = dt.date.today().isoformat()
 # Médaille Fields : Wikidata (lauréats, année, lieu de naissance)
 # slug Statlas : (graphiques OWID candidats, nom, catégorie, unité, higher_is_better, définition, éditeur d'origine, jeu d'origine)
 SETS = {
-    "gdp-per-capita-maddison": (["gdp-per-capita-maddison-project-database", "gdp-per-capita-maddison", "gdp-per-capita-maddison-2020"],
-        "GDP per capita (Maddison, long run)", "history", "international-$ 2011", True,
-        "Real GDP per person in 2011 international dollars, reconstructed over centuries by the Maddison Project.",
-        "Maddison Project (University of Groningen)", "Maddison Project Database 2023"),
     "population-un-wpp": (["population-with-un-projections", "population-long-run-with-projections"],
         "Population (UN, with projections)", "demographics", "people", None,
         "Total population at mid-year; values after the last observed year are the UN medium-variant projection.",
@@ -47,14 +48,6 @@ SETS = {
         "Liberal democracy index (V-Dem)", "politics", "index 0-1", True,
         "Electoral democracy combined with protection of individual and minority rights, rule of law and checks on the executive.",
         "V-Dem Institute (University of Gothenburg)", "Varieties of Democracy (V-Dem) dataset"),
-    "conflict-deaths": (["deaths-in-armed-conflicts-based-on-where-they-occurred", "deaths-in-armed-conflicts-by-country", "deaths-in-all-types-of-armed-conflicts-by-country"],
-        "Deaths in armed conflicts", "military", "deaths", False,
-        "Deaths of combatants and civilians from fighting in state-based, non-state and one-sided violence, counted in the country where they occurred.",
-        "Uppsala Conflict Data Program (UCDP)", "UCDP Georeferenced Event Dataset"),
-    "military-expenditure-gdp-sipri": (["military-expenditure-share-gdp", "military-spending-as-a-share-of-gdp-sipri"],
-        "Military expenditure (SIPRI, long run)", "military", "percent of gdp", None,
-        "Military expenditure as a share of GDP, from 1949 where available.",
-        "Stockholm International Peace Research Institute (SIPRI)", "SIPRI Military Expenditure Database"),
 }
 
 

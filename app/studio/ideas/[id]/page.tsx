@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import StudioShell from '@/components/studio/Shell';
 import IdeaComposer from '@/components/studio/IdeaComposer';
 import { ideaToDraft, saveIdea, setIdeaDone } from '../../actions';
-import { IDEA_KINDS, PROJECTS, TZ, getIdea } from '@/lib/studio';
+import { IDEA_KINDS, PROJECTS, TZ, downloadHref, getIdea } from '@/lib/studio';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Idea · Studio', robots: { index: false, follow: false } };
@@ -70,7 +70,7 @@ export default async function IdeaPage({ params }: { params: { id: string } }) {
                     <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                       <span className="break-all font-mono text-[12.5px] text-textSecondary">{it.file_name} · {size(it.size_bytes)}</span>
                       {it.url ? (
-                        <a href={it.url} target="_blank" rel="noopener noreferrer" download={it.file_name ?? undefined} className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">↓ Open</a>
+                        <a href={downloadHref(it.url, it.file_name)} download={it.file_name ?? undefined} className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">↓ Download</a>
                       ) : (
                         <span className="text-[13px] text-red">File not reachable</span>
                       )}

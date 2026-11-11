@@ -79,19 +79,6 @@
    "Deaths in armed conflicts based on where they occurred"
   ]
  },
- "military-expenditure-gdp-sipri": {
-  "chart": "military-expenditure-share-gdp",
-  "rows": 8541,
-  "countries": 167,
-  "years": [
-   1949,
-   2025
-  ],
-  "projections": 0,
-  "columns": [
-   "Military expenditure (% of GDP)"
-  ]
- },
  "nobel": {
   "laureates_rows": 1036,
   "unmatched_countries": []
