@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import StudioShell from '@/components/studio/Shell';
 import CopyButton from '@/components/studio/CopyButton';
+import MediaUploader from '@/components/studio/MediaUploader';
 import { savePost, setPublished } from '../../actions';
 import { FORMATS, NETWORKS, PROJECTS, STATUS, dayKey, getPost, timeOf } from '@/lib/studio';
 
@@ -11,11 +12,11 @@ export const metadata = { title: 'Publication · Studio', robots: { index: false
 const field = 'h-11 w-full rounded-lg border border-borderStrong bg-panel px-3 text-[16px]';
 const lab = 'block text-[13px] text-textSecondary';
 
-export default async function PublicationPage({ params }: { params: { id: string } }) {
+export default async function PublicationPage({ params, searchParams }: { params: { id: string }; searchParams: { upload?: string } }) {
   const p = await getPost(params.id);
   if (!p) notFound();
   const f = FORMATS[p.format ?? 'chart'] ?? FORMATS.chart;
-  const file = p.media_url.split('/').pop() ?? 'media';
+  const file = p.media_name ?? 'media';
   const published = p.status === 'published';
   return (
     <StudioShell active="Publications">
@@ -44,19 +45,29 @@ export default async function PublicationPage({ params }: { params: { id: string
         <section>
           <div className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-textMuted">{p.kind === 'video' ? 'Video' : 'Image'}</div>
           <div className="mt-2 rounded-xl border border-border bg-panel p-3.5">
-            {p.kind === 'video' ? (
+            {!p.media_url ? (
+              <div className="flex aspect-[4/3] w-full items-center justify-center rounded-md bg-panel2 text-[14px] text-textMuted">No visual yet</div>
+            ) : p.kind === 'video' ? (
               <video src={p.media_url} poster={p.poster_url ?? undefined} controls preload="metadata" playsInline className="max-h-[70vh] w-full rounded-md bg-text" />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={p.media_url} alt={p.title} className="max-h-[70vh] w-full rounded-md border border-border object-contain" />
             )}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <span className="break-all font-mono text-[12.5px] text-textMuted">{file}</span>
-              <a href={p.media_url} download={file} className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">
-                ↓ Download {p.kind === 'video' ? 'video' : 'image'}
-              </a>
+              <span className="break-all font-mono text-[12.5px] text-textMuted">{p.media_url ? file : ''}</span>
+              <div className="flex flex-wrap items-start gap-2">
+                <MediaUploader postId={p.id} hasMedia={!!p.media_url} />
+                {p.media_url && (
+                  <a href={p.media_url} download={file} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">
+                    ↓ Download {p.kind === 'video' ? 'video' : 'image'}
+                  </a>
+                )}
+              </div>
             </div>
           </div>
+          {searchParams.upload === 'failed' && !p.media_url && (
+            <p role="alert" className="mt-2.5 rounded-lg bg-[#FBE9E7] px-3 py-2.5 text-[13.5px] text-red">The publication was created, but the file could not be sent. Add it again with the button above.</p>
+          )}
           <p className="mt-2.5 text-[13px] text-textMuted">You post it yourself: download the file here on the day, then paste the caption.</p>
           <div className="mt-5 rounded-xl bg-panel2 px-5 py-4 text-[13.5px] text-textSecondary">
             <div className="font-semibold text-text">Check before posting</div>

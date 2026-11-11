@@ -85,12 +85,12 @@ export default async function CalendarPage({ searchParams }: { searchParams: { m
             <div className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-textMuted">To publish today</div>
             <div className="mt-0.5 font-serif text-[22px] font-semibold leading-snug">{p.title}</div>
             <div className="text-[13px] text-textMuted">
-              {[PROJECTS[p.project].label, (FORMATS[p.format ?? 'chart'] ?? FORMATS.chart).label, ...p.platforms.map((x) => NETWORKS[x] ?? x), p.caption ? 'caption ready' : 'no caption yet'].join(' · ')}
+              {[PROJECTS[p.project].label, (FORMATS[p.format ?? 'chart'] ?? FORMATS.chart).label, ...p.platforms.map((x) => NETWORKS[x] ?? x), p.caption ? 'caption ready' : 'no caption yet', p.media_url ? '' : 'no visual yet'].filter(Boolean).join(' · ')}
             </div>
           </div>
           <div className="flex gap-2">
             <Link href={`/studio/publications/${p.id}`} className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium hover:border-text">Open</Link>
-            <a href={p.media_url} download className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">↓ Download</a>
+            {p.media_url && <a href={p.media_url} download={p.media_name ?? undefined} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">↓ Download</a>}
           </div>
         </div>
       ))}

@@ -7,7 +7,8 @@ export type Post = {
   slug: string;
   title: string;
   kind: 'video' | 'image';
-  media_url: string;
+  media_url: string | null;
+  media_name: string | null;
   poster_url: string | null;
   platforms: string[];
   status: 'draft' | 'scheduled' | 'published';
@@ -46,18 +47,31 @@ export const isProject = (v: unknown): v is Project => v === 'statlas' || v === 
 
 const MISSING = 'Service key missing: add SUPABASE_SERVICE_ROLE_KEY in Vercel.';
 
+// Les visuels envoyés depuis le Studio sont rangés dans le stockage privé (adresse « studio://chemin »).
+// Au moment d'afficher, on les remplace par un lien temporaire (1 h) ; les fichiers du site gardent leur adresse.
+const STORED = 'studio://';
+async function resolveMedia(posts: Post[]): Promise<Post[]> {
+  const db = adminClient();
+  const named = posts.map((p) => ({ ...p, media_name: p.media_url ? decodeURIComponent(p.media_url.split('/').pop() ?? '').replace(/^[0-9a-f-]{36}-/, '') || null : null }));
+  const paths = named.filter((p) => p.media_url?.startsWith(STORED)).map((p) => p.media_url!.slice(STORED.length));
+  if (!db || paths.length === 0) return named;
+  const { data } = await db.storage.from('studio').createSignedUrls(paths, 3600);
+  const byPath = new Map((data ?? []).map((d) => [d.path, d.signedUrl]));
+  return named.map((p) => (p.media_url?.startsWith(STORED) ? { ...p, media_url: byPath.get(p.media_url.slice(STORED.length)) ?? null } : p));
+}
+
 export async function getPosts(): Promise<{ posts: Post[]; error: string | null }> {
   const db = adminClient();
   if (!db) return { posts: [], error: MISSING };
   const { data, error } = await db.from('social_posts').select('*').order('scheduled_at', { ascending: true, nullsFirst: false });
-  return { posts: (data as Post[]) ?? [], error: error?.message ?? null };
+  return { posts: await resolveMedia((data as Post[]) ?? []), error: error?.message ?? null };
 }
 
 export async function getPost(id: string): Promise<Post | null> {
   const db = adminClient();
   if (!db || !/^[0-9a-f-]{36}$/i.test(id)) return null;
   const { data } = await db.from('social_posts').select('*').eq('id', id).maybeSingle();
-  return (data as Post) ?? null;
+  return data ? (await resolveMedia([data as Post]))[0] : null;
 }
 
 export async function getReadings(): Promise<{ readings: Reading[]; error: string | null }> {

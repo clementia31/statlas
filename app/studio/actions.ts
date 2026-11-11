@@ -1,7 +1,6 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { adminClient } from '@/lib/supabase-admin';
 import { BUCKET, FORMATS, NETWORKS, isIdeaKind, isProject, isUuid } from '@/lib/studio';
 
@@ -71,29 +70,65 @@ export async function setPublished(form: FormData) {
   revalidatePath('/studio', 'layout');
 }
 
-export async function createPost(form: FormData) {
+const POST_MEDIA = /^(image\/(jpeg|png|webp|gif)|video\/(mp4|quicktime|webm))$/;
+const MAX_MEDIA = 50 * 1024 * 1024;
+
+export async function createPost(input: {
+  title: string; project: string; format: string; date: string; time: string; platforms: string[]; mediaPath: string;
+}): Promise<{ id?: string; error?: string }> {
   const db = adminClient();
-  if (!db) return;
-  const title = String(form.get('title') || '').trim();
-  const media = String(form.get('media_url') || '').trim();
-  if (!title || !/^(\/|https:\/\/)/.test(media)) return;
-  const c = common(form);
-  const slug = `${title.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60)}-${Date.now().toString(36)}`;
-  const { data } = await db
+  if (!db) return { error: 'Service key missing.' };
+  const title = input.title.trim();
+  if (!title) return { error: 'A title is needed.' };
+  const media = input.mediaPath.trim();
+  if (media && !/^(\/|https:\/\/)/.test(media)) return { error: 'The path must start with / (a file of the site) or https://. Leave it empty to add the visual later.' };
+  const scheduled_at = input.date ? parisToIso(input.date, input.time || '12:00') : null;
+  const platforms = input.platforms.filter((p) => p in NETWORKS);
+  const slug = `${title.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'post'}-${Date.now().toString(36)}`;
+  const { data, error } = await db
     .from('social_posts')
     .insert({
-      ...c,
       slug,
-      title,
-      media_url: media,
+      title: title.slice(0, 200),
+      project: isProject(input.project) ? input.project : 'statlas',
+      format: input.format in FORMATS ? input.format : null,
+      scheduled_at,
+      platforms: platforms.length ? platforms : ['instagram', 'x'],
+      media_url: media || null,
       kind: /\.(mp4|mov|webm)$/i.test(media) ? 'video' : 'image',
-      status: c.scheduled_at ? 'scheduled' : 'draft',
-      platforms: c.platforms.length ? c.platforms : ['instagram', 'x'],
+      status: scheduled_at ? 'scheduled' : 'draft',
     })
     .select('id')
     .maybeSingle();
   revalidatePath('/studio', 'layout');
-  if (data?.id) redirect(`/studio/publications/${data.id}`);
+  if (error || !data) return { error: error?.message?.includes('media_url') ? 'A publication without a visual needs the latest database update (migration 015).' : error?.message ?? 'Could not create the publication.' };
+  return { id: data.id };
+}
+
+// Envoi du visuel d'une publication : même principe que pour les idées (adresse d'envoi à usage unique, stockage privé).
+export async function signPostUpload(postId: string, file: { name: string; type: string; size: number }): Promise<{ path?: string; signedUrl?: string; error?: string }> {
+  const db = adminClient();
+  if (!db || !isUuid(postId)) return { error: 'Not available.' };
+  if (!POST_MEDIA.test(file.type)) return { error: `${file.name}: only images (JPG, PNG, WebP, GIF) and videos (MP4, MOV, WebM) are accepted.` };
+  if (!(file.size > 0) || file.size > MAX_MEDIA) return { error: `${file.name}: larger than 50 MB.` };
+  const safe = file.name.normalize('NFD').replace(/[^\w.\-]+/g, '_').slice(-80) || 'file';
+  const path = `posts/${postId}/${crypto.randomUUID()}-${safe}`;
+  const { data, error } = await db.storage.from(BUCKET).createSignedUploadUrl(path);
+  return error || !data ? { error: error?.message ?? 'Could not prepare the upload.' } : { path, signedUrl: data.signedUrl };
+}
+
+export async function attachPostMedia(postId: string, path: string, file: { name: string; type: string }): Promise<{ error?: string }> {
+  const db = adminClient();
+  if (!db || !isUuid(postId) || !path.startsWith(`posts/${postId}/`) || path.includes('..')) return { error: 'Not available.' };
+  const folder = path.slice(0, path.lastIndexOf('/'));
+  const { data: found } = await db.storage.from(BUCKET).list(folder, { search: path.slice(folder.length + 1) });
+  if (!found || found.length === 0) return { error: `${file.name}: the file did not arrive.` };
+  const { error } = await db
+    .from('social_posts')
+    .update({ media_url: `studio://${path}`, kind: file.type.startsWith('video/') ? 'video' : 'image', poster_url: null, updated_at: new Date().toISOString() })
+    .eq('id', postId);
+  revalidatePath('/studio', 'layout');
+  return error ? { error: error.message } : {};
 }
 
 const METRICS = ['followers_instagram', 'followers_x', 'visitors', 'page_views', 'google_clicks'];

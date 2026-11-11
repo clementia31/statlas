@@ -1,23 +1,21 @@
 import Link from 'next/link';
 import StudioShell, { Eyebrow, Notice } from '@/components/studio/Shell';
-import { createPost } from '../actions';
+import PublicationComposer from '@/components/studio/PublicationComposer';
 import { FORMATS, NETWORKS, PROJECTS, Post, STATUS, dayKey, getPosts, isProject } from '@/lib/studio';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Publications · Studio', robots: { index: false, follow: false } };
-
-const field = 'h-11 w-full rounded-lg border border-borderStrong bg-panel px-3 text-[16px]';
 
 function Card({ p }: { p: Post }) {
   const f = FORMATS[p.format ?? 'chart'] ?? FORMATS.chart;
   return (
     <li className="overflow-hidden rounded-xl border border-border bg-panel">
       <Link href={`/studio/publications/${p.id}`} className="block">
-        {p.kind === 'video' && !p.poster_url ? (
-          <div className="flex aspect-[4/3] w-full items-center justify-center bg-panel2 text-[13px] text-textMuted">Video</div>
+        {!p.media_url || (p.kind === 'video' && !p.poster_url) ? (
+          <div className="flex aspect-[4/3] w-full items-center justify-center bg-panel2 text-[13px] text-textMuted">{p.media_url ? 'Video' : 'No visual yet'}</div>
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={p.kind === 'video' ? p.poster_url! : p.media_url} alt="" loading="lazy" className="aspect-[4/3] w-full bg-panel2 object-cover" />
+          <img src={p.kind === 'video' ? p.poster_url! : p.media_url!} alt="" loading="lazy" className="aspect-[4/3] w-full bg-panel2 object-cover" />
         )}
         <div className="p-3.5">
           <div className="text-[10.5px] font-semibold uppercase tracking-[0.1em]" style={{ color: f.color }}>
@@ -72,25 +70,14 @@ export default async function PublicationsPage({ searchParams }: { searchParams:
 
       <section id="new" className="mt-12 scroll-mt-6 rounded-xl border border-border bg-panel p-5">
         <h2 className="font-serif text-[22px] font-semibold">New publication</h2>
-        <p className="mt-1 text-[13.5px] text-textMuted">The image or video must already be on the site. Give its path (for example /social/my-chart.jpg) or a full https address.</p>
-        <form action={createPost} className="mt-4 grid gap-3 sm:grid-cols-2">
-          <label className="text-[13px] text-textSecondary sm:col-span-2">Title<input name="title" required defaultValue={searchParams.title ?? ''} className={`mt-1 ${field}`} /></label>
-          <label className="text-[13px] text-textSecondary sm:col-span-2">Image or video path<input name="media_url" required placeholder="/social/…" className={`mt-1 font-mono ${field}`} /></label>
-          <label className="text-[13px] text-textSecondary">Project
-            <select name="project" defaultValue={isProject(searchParams.project) ? searchParams.project : 'statlas'} className={`mt-1 ${field}`}>{(Object.keys(PROJECTS) as (keyof typeof PROJECTS)[]).map((k) => <option key={k} value={k}>{PROJECTS[k].label}</option>)}</select>
-          </label>
-          <label className="text-[13px] text-textSecondary">Format
-            <select name="format" defaultValue="chart" className={`mt-1 ${field}`}>{Object.entries(FORMATS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select>
-          </label>
-          <label className="text-[13px] text-textSecondary">Date (optional)<input type="date" name="date" className={`mt-1 ${field}`} /></label>
-          <label className="text-[13px] text-textSecondary">Time, Paris<input type="time" name="time" defaultValue="12:00" className={`mt-1 ${field}`} /></label>
-          <div className="flex flex-wrap gap-4 sm:col-span-2">
-            {Object.entries(NETWORKS).map(([k, v]) => (
-              <label key={k} className="flex min-h-11 items-center gap-2 text-[14px]"><input type="checkbox" name="platforms" value={k} defaultChecked={k !== 'gazette'} className="h-5 w-5" />{v}</label>
-            ))}
-          </div>
-          <div className="sm:col-span-2"><button className="h-11 rounded-lg bg-accent px-5 text-[14px] font-semibold text-white hover:opacity-90">Create</button></div>
-        </form>
+        <p className="mt-1 text-[13.5px] text-textMuted">Plan it now and add the image or video when it is ready, or send the file straight away.</p>
+        <PublicationComposer
+          projects={(Object.keys(PROJECTS) as (keyof typeof PROJECTS)[]).map((k) => ({ value: k, label: PROJECTS[k].label }))}
+          formats={Object.entries(FORMATS).map(([value, v]) => ({ value, label: v.label }))}
+          networks={Object.entries(NETWORKS).map(([value, label]) => ({ value, label }))}
+          initialTitle={searchParams.title ?? ''}
+          initialProject={isProject(searchParams.project) ? searchParams.project : 'statlas'}
+        />
       </section>
     </StudioShell>
   );
