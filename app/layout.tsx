@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import VisitBeacon from '@/components/VisitBeacon';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.statlasresearch.com'),
@@ -25,7 +26,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        {children}
+        <VisitBeacon />
+      </body>
     </html>
   );
 }

@@ -39,7 +39,7 @@
 - Territoires : les 37 territoires couverts par l'ONU (Réunion, Groenland, Gibraltar…) sont des entités `country` avec fiche d'identité ; 237 pays et territoires au total.
 - Maddison : dès qu'un graphique montre ces données, citer aussi les travaux d'origine listés dans l'onglet Sources du fichier (condition de la source, on ne peut pas l'assouplir).
 - Espaces : `public` (Statlas, Gazette, tables du Studio), `common` (journal, `fx_annual`), `immo`, `finance`, `studio` (vides).
-- Tables privées dans `public` : `article_drafts`, `social_posts`, `studio_metric_readings`, `studio_ideas`, `studio_idea_items`. Protection par ligne sans règle + droits retirés au public : seule la clé de service les lit.
+- Tables privées dans `public` : `article_drafts`, `social_posts`, `studio_metric_readings`, `studio_ideas`, `studio_idea_items`, `studio_visits_daily`, `studio_visitors_daily`, `studio_visitor_seen`. Protection par ligne sans règle + droits retirés au public : seule la clé de service les lit.
 - Fichiers privés du Studio : espace de stockage `studio` (20 Mo par fichier).
 - Offre gratuite : 500 Mo. `observations` et `obs_yearly` en occupent l'essentiel. Les données volumineuses vont sur le disque externe (DuckDB), seuls les agrégats vont en ligne.
 
@@ -52,5 +52,6 @@
 - `scripts/fetch_seeds.py` (collecte à la demande) ne récupère plus Maddison, UCDP, SIPRI, ONU ni V-Dem : ne pas les y remettre.
 - Pas de vérification automatique du style de code (ESLint non configuré) : seuls `tsc` et `next build` font foi.
 - Chaque indicateur a une fréquence de mise à jour (`update_frequency`) et la date de son dernier import (`last_checked_on`, tenue à jour par `refresh_statlas`).
-- Mesures du Studio saisies à la main : aucun compteur de visites branché.
+- Compteur de visites maison (migration 021) : `components/VisitBeacon.tsx` → `/api/visit` → totaux par jour dans `studio_visits_daily` / `studio_visitors_daily` (page, provenance, pays). Sans cookie ; l'empreinte du jour (`studio_visitor_seen`) est effacée le lendemain ; robots, pages du Studio et visites du propriétaire connecté non comptés. Abonnés et clics Google restent saisis à la main ; MyInvesta n'est pas couvert.
+- Idée notée, non lancée : comptes lecteurs pour commenter les articles de la Gazette (les commentaires vivent sur X pour l'instant).
 - `studio.finalea.fr` : le code le gère, le domaine reste à brancher (Vercel + OVH).
