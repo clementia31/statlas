@@ -3,7 +3,7 @@ src, out = sys.argv[1], sys.argv[2]
 if os.path.exists(out): os.remove(out)
 con = duckdb.connect(out)
 for sch in ['common','immo','finance','studio']: con.execute(f'create schema if not exists {sch}')
-skip = {'public.article_drafts','public.social_posts','public.studio_ideas','public.studio_idea_items','public.studio_metric_readings','common.import_log'}  # prive : pas dans la copie hors ligne
+skip = {'public.article_drafts','public.social_posts','public.studio_ideas','public.studio_idea_items','public.studio_metric_readings','public.studio_visits_daily','public.studio_visitors_daily','public.studio_visitor_seen','common.import_log'}  # prive : pas dans la copie hors ligne
 n = {}
 for f in sorted(glob.glob(f'{src}/data/*.jsonl')):
     name = os.path.basename(f)[:-6]

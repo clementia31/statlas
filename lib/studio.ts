@@ -86,6 +86,51 @@ export async function getReadings(): Promise<{ readings: Reading[]; error: strin
   return { readings: (data as Reading[]) ?? [], error: error?.message ?? null };
 }
 
+// ---- Compteur de visites (totaux par jour, voir data/migrations/021_studio_visits.sql)
+export type VisitSummary = {
+  first_day: string | null;
+  views: number;
+  visitors: number;
+  prev_views: number;
+  prev_visitors: number;
+  entries: number;
+  days: { day: string; views: number; visitors: number }[];
+  pages: { path: string; views: number }[];
+  sources: { source: string; views: number }[];
+  countries: { country: string; views: number }[];
+};
+export const addDays = (key: string, n: number) => {
+  const d = new Date(`${key}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+
+export async function getVisitSummary(project: Project, days: number): Promise<{ summary: VisitSummary | null; from: string; to: string; error: string | null }> {
+  const to = todayKey();
+  const from = addDays(to, -(days - 1));
+  const db = adminClient();
+  if (!db) return { summary: null, from, to, error: MISSING };
+  const { data, error } = await db.rpc('studio_visit_summary', { p_project: project, p_from: from, p_to: to });
+  if (error) return { summary: null, from, to, error: 'The visit counter is not installed in the database yet (migration 021).' };
+  return { summary: data as VisitSummary, from, to, error: null };
+}
+
+// Vues le jour d'une publication et le lendemain, sur la page liée (ou sur tout le projet si aucune page n'est liée).
+export async function getViewsAfter(project: Project, day: string, path: string | null): Promise<number | null> {
+  const db = adminClient();
+  if (!db) return null;
+  const { data, error } = await db.rpc('studio_views_after', { p_project: project, p_day: day, p_path: path });
+  return error ? null : Number(data ?? 0);
+}
+
+// Page du site liée à une figure de la semaine, retrouvée par son titre.
+export async function getFigureLinks(): Promise<Map<string, string>> {
+  const db = adminClient();
+  if (!db) return new Map();
+  const { data } = await db.from('chart_of_the_week').select('title, link_url');
+  return new Map(((data as { title: string; link_url: string | null }[]) ?? []).filter((r) => r.link_url).map((r) => [r.title, r.link_url as string]));
+}
+
 // ---- Idées et sujets à traiter
 export type Idea = {
   id: string;
