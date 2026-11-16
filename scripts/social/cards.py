@@ -42,10 +42,11 @@ def _frame(theme, title, subtitle, source, note=""):
     return fig, T
 
 
-def keyfigure(title, subtitle, before, after, unit, source, out, theme="statlas", note=""):
+def keyfigure(title, subtitle, before, after, unit, source, out, theme="statlas", note="", big="{:.0f}", small="{:.1f}"):
     """before / after = (libellé, valeur). La valeur d'arrivée est mise en avant."""
     fig, T = _frame(theme, title, subtitle, source, note)
-    fig.text(0.5, 0.60, f"{after[1]:.0f}", ha="center", va="center", fontproperties=T["year"], fontsize=250, color=T["accent"])
+    b = big.format(after[1])
+    fig.text(0.5, 0.60, b, ha="center", va="center", fontproperties=T["year"], fontsize=250 if len(b) <= 2 else 200, color=T["accent"])
     fig.text(0.5, 0.455, f"{unit} in {after[0]}", ha="center", va="center", fontproperties=T["label"], fontsize=34, color=T["ink"])
     fig.add_artist(Rectangle((0.2, 0.385), 0.6, 0.0015, transform=fig.transFigure, color=T["grid"]))
     # frise avant → après
@@ -54,7 +55,7 @@ def keyfigure(title, subtitle, before, after, unit, source, out, theme="statlas"
     for x, (lab, v), col in ((x0, before, T["palette"][1]), (x1, after, T["accent"])):
         fig.add_artist(FancyBboxPatch((x - 0.011, y - 0.011 * 1080 / 1350), 0.022, 0.022 * 1080 / 1350, boxstyle="round,pad=0,rounding_size=0.011",
                                       transform=fig.transFigure, color=col))
-        fig.text(x, y + 0.045, f"{v:.1f}", ha="center", va="center", fontproperties=T["num"], fontsize=40, color=T["ink"])
+        fig.text(x, y + 0.045, small.format(v), ha="center", va="center", fontproperties=T["num"], fontsize=40, color=T["ink"])
         fig.text(x, y - 0.04, str(lab), ha="center", va="center", fontproperties=T["sub"], fontsize=20, color=T["muted"])
     fig.savefig(out, facecolor=T["bg"]); plt.close(fig)
 
@@ -84,7 +85,7 @@ def _world(topo_path):
     return out
 
 
-def worldmap(values, title, subtitle, source, out, topo_path, theme="statlas", note="", unit="%", top=5, vmax=None, names=None):
+def worldmap(values, title, subtitle, source, out, topo_path, theme="statlas", note="", unit="%", top=5, vmax=None, names=None, vmin=0.0, val="{:.0f}", more=True, rank="highest", topval=None):
     """values = {iso2: valeur}. Les pays sans donnée restent en gris."""
     import pycountry
     fig, T = _frame(theme, title, subtitle, source, note)
@@ -105,24 +106,24 @@ def worldmap(values, title, subtitle, source, out, topo_path, theme="statlas", n
             if np.ptp(r[:, 0]) > 180:  # anneau à cheval sur l'antiméridien (Russie, Fidji) : on le ramène d'un seul côté
                 r = r.copy(); r[:, 0] = np.minimum(np.where(r[:, 0] < 0, r[:, 0] + 360, r[:, 0]), 180)
             x, y = _equal_earth(r[:, 0], r[:, 1]); polys.append(np.column_stack([x, y]))
-            cols.append(nodata if v is None else cmap(min(v / vmax, 1.0)))
+            cols.append(nodata if v is None else cmap(min(max((v - vmin) / (vmax - vmin), 0.0), 1.0)))
     ax.add_collection(PolyCollection(polys, facecolors=cols, edgecolors=T["bg"], linewidths=0.5))
     ax.set_xlim(-2.75, 2.75); ax.set_ylim(-1.05, 1.32)
     # légende
     lax = fig.add_axes([0.30, 0.405, 0.40, 0.012]); lax.imshow(np.linspace(0, 1, 256)[None, :], aspect="auto", cmap=cmap); lax.axis("off")
-    fig.text(0.29, 0.411, "0", ha="right", va="center", fontproperties=T["tick"], fontsize=13, color=T["muted"])
-    fig.text(0.71, 0.411, f"{vmax:.0f}{unit} and more", ha="left", va="center", fontproperties=T["tick"], fontsize=13, color=T["muted"])
+    fig.text(0.29, 0.411, val.format(vmin) + (unit if vmin else ""), ha="right", va="center", fontproperties=T["tick"], fontsize=13, color=T["muted"])
+    fig.text(0.71, 0.411, val.format(vmax) + unit + (" and more" if more else ""), ha="left", va="center", fontproperties=T["tick"], fontsize=13, color=T["muted"])
     fig.add_artist(Rectangle((0.84, 0.405), 0.022, 0.012, transform=fig.transFigure, color=nodata))
     fig.text(0.868, 0.411, "no data", ha="left", va="center", fontproperties=T["tick"], fontsize=13, color=T["muted"])
     # les plus hautes valeurs
-    order = sorted(values.items(), key=lambda kv: -kv[1])[:top]
-    fig.text(0.5, 0.362, "HIGHEST", ha="center", va="center", fontproperties=T["foot"], fontsize=13, color=T["accent"])
+    order = sorted(values.items(), key=lambda kv: kv[1] if rank == "lowest" else -kv[1])[:top]
+    fig.text(0.5, 0.362, rank.upper(), ha="center", va="center", fontproperties=T["foot"], fontsize=13, color=T["accent"])
     y0, h = 0.335, 0.033
     for i, (iso, v) in enumerate(order):
         y = y0 - h * i
         fig.text(0.27, y, f"{i + 1}", ha="center", va="center", fontproperties=T["year"], fontsize=19, color=T["accent"] if i == 0 else T["muted"])
         fig.text(0.31, y, names.get(iso) or country_name(iso), ha="left", va="center", fontproperties=T["label"], fontsize=19, color=T["ink"])
-        fig.text(0.73, y, f"{v:.0f}{unit}", ha="right", va="center", fontproperties=T["num"], fontsize=19, color=T["ink"])
+        fig.text(0.73, y, (topval or val).format(v) + unit, ha="right", va="center", fontproperties=T["num"], fontsize=19, color=T["ink"])
     fig.savefig(out, facecolor=T["bg"]); plt.close(fig)
 
 
