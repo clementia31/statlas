@@ -39,6 +39,7 @@
 - Fonctions d'import : `import_worldbank`, `import_imf_weo`, `import_psv`, `import_psv_at`, `import_translations`. Chaque import s'inscrit dans `common.import_log`.
 - L'unité d'une valeur vient de `indicators.unit` (plus de colonne `unit` sur `observations`).
 - États disparus (Allemagne de l'Ouest et de l'Est, Union soviétique, Yougoslavie, Tchécoslovaquie) : `iso_code` vide, ce qui les exclut des listes de pays du site ; `hist_code` (SU, YU, CS) sert aux imports par fichier ; dates dans `valid_from` / `valid_to`, successeurs dans `entity_relations`.
+- Monde et régions : entités `world` et `region` (colonne `wb_code` : WLD, EAS, ECS, LCN, MEA, NAC, SAS, SSF) portant les agrégats publiés par la Banque mondiale, jamais calculés par nous. `import_worldbank` les recharge avec les pays ; `import_worldbank_aggregates(code, slug)` les recharge seuls. Classements, cartes et listes ne lisent que le type `country` ; l'encadré « World and regions » des classements les affiche à part.
 - Territoires : les 37 territoires couverts par l'ONU (Réunion, Groenland, Gibraltar…) sont des entités `country` avec fiche d'identité ; 237 pays et territoires au total.
 - Maddison : dès qu'un graphique montre ces données, citer aussi les travaux d'origine listés dans l'onglet Sources du fichier (condition de la source, on ne peut pas l'assouplir).
 - Espaces : `public` (Statlas, Gazette, tables du Studio), `common` (journal, `fx_annual`), `immo`, `finance`, `studio` (vides).
