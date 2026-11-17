@@ -6,13 +6,13 @@ import { useState } from 'react';
 // Navigation principale (direction A : barre horizontale en haut)
 const ITEMS: { label: string; href: string; match: string[] }[] = [
   { label: 'Overview', href: '/', match: ['Overview'] },
-  { label: 'Indicators', href: '/indicateurs', match: ['Indicators'] },
-  { label: 'Map', href: '/carte', match: ['Map'] },
-  { label: 'Countries', href: '/pays', match: ['Countries'] },
+  { label: 'Indicators', href: '/indicators', match: ['Indicators'] },
+  { label: 'Map', href: '/map', match: ['Map'] },
+  { label: 'Countries', href: '/countries', match: ['Countries'] },
   { label: 'Rankings', href: '/rankings', match: ['Rankings'] },
   { label: 'Sport', href: '/sport', match: ['Sport'] },
   { label: 'Lists', href: '/lists', match: ['Lists'] },
-  { label: 'Compare', href: '/comparaisons', match: ['Comparisons', 'Benchmark', 'Compare'] },
+  { label: 'Compare', href: '/compare', match: ['Comparisons', 'Benchmark', 'Compare'] },
   { label: 'The Gazette', href: '/gazette', match: ['The Gazette'] },
 ];
 

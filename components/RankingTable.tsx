@@ -24,7 +24,7 @@ export default function RankingTable({ rows, unit, showScore = false, linkable =
               <td className="py-2 pl-4 sm:pl-0 pr-2 font-mono text-textMuted">{r.rank}</td>
               <td className="py-2 pr-2">
                 {linkable ? (
-                  <Link href={`/pays/${r.entity_slug}`} className="inline-flex items-center gap-2.5 text-text hover:text-accent">
+                  <Link href={`/countries/${r.entity_slug}`} className="inline-flex items-center gap-2.5 text-text hover:text-accent">
                     <Flag iso={r.iso_code} />
                     <span>{r.entity_name}</span>
                   </Link>

@@ -8,7 +8,7 @@ import Flag from '@/components/ui/Flag';
 import EmptyState from '@/components/ui/EmptyState';
 import RankingTable from '@/components/RankingTable';
 import YearSelect from '@/components/controls/YearSelect';
-import { getIndicatorMeta, getIndicatorYears, getYearValues, isCityIndicator, pickYear, rankValues } from '@/lib/data';
+import { getIndicatorMeta, getSourceLicence, getIndicatorYears, getYearValues, isCityIndicator, pickYear, rankValues } from '@/lib/data';
 import { formatValue } from '@/lib/format';
 
 // Lectures gardées une heure (voir lib/supabase.ts) : un robot qui repasse sur la page ne sollicite plus la base.
@@ -20,6 +20,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: `${meta.name} — world ranking ${meta.ref_year} | Statlas`,
     description: `${meta.ref_coverage} countries ranked by ${meta.name} in ${meta.ref_year}. Source: ${meta.source_name}.`,
+    // Une seule adresse de référence par classement, quelle que soit l'année choisie dans la page
+    alternates: { canonical: `/rankings/${meta.slug}` },
   };
 }
 
@@ -35,8 +37,29 @@ export default async function RankingPage({ params, searchParams }: { params: { 
   const city = isCityIndicator(meta.slug);
   const direction = meta.higher_is_better === null ? 'Sorted from highest to lowest' : meta.higher_is_better ? 'Higher is better' : 'Lower is better';
 
+  // Étiquette « jeu de données » (schema.org/Dataset) : invisible pour le visiteur, lue par Google Dataset Search et les assistants.
+  // Rien d'inventé : la licence n'est indiquée que si elle figure dans le registre des sources.
+  const lic = await getSourceLicence(meta.source_name);
+  const dataset = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: `${meta.name} — world ranking`,
+    description: meta.definition ?? `${meta.name}, by country.`,
+    url: `https://www.statlasresearch.com/rankings/${meta.slug}`,
+    isAccessibleForFree: true,
+    variableMeasured: meta.name,
+    ...(meta.first_year && meta.last_year ? { temporalCoverage: `${meta.first_year}/${meta.last_year}` } : {}),
+    spatialCoverage: 'World',
+    ...(meta.source_name ? { creator: { '@type': 'Organization', name: meta.source_name, ...(meta.source_url ? { url: meta.source_url } : {}) } } : {}),
+    ...(meta.dataset_title ? { isBasedOn: meta.dataset_title } : {}),
+    ...(lic?.licence_url ? { license: lic.licence_url } : {}),
+    publisher: { '@type': 'Organization', name: 'Statlas', url: 'https://www.statlasresearch.com' },
+    distribution: [{ '@type': 'DataDownload', encodingFormat: 'text/csv', contentUrl: `https://www.statlasresearch.com/api/export/${meta.slug}` }],
+  };
+
   return (
     <AppShell active="Rankings">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(dataset).replace(/</g, '\\u003c') }} />
       <Link href="/rankings" className="text-[13px] text-textMuted hover:text-accent">
         ← All rankings
       </Link>
@@ -53,7 +76,7 @@ export default async function RankingPage({ params, searchParams }: { params: { 
         <div className="rounded-xl border border-accent/50 bg-panel p-4">
           <div className="text-[12px] text-textMuted">{meta.higher_is_better === false ? 'Lowest' : 'Highest'} · {year}</div>
           {leader ? (
-            <Link href={city ? '#' : `/pays/${leader.entity_slug}`} className="mt-1 flex items-center gap-2 text-text hover:text-accent">
+            <Link href={city ? '#' : `/countries/${leader.entity_slug}`} className="mt-1 flex items-center gap-2 text-text hover:text-accent">
               <Flag iso={leader.iso_code} size="md" />
               <span className="font-serif text-[18px]">{leader.entity_name}</span>
             </Link>

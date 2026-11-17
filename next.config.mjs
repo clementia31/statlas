@@ -15,7 +15,18 @@ const nextConfig = {
       { source: '/admin/export-articles', destination: '/studio/export-articles', permanent: false },
       { source: '/admin/brouillon/:lang/:slug', destination: '/studio/articles/:lang/:slug', permanent: false },
     ];
-    return [...gazette, ...admin];
+    // Adresses passées en anglais (nov. 2026) : les anciennes adresses françaises redirigent définitivement, paramètres conservés
+    const english = [
+      ['pays', 'countries'],
+      ['indicateurs', 'indicators'],
+      ['carte', 'map'],
+      ['comparaisons', 'compare'],
+      ['bibliographie', 'bibliography'],
+    ].flatMap(([from, to]) => [
+      { source: `/${from}`, destination: `/${to}`, permanent: true },
+      { source: `/${from}/:path*`, destination: `/${to}/:path*`, permanent: true },
+    ]);
+    return [...gazette, ...admin, ...english];
   },
 };
 export default nextConfig;

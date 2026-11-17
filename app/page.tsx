@@ -55,7 +55,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
           return (
             <Link
               key={k.slug}
-              href={`/indicateurs?indicator=${k.slug}`}
+              href={`/indicators?indicator=${k.slug}`}
               className="border-b border-border px-3 py-4 hover:bg-panel transition-colors xl:[&:not(:last-child)]:border-r"
             >
               <div className="text-[13px] text-textMuted leading-tight min-h-[32px]">{k.label}</div>
@@ -107,7 +107,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
                 <li key={r.entity_slug} className="flex items-center gap-3 py-2">
                   <span className="w-7 text-right font-mono text-[13px] text-textMuted">{r.rank}</span>
                   <Flag iso={r.iso_code} />
-                  <Link href={`/pays/${r.entity_slug}`} className="flex-1 text-[14px] text-text hover:text-accent truncate">
+                  <Link href={`/countries/${r.entity_slug}`} className="flex-1 text-[14px] text-text hover:text-accent truncate">
                     {r.entity_name}
                   </Link>
                   <span className="font-mono text-[14px] text-text">{formatValue(r.value, meta.unit)}</span>
@@ -123,7 +123,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { href: '/pays', t: 'Country profiles', d: 'Every indicator for every country, with its world rank.' },
+          { href: '/countries', t: 'Country profiles', d: 'Every indicator for every country, with its world rank.' },
           { href: '/rankings', t: 'Rankings', d: 'Who leads and who lags, year by year.' },
           { href: '/benchmark', t: 'Benchmark', d: 'See where up to six countries stand among all countries.' },
           { href: '/gazette', t: 'The Gazette', d: 'Essays on the quantitative social sciences.' },

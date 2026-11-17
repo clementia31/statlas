@@ -11,6 +11,12 @@ import { getCountries, getCountryCatalog, getCountrySeries, getYearValues } from
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Compare countries | Statlas',
+  description: 'Compare countries side by side on any indicator, with sources and long-run series.',
+  alternates: { canonical: '/compare' },
+};
+
 // Colonnes du tableau comparatif : chaque colonne utilise l'année de référence de son indicateur
 const TABLE_INDICATORS = [
   { slug: 'population-total', label: 'Population' },
@@ -83,7 +89,7 @@ export default async function ComparisonsPage({ searchParams }: { searchParams: 
               <CountrySelector
                 selected={selected.map((s) => ({ slug: s, name: nameOf.get(s) ?? s }))}
                 allCountries={countries.map((c) => ({ slug: c.slug, name_default: c.name }))}
-                basePath="/comparaisons"
+                basePath="/compare"
                 baseParams={{ indicator: chartMeta.slug }}
               />
             </div>

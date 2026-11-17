@@ -66,6 +66,13 @@ export async function getIndicatorMeta(slug: string): Promise<IndicatorMeta | nu
   return (data as IndicatorMeta) ?? null;
 }
 
+// Licence de la source d'un indicateur (registre `sources`), pour l'étiquette « jeu de données » lue par les moteurs de recherche
+export async function getSourceLicence(sourceName: string | null): Promise<{ licence: string | null; licence_url: string | null } | null> {
+  if (!sourceName) return null;
+  const { data } = await supabase.from('sources').select('licence, licence_url').eq('name', sourceName).maybeSingle();
+  return data ?? null;
+}
+
 export async function getIndicatorYears(slug: string): Promise<YearInfo[]> {
   const { data, error } = await supabase
     .from('indicator_years')

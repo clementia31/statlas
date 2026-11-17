@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import ArticleBody from '@/components/gazette/ArticleBody';
@@ -7,6 +8,20 @@ import { getDomainBySlug, getArticlesByDomain, getDisciplines, getRelatedForArti
 import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const domain = await getDomainBySlug(params.slug);
+  if (domain) return { title: `${domain.name} — The Statlas Gazette`, alternates: { canonical: `/gazette/${domain.slug}` } };
+  const article = await getArticleBySlug(params.slug);
+  if (!article) return { title: 'Article not found — The Statlas Gazette' };
+  const description = article.subtitle ?? undefined;
+  return {
+    title: `${article.title} — The Statlas Gazette`,
+    description,
+    alternates: { canonical: `/gazette/${article.slug}` },
+    openGraph: { type: 'article', title: article.title, description, publishedTime: article.published_at ?? undefined, authors: article.author_name ? [article.author_name] : undefined },
+  };
+}
 
 export default async function GazetteSlugPage({
   params,
@@ -175,7 +190,7 @@ export default async function GazetteSlugPage({
                 {indicators.map((i) => (
                   <Link
                     key={i.slug}
-                    href={`/indicateurs?indicator=${i.slug}`}
+                    href={`/indicators?indicator=${i.slug}`}
                     className="inline-flex h-11 items-center border border-ink px-3.5 font-sans text-[14px] hover:bg-ink hover:text-paper"
                   >
                     {i.name_default}
@@ -184,7 +199,7 @@ export default async function GazetteSlugPage({
                 {countries.map((c) => (
                   <Link
                     key={c.slug}
-                    href={`/pays/${c.slug}`}
+                    href={`/countries/${c.slug}`}
                     className="inline-flex h-11 items-center border border-rule px-3.5 font-sans text-[14px] hover:bg-ink hover:text-paper"
                   >
                     {c.name_default}

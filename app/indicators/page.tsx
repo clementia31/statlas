@@ -16,6 +16,12 @@ import { formatValue, isAdditive, unitLabel } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Indicators — sourced world statistics | Statlas',
+  description: 'Browse every indicator: world map, trend, ranking and metadata, with the source and licence of each dataset.',
+  alternates: { canonical: '/indicators' },
+};
+
 const TABS = [
   { key: 'overview', label: 'Overview' },
   { key: 'map', label: 'Map' },
@@ -46,7 +52,7 @@ export default async function IndicatorsPage({ searchParams }: { searchParams: {
   const href = (t: string) => {
     const p = new URLSearchParams({ indicator: meta.slug, tab: t });
     if (searchParams.year) p.set('year', searchParams.year);
-    return `/indicateurs?${p.toString()}`;
+    return `/indicators?${p.toString()}`;
   };
 
   // Statistiques descriptives de l'année affichée

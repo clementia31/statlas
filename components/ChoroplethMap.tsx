@@ -105,7 +105,7 @@ export default function ChoroplethMap({
                 stroke="#F7F5EF"
                 strokeWidth={0.5 / zoom}
                 className={d ? 'cursor-pointer hover:opacity-80' : ''}
-                onClick={() => d && router.push(`/pays/${d.slug}`)}
+                onClick={() => d && router.push(`/countries/${d.slug}`)}
                 onMouseMove={(e) => {
                   const r = wrapRef.current?.getBoundingClientRect();
                   if (!r) return;

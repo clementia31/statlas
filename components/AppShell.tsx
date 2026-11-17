@@ -15,7 +15,7 @@ export default function AppShell({ active, children, paper = false }: { active: 
           </span>
           <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2">
             <Link href="/benchmark" className="hover:text-accent">Benchmark</Link>
-            <Link href="/bibliographie" className="hover:text-accent">Bibliography</Link>
+            <Link href="/bibliography" className="hover:text-accent">Bibliography</Link>
             <Link href="/api-export" className="hover:text-accent">Export &amp; API</Link>
           </nav>
         </div>

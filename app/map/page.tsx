@@ -9,6 +9,12 @@ import { DEFAULT_INDICATOR, getAllYearValues, getCountryCatalog } from '@/lib/da
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'World map of statistics | Statlas',
+  description: 'Explore any indicator on a world map, year by year, with its source.',
+  alternates: { canonical: '/map' },
+};
+
 export default async function MapPage({ searchParams }: { searchParams: { indicator?: string } }) {
   const catalog = await getCountryCatalog();
   const meta = catalog.find((c) => c.slug === searchParams.indicator) ?? catalog.find((c) => c.slug === DEFAULT_INDICATOR) ?? catalog[0];

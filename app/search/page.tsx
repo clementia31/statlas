@@ -37,7 +37,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
           <Panel title="Countries">
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {countries.map((c) => (
-                <Link key={c.slug} href={`/pays/${c.slug}`} className="flex items-center gap-2.5 rounded-lg border border-border px-3 py-2 text-[14px] text-text hover:border-accent">
+                <Link key={c.slug} href={`/countries/${c.slug}`} className="flex items-center gap-2.5 rounded-lg border border-border px-3 py-2 text-[14px] text-text hover:border-accent">
                   <Flag iso={c.iso_code} />
                   {c.name_default}
                 </Link>
@@ -50,7 +50,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
             <ul className="divide-y divide-border">
               {indicators.map((i) => (
                 <li key={i.slug}>
-                  <Link href={`/indicateurs?indicator=${i.slug}`} className="block py-2.5 text-[14px] text-text hover:text-accent">
+                  <Link href={`/indicators?indicator=${i.slug}`} className="block py-2.5 text-[14px] text-text hover:text-accent">
                     {i.name_default}
                   </Link>
                 </li>

@@ -13,7 +13,9 @@ export const metadata: Metadata = {
     title: 'Statlas — Sourced world statistics',
     description: 'Free, sourced statistics on every country, harmonised from the IMF, UNDP, OECD and UN.',
     type: 'website',
+    siteName: 'Statlas',
   },
+  twitter: { card: 'summary_large_image' },
 };
 
 export const viewport: Viewport = {

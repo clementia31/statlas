@@ -47,7 +47,7 @@ export default function CountryDirectory({ countries }: { countries: DirCountry[
         {filtered.map((c) => (
           <Link
             key={c.slug}
-            href={`/pays/${c.slug}`}
+            href={`/countries/${c.slug}`}
             className="flex items-center gap-3 rounded-lg border border-border bg-panel px-3 py-2.5 hover:border-accent transition-colors"
           >
             <Flag iso={c.iso} size="md" />

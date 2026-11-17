@@ -6,6 +6,12 @@ import { regionOf } from '@/lib/iso';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Countries and territories — key statistics | Statlas',
+  description: 'Profiles of 237 countries and territories: economy, population, development, health and environment, with the source of every figure.',
+  alternates: { canonical: '/countries' },
+};
+
 export default async function CountriesPage() {
   const countries = await getCountries();
   return (

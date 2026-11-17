@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: `${e.name_default} — key statistics | Statlas`,
     description: `GDP, population, human development, life expectancy and more for ${e.name_default}, with sources and world rankings.`,
+    alternates: { canonical: `/countries/${e.slug}` },
   };
 }
 
@@ -75,7 +76,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
 
   return (
     <AppShell active="Countries">
-      <Link href="/pays" className="text-[13px] text-textMuted hover:text-accent">
+      <Link href="/countries" className="text-[13px] text-textMuted hover:text-accent">
         ← All countries
       </Link>
 
@@ -117,7 +118,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
               .map((i) => (
                 <Link
                   key={i.meta.slug}
-                  href={`/pays/${entity.slug}?trend=${i.meta.slug}`}
+                  href={`/countries/${entity.slug}?trend=${i.meta.slug}`}
                   scroll={false}
                   className={`inline-flex h-10 shrink-0 whitespace-nowrap items-center rounded-full border px-3.5 text-[13px] ${
                     i.meta.slug === trendSlug ? 'border-text bg-text text-white' : 'border-borderStrong bg-panel text-text hover:border-accent'

@@ -6,6 +6,7 @@
 
 - **Statlas** : statistiques mondiales sourcées, gratuites. En ligne : https://www.statlasresearch.com
 - **The Gazette** : les articles, dans `/gazette`.
+- Adresses publiques en anglais : `/countries`, `/indicators`, `/map`, `/compare`, `/bibliography`, `/rankings`, `/lists`. Les anciennes adresses françaises (`/pays`, `/indicateurs`, `/carte`, `/comparaisons`, `/bibliographie`) redirigent définitivement (`next.config.mjs`) : ne pas les réutiliser.
 - **Studio** : administration privée dans `/studio` (calendrier, publications, mesures, idées, articles, organisation). Couvre Statlas, Gazette et MyInvesta.
 - Next.js 14 (App Router) + Supabase (projet `pkphpvarzbfqmugsjyom`), déployé par Vercel à chaque envoi sur `main`.
 - Projets voisins, hors de ce dépôt : MyInvesta (dépôt `investa`, base Supabase séparée, données internes) et Finalea (base séparée, personnelle).
@@ -55,4 +56,5 @@
 - Pas de vérification automatique du style de code (ESLint non configuré) : seuls `tsc` et `next build` font foi.
 - Chaque indicateur a une fréquence de mise à jour (`update_frequency`) et la date de son dernier import (`last_checked_on`, tenue à jour par `refresh_statlas`).
 - Mesures du Studio saisies à la main : aucun compteur de visites branché.
+- Référencement (nov. 2026) : image d'aperçu par page (`lib/og.tsx` et fichiers `opengraph-image.tsx`), adresse de référence par page (canonical), étiquette « jeu de données » sur chaque classement (schema.org/Dataset, licence seulement si elle est dans `sources`), plan du site avec articles et listes. Reste à faire par Clem : déclarer le site dans Google Search Console et Bing Webmaster Tools.
 - `studio.finalea.fr` : le code le gère, le domaine reste à brancher (Vercel + OVH).
