@@ -99,6 +99,23 @@ export async function getYearValues(slug: string, year: number): Promise<YearVal
   return (data ?? []).map((r) => ({ ...r, value: Number(r.value), year: Number(r.year) }));
 }
 
+export type Aggregate = { slug: string; name: string; kind: 'world' | 'region'; value: number };
+
+// Valeurs « Monde » et par région publiées par la source elle-même (agrégats de la Banque mondiale) :
+// jamais calculées par nous, jamais mêlées au classement des pays. Liste vide si la source n'en publie pas.
+export async function getAggregates(slug: string, year: number): Promise<Aggregate[]> {
+  const { data, error } = await supabase
+    .from('obs_values')
+    .select('entity_slug, entity_name, entity_type, value')
+    .eq('indicator_slug', slug)
+    .eq('year', year)
+    .in('entity_type', ['world', 'region'])
+    .order('entity_name', { ascending: true });
+  if (error) console.error('getAggregates:', error.message);
+  const rows = (data ?? []).map((r: any) => ({ slug: r.entity_slug, name: r.entity_name, kind: r.entity_type as 'world' | 'region', value: Number(r.value) }));
+  return [...rows.filter((r) => r.kind === 'world'), ...rows.filter((r) => r.kind === 'region')];
+}
+
 // Toutes les années d'un indicateur (pour la carte animée)
 export async function getAllYearValues(slug: string): Promise<Record<number, YearValue[]>> {
   const entityType = isCityIndicator(slug) ? 'city' : 'country';
