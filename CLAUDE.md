@@ -33,6 +33,7 @@
 ## Base de données : à savoir
 
 - Après un import : `select public.refresh_statlas();` (obs_yearly, indicator_stats, indicator_catalog). Sans cela le site garde les anciennes valeurs.
+- Le site public garde chaque lecture de la base une heure (`PUBLIC_CACHE_SECONDS` dans `lib/supabase.ts`) : une nouvelle valeur, un article ou la figure de la semaine peuvent mettre jusqu'à une heure à apparaître. Le Studio lit en direct. Ne pas retirer ce cache : sans lui, un robot qui parcourt les fiches pays épuise le budget disque de l'offre gratuite Supabase (incident du 16-17 nov. 2026).
 - Fonctions d'import : `import_worldbank`, `import_imf_weo`, `import_psv`, `import_psv_at`, `import_translations`. Chaque import s'inscrit dans `common.import_log`.
 - L'unité d'une valeur vient de `indicators.unit` (plus de colonne `unit` sur `observations`).
 - États disparus (Allemagne de l'Ouest et de l'Est, Union soviétique, Yougoslavie, Tchécoslovaquie) : `iso_code` vide, ce qui les exclut des listes de pays du site ; `hist_code` (SU, YU, CS) sert aux imports par fichier ; dates dans `valid_from` / `valid_to`, successeurs dans `entity_relations`.

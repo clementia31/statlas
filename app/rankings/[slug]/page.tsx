@@ -11,7 +11,8 @@ import YearSelect from '@/components/controls/YearSelect';
 import { getIndicatorMeta, getIndicatorYears, getYearValues, isCityIndicator, pickYear, rankValues } from '@/lib/data';
 import { formatValue } from '@/lib/format';
 
-export const dynamic = 'force-dynamic';
+// Lectures gardées une heure (voir lib/supabase.ts) : un robot qui repasse sur la page ne sollicite plus la base.
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const meta = await getIndicatorMeta(params.slug);

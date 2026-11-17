@@ -13,7 +13,8 @@ import { getCountryForecasts, getCountryIndicators, getCountrySeries } from '@/l
 import { formatValue, shortSource } from '@/lib/format';
 import { regionOf, ISO } from '@/lib/iso';
 
-export const dynamic = 'force-dynamic';
+// Lectures gardées une heure (voir lib/supabase.ts) : un robot qui repasse sur la page ne sollicite plus la base.
+export const revalidate = 3600;
 
 async function getEntity(slug: string) {
   const { data } = await supabase

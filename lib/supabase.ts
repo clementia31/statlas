@@ -3,11 +3,21 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Pas de cache Next.js sur les requêtes Supabase : le site affiche toujours l'état actuel de la base
-// (sinon Vercel peut servir indéfiniment d'anciennes réponses, même après un redéploiement).
+// Durée pendant laquelle une lecture publique est gardée en mémoire par le site (en secondes).
+// Sans cela, chaque page vue relance toutes ses requêtes : un robot qui parcourt le site suffit à saturer la base.
+// La base ne change qu'aux imports : une heure de délai au plus avant qu'une nouvelle valeur apparaisse.
+export const PUBLIC_CACHE_SECONDS = 3600;
+
+// Seules les lectures (GET) sont gardées, sur toutes les pages publiques (vérifié : même celles en `force-dynamic`).
+// Jamais de cache illimité. Le Studio lit toujours la base en direct (lib/supabase-admin.ts).
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
-    fetch: (input: any, init?: any) => fetch(input, { ...init, cache: 'no-store' }),
+    fetch: (input: any, init?: any) => {
+      const method = String(init?.method ?? 'GET').toUpperCase();
+      return method === 'GET' || method === 'HEAD'
+        ? fetch(input, { ...init, next: { revalidate: PUBLIC_CACHE_SECONDS } })
+        : fetch(input, { ...init, cache: 'no-store' });
+    },
   },
 });
 
