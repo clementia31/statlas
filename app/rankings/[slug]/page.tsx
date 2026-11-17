@@ -8,8 +8,8 @@ import Flag from '@/components/ui/Flag';
 import EmptyState from '@/components/ui/EmptyState';
 import RankingTable from '@/components/RankingTable';
 import YearSelect from '@/components/controls/YearSelect';
-import { getIndicatorMeta, getSourceLicence, getIndicatorYears, getYearValues, isCityIndicator, pickYear, rankValues } from '@/lib/data';
-import { formatValue } from '@/lib/format';
+import { getAggregates, getIndicatorMeta, getSourceLicence, getIndicatorYears, getYearValues, isCityIndicator, pickYear, rankValues } from '@/lib/data';
+import { formatValue, shortSource } from '@/lib/format';
 
 // Lectures gardées une heure (voir lib/supabase.ts) : un robot qui repasse sur la page ne sollicite plus la base.
 export const revalidate = 3600;
@@ -31,7 +31,7 @@ export default async function RankingPage({ params, searchParams }: { params: { 
 
   const years = await getIndicatorYears(meta.slug);
   const year = pickYear(years, searchParams.year, meta.ref_year) ?? meta.ref_year;
-  const rows = await getYearValues(meta.slug, year);
+  const [rows, aggregates] = await Promise.all([getYearValues(meta.slug, year), getAggregates(meta.slug, year)]);
   const ranked = rankValues(rows, meta.higher_is_better);
   const leader = ranked[0];
   const city = isCityIndicator(meta.slug);
@@ -96,6 +96,23 @@ export default async function RankingPage({ params, searchParams }: { params: { 
           {meta.higher_is_better !== null && <div className="text-[12px] text-textMuted mt-1">Score: 0 = worst, 100 = best in {year}</div>}
         </div>
       </div>
+
+      {aggregates.length > 0 && (
+        <section aria-label="World and regions" className="mb-6 rounded-xl border border-border bg-panel p-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <h2 className="font-serif text-[18px] font-semibold">World and regions · {year}</h2>
+            <p className="text-[12px] text-textMuted">Aggregates published by the {shortSource(meta.source_name)}, not computed by Statlas. Not part of the ranking.</p>
+          </div>
+          <dl className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-4">
+            {aggregates.map((a) => (
+              <div key={a.slug} className={`flex min-w-0 items-baseline justify-between gap-3 border-b border-border py-1.5 ${a.kind === 'world' ? 'font-semibold' : ''}`}>
+                <dt className="min-w-0 truncate text-[13.5px]" title={a.name}>{a.name}</dt>
+                <dd className="shrink-0 font-mono text-[13.5px]">{formatValue(a.value, meta.unit)}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
 
       <Panel
         title={`Ranking ${year}`}
