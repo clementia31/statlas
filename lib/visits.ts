@@ -1,7 +1,7 @@
 // Compteur de visites : règles communes (qui compter, comment nommer la provenance).
 // Aucune donnée personnelle n'est conservée : seulement des totaux par jour.
 
-export const BOT = /bot|crawl|spider|slurp|preview|monitor|headless|lighthouse|pingdom|uptime|curl|wget|python|scrapy|httpclient|facebookexternalhit|whatsapp|telegram|discord|vercel/i;
+export const BOT = /bot|crawl|spider|slurp|preview|monitor|headless|lighthouse|pingdom|uptime|curl|wget|python|scrapy|httpclient|facebookexternalhit|facebot|meta-|whatsapp|telegram|discord|vercel/i;
 
 export function projectOf(path: string): 'statlas' | 'gazette' {
   return path === '/gazette' || path.startsWith('/gazette/') ? 'gazette' : 'statlas';
