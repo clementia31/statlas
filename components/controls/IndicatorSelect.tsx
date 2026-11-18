@@ -1,13 +1,12 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export type IndicatorOption = { slug: string; name: string; category: string | null };
 
 export default function IndicatorSelect({ options, value, param = 'indicator' }: { options: IndicatorOption[]; value: string; param?: string }) {
   const router = useRouter();
   const pathname = usePathname();
-  const sp = useSearchParams();
 
   const groups = new Map<string, IndicatorOption[]>();
   for (const o of options) {
@@ -22,7 +21,7 @@ export default function IndicatorSelect({ options, value, param = 'indicator' }:
       <select
         value={value}
         onChange={(e) => {
-          const p = new URLSearchParams(sp.toString());
+          const p = new URLSearchParams(window.location.search);
           p.set(param, e.target.value);
           p.delete('year');
           router.push(`${pathname}?${p.toString()}`);

@@ -1,13 +1,15 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+// Les paramètres de l'adresse sont lus au moment du clic (window.location) et non avec useSearchParams :
+// sinon toute la page préparée à l'avance serait rendue dans le navigateur, et les robots ne verraient qu'un écran de chargement.
+
+import { usePathname, useRouter } from 'next/navigation';
 
 export type YearOption = { year: number; n_countries: number; is_projection: boolean };
 
 export default function YearSelect({ years, value, refYear }: { years: YearOption[]; value: number; refYear?: number | null }) {
   const router = useRouter();
   const pathname = usePathname();
-  const sp = useSearchParams();
 
   return (
     <label className="flex flex-col gap-1">
@@ -15,7 +17,7 @@ export default function YearSelect({ years, value, refYear }: { years: YearOptio
       <select
         value={value}
         onChange={(e) => {
-          const p = new URLSearchParams(sp.toString());
+          const p = new URLSearchParams(window.location.search);
           p.set('year', e.target.value);
           router.push(`${pathname}?${p.toString()}`);
         }}
