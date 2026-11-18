@@ -569,6 +569,17 @@
     "NG",
     "BR"
    ]
+  },
+  {
+   "slug": "vid-tour-de-france-race",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "bars",
+   "channel": "x, instagram",
+   "indicator": "tour-de-france-wins",
+   "title": "Who wins the Tour de France?",
+   "period": "1903-2026",
+   "selection": "top 10"
   }
  ]
 }
