@@ -636,6 +636,17 @@
     "ML",
     "SN"
    ]
+  },
+  {
+   "slug": "img-nobel-per-million",
+   "made": "2026-11-18",
+   "kind": "image",
+   "format": "ranking",
+   "channel": "x, instagram",
+   "indicator": "nobel-laureates-per-million",
+   "title": "Nobel Prizes per million people",
+   "period": "1901-2026",
+   "selection": "top 10 (over 1m people)"
   }
  ]
 }
