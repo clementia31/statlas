@@ -253,7 +253,12 @@ class Race:
             ax.add_artist(AnnotationBbox(OffsetImage(self.flags[iso], zoom=0.34 * self.k), (t + dx, pos[iso]), frameon=False, annotation_clip=False))
             ax.text(t + dx * 1.9 * self.k ** .5, pos[iso] + gap * 0.18, self.names[iso], color=col, fontproperties=T["label"], fontsize=17 * self.k, va="center")
             ax.text(t + dx * 1.9 * self.k ** .5, pos[iso] - gap * 0.22, fmt(cur[iso], a.unit, self.integer), color=T["ink"], fontproperties=T["num"], fontsize=18 * self.k, va="center")
-        fig.text(0.5, 0.183, f"Source{' :' if FR else ':'} {a.source}", ha="center", fontproperties=T["sub"], fontsize=13.5, color=T["muted"])
+        src = f"Source{' :' if FR else ':'} {a.source}"
+        if len(src) <= 100:
+            fig.text(0.5, 0.183, src, ha="center", fontproperties=T["sub"], fontsize=13.5, color=T["muted"])
+        else:   # source longue (ex. Maddison et ses travaux d'origine) : plusieurs lignes, plus petit
+            import textwrap
+            fig.text(0.5, 0.207, "\n".join(textwrap.wrap(src, 146)), ha="center", va="top", fontproperties=T["sub"], fontsize=9.2, color=T["muted"], linespacing=1.25)
         yr = f"{int(np.floor(t + 1e-9))}"
         if T["year_style"] == "rule":
             fig.text(0.5, 0.112, yr, ha="center", va="center", fontproperties=T["year"], fontsize=72, color=T["ink"])
