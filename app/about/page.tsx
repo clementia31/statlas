@@ -84,7 +84,6 @@ export default function AboutPage() {
               Statlas is an independent, non-commercial project published under the name Statlas Research. It is not affiliated with any of the organisations it
               cites.
             </p>
-            <p className="mt-2.5 text-[13px] leading-relaxed text-textMuted">Hosted by Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, United States.</p>
           </section>
           <section id="contact" className={card}>
             <h2 className={cardTitle}>Contact and corrections</h2>
