@@ -44,6 +44,7 @@ ALIAS = {
 def iso(name):
     n = re.sub(r"\[.*?\]|[*‡†^]|\(.*?\)", "", str(name)).strip().lower()
     n = re.sub(r"\s+", " ", n)
+    if not n: return "??"   # drapeau absent (athlète sous bannière neutre) : ne jamais deviner un pays
     if n in ALIAS: return ALIAS[n]
     try:
         return pycountry.countries.lookup(n).alpha_2
@@ -142,6 +143,11 @@ def table_with(f, words):
     return next(t for t in s.select("table.wikitable") if all(w in t.get_text()[:600] for w in words))
 
 
+# Joueurs et joueuses que la source affiche sans drapeau (bannière neutre). Sans cette table, le titre n'est attribué à aucun pays.
+# Erreur corrigée le 18 nov. 2026 : cinq titres féminins (2023-2026) avaient été attribués au Royaume-Uni par défaut.
+NEUTRAL_PLAYERS = {"Aryna Sabalenka": "Belarus", "Mirra Andreeva": "Russia"}
+
+
 def grand_slams(f):
     t = table_with(f, ["Australian", "Wimbledon"]); out = []
     for tr in t.select("tr"):
@@ -149,7 +155,10 @@ def grand_slams(f):
         m = re.match(r"(18|19|20)\d{2}", cells[0].get_text(strip=True)) if cells else None
         if not m: continue
         for c in cells[1:]:
-            out += [(int(m.group(0)), n) for n in flags(c)]
+            for n in flags(c):
+                if not (n or "").strip():   # joueuse affichée sans drapeau depuis 2022 : nationalité renseignée ici, à la main
+                    n = next((country for player, country in NEUTRAL_PLAYERS.items() if player in c.get_text(" ", strip=True)), "")
+                out.append((int(m.group(0)), n))
     return out
 
 
