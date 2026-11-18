@@ -7,7 +7,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import { supabase } from '@/lib/supabase';
 import { getYearValues, type IndicatorMeta } from '@/lib/data';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'Sport & space — titles, medals and satellites by country | Statlas',

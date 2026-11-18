@@ -6,7 +6,7 @@ import Flag from '@/components/ui/Flag';
 import { getCountryCatalog, getPodiums } from '@/lib/data';
 import { formatValue } from '@/lib/format';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'World rankings — every indicator ranked | Statlas',

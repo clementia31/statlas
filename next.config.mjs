@@ -26,7 +26,35 @@ const nextConfig = {
       { source: `/${from}`, destination: `/${to}`, permanent: true },
       { source: `/${from}/:path*`, destination: `/${to}/:path*`, permanent: true },
     ]);
-    return [...gazette, ...admin, ...english];
+    // Sur un domaine studio.* (ex. studio.finalea.fr), l'accueil mène directement au Studio
+    const studio = [{ source: '/', has: [{ type: 'host', value: 'studio\\..*' }], destination: '/studio', permanent: false }];
+    return [...gazette, ...admin, ...english, ...studio];
+  },
+  // Les pages publiques sont préparées à l'avance (statiques, renouvelées chaque heure). Quand l'adresse porte un paramètre
+  // (?year=, ?indicator=…), la demande est servie par la page jumelle sous /q, calculée à la demande. L'adresse visible ne change pas.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: '/', has: [{ type: 'query', key: 'indicator' }], destination: '/q/overview' },
+        { source: '/', has: [{ type: 'query', key: 'year' }], destination: '/q/overview' },
+        { source: '/indicators', has: [{ type: 'query', key: 'indicator' }], destination: '/q/indicators' },
+        { source: '/indicators', has: [{ type: 'query', key: 'year' }], destination: '/q/indicators' },
+        { source: '/indicators', has: [{ type: 'query', key: 'tab' }], destination: '/q/indicators' },
+        { source: '/map', has: [{ type: 'query', key: 'indicator' }], destination: '/q/map' },
+        { source: '/compare', has: [{ type: 'query', key: 'indicator' }], destination: '/q/compare' },
+        { source: '/compare', has: [{ type: 'query', key: 'countries' }], destination: '/q/compare' },
+        { source: '/benchmark', has: [{ type: 'query', key: 'countries' }], destination: '/q/benchmark' },
+        { source: '/benchmark', has: [{ type: 'query', key: 'mode' }], destination: '/q/benchmark' },
+        { source: '/benchmark', has: [{ type: 'query', key: 'preset' }], destination: '/q/benchmark' },
+        { source: '/benchmark', has: [{ type: 'query', key: 'view' }], destination: '/q/benchmark' },
+        { source: '/bibliography', has: [{ type: 'query', key: 'q' }], destination: '/q/bibliography' },
+        { source: '/gazette/archive', has: [{ type: 'query', key: 'year' }], destination: '/q/gazette-archive' },
+        { source: '/gazette/archive', has: [{ type: 'query', key: 'domain' }], destination: '/q/gazette-archive' },
+        { source: '/gazette/archive', has: [{ type: 'query', key: 'type' }], destination: '/q/gazette-archive' },
+        { source: '/rankings/:slug', has: [{ type: 'query', key: 'year' }], destination: '/q/rankings/:slug' },
+        { source: '/countries/:slug', has: [{ type: 'query', key: 'trend' }], destination: '/q/countries/:slug' },
+      ],
+    };
   },
 };
 export default nextConfig;

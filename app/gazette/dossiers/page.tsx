@@ -3,7 +3,7 @@ import AppShell from '@/components/AppShell';
 import { getDossiers } from '@/lib/gazette';
 import { CompactMasthead, GazettePage } from '@/components/gazette/Gazette';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'Dossiers — The Statlas Gazette',

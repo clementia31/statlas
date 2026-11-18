@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Espace privé (/studio) : accessible seulement avec la clé ADMIN_KEY (variable d'environnement Vercel).
 // Sans cookie valide, une page de connexion demande la clé ; elle est envoyée par formulaire (jamais dans l'adresse).
 // L'ancien lien /studio?k=<clé> reste accepté. Le cookie contient une empreinte de la clé, pas la clé elle-même.
-// Sur un domaine studio.* (ex. studio.finalea.fr), l'accueil mène directement au Studio.
+// Sur un domaine studio.* (ex. studio.finalea.fr), l'accueil mène au Studio : redirection dans next.config.mjs.
 const COOKIE = 'statlas_studio';
 const YEAR = 60 * 60 * 24 * 365;
 
@@ -36,14 +36,7 @@ ${wrong ? '<div class="err" role="alert">That key is not the right one. Check fo
 }
 
 export async function middleware(req: NextRequest) {
-  const host = req.headers.get('host') ?? '';
   const path = req.nextUrl.pathname;
-  if (path === '/') {
-    if (!host.startsWith('studio.')) return NextResponse.next();
-    const url = req.nextUrl.clone();
-    url.pathname = '/studio';
-    return NextResponse.redirect(url);
-  }
   const key = (process.env.ADMIN_KEY ?? '').trim();
   if (!key) return new NextResponse('Studio not configured (ADMIN_KEY is missing).', { status: 503 });
   const expected = await fingerprint(key);
@@ -77,4 +70,4 @@ export async function middleware(req: NextRequest) {
   return loginPage(false);
 }
 
-export const config = { matcher: ['/', '/studio/:path*'] };
+export const config = { matcher: ['/studio/:path*'] };

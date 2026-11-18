@@ -1,76 +1,10 @@
-import AppShell from '@/components/AppShell';
-import { getAllSources } from '@/lib/supabase';
+import View, { metadata } from './view';
 
-export const dynamic = 'force-dynamic';
+// Page préparée à l'avance et gardée une heure : elle ne coûte presque rien à servir, même à un robot.
+// Les variantes avec paramètres (?…) passent par la page jumelle sous /q (voir next.config.mjs).
+export { metadata };
+export const revalidate = 3600;
 
-export const metadata = {
-  title: 'Bibliography — every source and its licence | Statlas',
-  description: 'Every source behind Statlas figures, with its publisher, its licence and the indicators it feeds.',
-  alternates: { canonical: '/bibliography' },
-};
-
-export default async function BibliographyPage({
-  searchParams,
-}: {
-  searchParams: { q?: string };
-}) {
-  const sources = await getAllSources();
-  const query = (searchParams.q ?? '').toLowerCase().trim();
-  const filtered = sources.filter((s) => s.name.toLowerCase().includes(query));
-
-  return (
-    <AppShell active="Bibliography">
-
-        <div>
-          <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent mb-2.5">Sources</div>
-          <h1 className="font-serif text-[34px] sm:text-[44px] font-semibold leading-[1.05] tracking-[-0.02em]">Bibliography</h1>
-          <div className="text-textMuted text-[14px] mt-3 mb-6">
-            {filtered.length} organizations
-            {query ? ` matching "${searchParams.q}"` : ''}
-          </div>
-
-          <div className="max-w-3xl flex flex-col gap-3">
-            {filtered.map((s) => (
-              <div key={s.id} className="bg-panel border border-border rounded-xl p-5">
-                <div className="flex items-baseline justify-between mb-1">
-                  <div className="font-serif text-lg">
-                    {s.url ? (
-                      <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-block py-2.5 hover:text-accent">
-                        {s.name}
-                      </a>
-                    ) : (
-                      s.name
-                    )}
-                  </div>
-                  <div className="text-textMuted text-[12px] font-mono uppercase">{s.source_type}</div>
-                </div>
-                {s.documents.length > 0 && (
-                  <div className="mt-2 flex flex-col gap-1">
-                    {s.documents.map((d: any) => (
-                      <div key={d.id} className="text-[15px] text-textSecondary flex justify-between gap-3">
-                        <span>
-                          {d.url ? (
-                            <a href={d.url} target="_blank" rel="noopener noreferrer" className="inline-block py-2.5 hover:text-accent">
-                              {d.title}
-                            </a>
-                          ) : (
-                            d.title
-                          )}
-                        </span>
-                        {d.published_at && (
-                          <span className="text-textMuted font-mono">{d.published_at.slice(0, 10)}</span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-            {filtered.length === 0 && (
-              <div className="text-textMuted text-sm">No source matches your search.</div>
-            )}
-          </div>
-        </div>
-    </AppShell>
-  );
+export default function Page() {
+  return <View searchParams={{}} />;
 }

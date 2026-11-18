@@ -4,7 +4,10 @@ import { ArticleList, CompactMasthead, GazettePage, Kicker } from '@/components/
 import { getDossierBySlug } from '@/lib/gazette';
 import { notFound } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
+export function generateStaticParams() {
+  return [];
+}
 
 export default async function DossierDetailPage({
   params,

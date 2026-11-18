@@ -5,7 +5,10 @@ import PageHeader from '@/components/ui/PageHeader';
 import Flag from '@/components/ui/Flag';
 import { STATUS_LABEL, formatListValue, getList } from '@/lib/lists';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
+export function generateStaticParams() {
+  return [];
+}
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const data = await getList(params.slug);

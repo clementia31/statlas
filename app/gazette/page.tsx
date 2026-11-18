@@ -4,7 +4,7 @@ import { leadText } from '@/components/gazette/ArticleBody';
 import { getDomains, getDisciplines, getFeaturedAndLatest, getActiveChartOfWeek } from '@/lib/gazette';
 import { ArticleList, DoubleRule, GazettePage, Kicker, Masthead, Ornament, SectionLabel, articleDate, typeLabel } from '@/components/gazette/Gazette';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'The Statlas Gazette — A quantitative journal of the world',

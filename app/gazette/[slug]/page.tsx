@@ -7,7 +7,10 @@ import { getArticleBySlug } from '@/lib/supabase';
 import { getDomainBySlug, getArticlesByDomain, getDisciplines, getRelatedForArticle } from '@/lib/gazette';
 import { notFound } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
+export function generateStaticParams() {
+  return [];
+}
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const domain = await getDomainBySlug(params.slug);

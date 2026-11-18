@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getCatalog, getCountries } from '@/lib/data';
 import { supabase } from '@/lib/supabase';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 const BASE = 'https://www.statlasresearch.com';
 

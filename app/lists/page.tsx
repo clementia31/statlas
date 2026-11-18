@@ -6,7 +6,7 @@ import Flag from '@/components/ui/Flag';
 import EmptyState from '@/components/ui/EmptyState';
 import { formatListValue, getLists } from '@/lib/lists';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'Lists — sourced rankings beyond countries | Statlas',

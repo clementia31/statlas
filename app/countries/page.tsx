@@ -4,7 +4,7 @@ import CountryDirectory from '@/components/CountryDirectory';
 import { getCountries } from '@/lib/data';
 import { regionOf } from '@/lib/iso';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'Countries and territories — key statistics | Statlas',

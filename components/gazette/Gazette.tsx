@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import EditionDate from './EditionDate';
 
 // Éléments de mise en page « journal » de la Gazette
 
@@ -23,8 +24,8 @@ export function Masthead({ domains }: { domains: { slug: string; name: string }[
     <div>
       <div className="flex flex-wrap justify-between gap-x-6 gap-y-1 pb-2.5 font-sans text-[11px] uppercase tracking-[0.16em] text-inkMuted">
         <span>Vol. {d.volume}</span>
-        <span className="hidden sm:inline">{d.long}</span>
-        <span className="sm:hidden">{d.short}</span>
+        <EditionDate kind="long" initial={d.long} className="hidden sm:inline" />
+        <EditionDate kind="short" initial={d.short} className="sm:hidden" />
         <span className="hidden md:inline">Free of charge · Every figure sourced</span>
       </div>
       <div className="h-[7px] border-t-[3px] border-b border-ink" />
@@ -61,8 +62,8 @@ export function CompactMasthead({ section }: { section?: string }) {
       </Link>
       <span className="text-right font-sans text-[11px] uppercase tracking-[0.16em] text-inkMuted">
         {section && <span className="hidden sm:inline">{section} · </span>}
-        <span className="hidden sm:inline">{d.long}</span>
-        <span className="sm:hidden">{d.short}</span>
+        <EditionDate kind="long" initial={d.long} className="hidden sm:inline" />
+        <EditionDate kind="short" initial={d.short} className="sm:hidden" />
       </span>
     </div>
     <DoubleRule />

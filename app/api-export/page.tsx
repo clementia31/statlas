@@ -4,7 +4,7 @@ import Panel from '@/components/ui/Panel';
 import { getCatalog } from '@/lib/data';
 import { unitLabel } from '@/lib/format';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'Export & API | Statlas',
