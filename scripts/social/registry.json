@@ -602,6 +602,40 @@
    "title": "The queens of Grand Slam",
    "period": "1884-2026",
    "selection": "top 10"
+  },
+  {
+   "slug": "vid-africa-christians",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "wrp-christians-pct",
+   "title": "Christianity in Africa",
+   "period": "1960-2010",
+   "countries": [
+    "NG",
+    "KE",
+    "GH",
+    "UG",
+    "CI"
+   ]
+  },
+  {
+   "slug": "vid-west-africa-muslims",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "wrp-muslims-pct",
+   "title": "Islam in West Africa",
+   "period": "1960-2010",
+   "countries": [
+    "BF",
+    "GN",
+    "SL",
+    "ML",
+    "SN"
+   ]
   }
  ]
 }
