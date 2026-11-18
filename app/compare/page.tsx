@@ -53,7 +53,7 @@ export default async function ComparisonsPage({ searchParams }: { searchParams: 
 
   // Graphique : un indicateur, jusqu'à 6 pays
   const chartMeta = bySlug.get(searchParams.indicator ?? '') ?? bySlug.get('gdp-ppp-per-capita-intl-dollar') ?? catalog[0];
-  const selected = (searchParams.countries ?? 'france,germany,united-states,china,japan')
+  const selected = (searchParams.countries ?? 'united-states,china,india')
     .split(',')
     .map((s) => s.trim())
     .filter((s) => countries.some((c) => c.slug === s))

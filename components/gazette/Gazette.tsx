@@ -52,13 +52,18 @@ export function DoubleRule({ className = '' }: { className?: string }) {
 }
 
 export function CompactMasthead({ section }: { section?: string }) {
+  const d = editionDate();
   return (
     <div>
     <div className="flex items-center justify-between gap-4 pb-2.5">
       <Link href="/gazette" className="font-masthead text-[26px] sm:text-[34px] leading-none hover:text-press">
         The Statlas Gazette
       </Link>
-      {section && <span className="hidden sm:inline font-sans text-[11px] uppercase tracking-[0.16em] text-inkMuted">{section}</span>}
+      <span className="text-right font-sans text-[11px] uppercase tracking-[0.16em] text-inkMuted">
+        {section && <span className="hidden sm:inline">{section} · </span>}
+        <span className="hidden sm:inline">{d.long}</span>
+        <span className="sm:hidden">{d.short}</span>
+      </span>
     </div>
     <DoubleRule />
     </div>
