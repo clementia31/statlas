@@ -31,6 +31,7 @@
 - **Qui lance quoi** : Clem clique lui-même sur « Run » dans Supabase. Lui donner le bloc SQL directement dans la conversation, prêt à copier.
 - **Ordre de mise en ligne** quand le code dépend d'une migration : pousser la migration seule, faire lancer le bloc, puis pousser le code (sur une branche en attendant).
 - **Textes des publications** (champ `caption` de `social_posts`) : chaque nom de pays est suivi de son drapeau, à chaque mention (ex. « India 🇮🇳 »).
+- **Pas deux fois le même graphique** : avant de produire une vidéo ou une image, consulter le registre (`python3 scripts/social/registry.py check --indicator … --countries … --format …`). Un indicateur peut resservir, mais avec d'autres pays ou un autre angle. Après production, ajouter l'entrée dans `scripts/social/registry.json` dans le même envoi.
 - **Secrets** : ne jamais demander, afficher ni écrire une clé. `ADMIN_KEY` et `SUPABASE_SERVICE_ROLE_KEY` ne vivent que dans Vercel.
 - **Données privées** : tout ce qui est client MyInvesta reste dans la base MyInvesta. Le Studio ne reçoit que des totaux, sans tranche de moins de cinq clients.
 

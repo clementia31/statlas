@@ -1,0 +1,512 @@
+{
+ "note": "One entry per chart already produced. Check before making a new one: python3 scripts/social/registry.py check ...",
+ "visuals": [
+  {
+   "slug": "debt",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "public-debt-gdp-percent",
+   "title": "The weight of debt",
+   "period": "2001-2030",
+   "countries": [
+    "JP",
+    "IT",
+    "US",
+    "FR",
+    "GB"
+   ]
+  },
+  {
+   "slug": "wealth-200y",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "gdp-per-capita-maddison",
+   "title": "200 years of wealth",
+   "period": "1820-2022",
+   "countries": [
+    "US",
+    "GB",
+    "FR",
+    "JP",
+    "CN"
+   ]
+  },
+  {
+   "slug": "oldest",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "median-age",
+   "title": "The oldest countries on Earth",
+   "period": "1950-2100",
+   "selection": "top 5 in 2025 (over 1M people)"
+  },
+  {
+   "slug": "fields",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "fields-medalists",
+   "title": "Who wins the Fields Medal?",
+   "period": "1936-2026",
+   "selection": "top 5 in 2026"
+  },
+  {
+   "slug": "nobel-top10",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "nobel-laureates",
+   "title": "Who wins the Nobel Prize?",
+   "period": "1901-2025",
+   "selection": "top 10 in 2025"
+  },
+  {
+   "slug": "births",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "birth-rate",
+   "title": "The end of babies?",
+   "period": "1960-2024",
+   "countries": [
+    "KR",
+    "CN",
+    "JP",
+    "IT",
+    "FR"
+   ]
+  },
+  {
+   "slug": "rd",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "rd-expenditure-gdp",
+   "title": "Who invents the future?",
+   "period": "1996-2023",
+   "selection": "top 5 in 2021 (over 1M people)"
+  },
+  {
+   "slug": "industry",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "industry-share-gdp",
+   "title": "Factories vs services",
+   "period": "1970-2024",
+   "countries": [
+    "CN",
+    "DE",
+    "US",
+    "GB",
+    "FR"
+   ]
+  },
+  {
+   "slug": "co2",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "co2-emissions-total",
+   "title": "Who emits the most CO2?",
+   "period": "1970-2024",
+   "selection": "top 5 in 2024"
+  },
+  {
+   "slug": "world-2100",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "population-un-wpp",
+   "title": "The world in 2100",
+   "period": "1950-2100",
+   "selection": "top 5 in 2100"
+  },
+  {
+   "slug": "satellites",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "satellites-in-orbit",
+   "title": "Who owns the sky?",
+   "period": "1957-2026",
+   "countries": [
+    "US",
+    "RU",
+    "CN",
+    "GB",
+    "JP",
+    "EU"
+   ]
+  },
+  {
+   "slug": "football-world-cup",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "football-world-cup-titles",
+   "title": "Who wins the World Cup?",
+   "period": "1930-2026",
+   "selection": "top 5 in 2026"
+  },
+  {
+   "slug": "olympics-summer",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "olympics-summer-medals",
+   "title": "The Olympic superpowers",
+   "period": "1896-2024",
+   "selection": "top 5 in 2024"
+  },
+  {
+   "slug": "tennis-men",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "tennis-grand-slam-men",
+   "title": "The kings of Grand Slam",
+   "period": "1877-2026",
+   "selection": "top 5 in 2026"
+  },
+  {
+   "slug": "formula1",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "formula1-drivers-titles",
+   "title": "Who rules Formula One?",
+   "period": "1950-2025",
+   "selection": "top 5 in 2025"
+  },
+  {
+   "slug": "hosts-world-cup",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "hosts-football-world-cup",
+   "title": "Who hosts the World Cup?",
+   "period": "1930-2034",
+   "selection": "top 5 in 2026"
+  },
+  {
+   "slug": "hosts-summer-olympics",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "hosts-olympics-summer",
+   "title": "Who hosts the Summer Olympics?",
+   "period": "1896-2032",
+   "selection": "top 5 in 2024"
+  },
+  {
+   "slug": "hosts-winter-olympics",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "hosts-olympics-winter",
+   "title": "Who hosts the Winter Olympics?",
+   "period": "1924-2034",
+   "selection": "top 5 in 2026"
+  },
+  {
+   "slug": "hosts-mega-events",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "hosts-mega-events",
+   "title": "The world's favourite hosts",
+   "period": "1896-2034",
+   "selection": "top 10 in 2026"
+  },
+  {
+   "slug": "richest-top10",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week / social",
+   "indicator": "gdp-per-capita-maddison",
+   "title": "The richest countries",
+   "period": "1950-2022",
+   "selection": "top 10 in 2022 (over 1M people)"
+  },
+  {
+   "slug": "military",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette figure of the week",
+   "indicator": "military-expenditure (SIPRI, limited use)",
+   "title": "The price of war",
+   "selection": "5 countries (see figure)",
+   "period": ""
+  },
+  {
+   "slug": "nobel-top3",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "nobel-laureates",
+   "title": "Who wins the Nobel Prize? (top 3)",
+   "selection": "top 3 in 2025",
+   "period": "1901-2025"
+  },
+  {
+   "slug": "nobel-top5",
+   "made": "2026-11-05",
+   "kind": "video",
+   "format": "lines",
+   "channel": "gazette, x, instagram",
+   "indicator": "nobel-laureates",
+   "title": "Who wins the Nobel Prize? (top 5)",
+   "selection": "top 5 in 2025",
+   "period": "1901-2025"
+  },
+  {
+   "slug": "hosts-mega-events-bars",
+   "made": "2026-11-06",
+   "kind": "video",
+   "format": "bars",
+   "channel": "x, instagram",
+   "indicator": "hosts-mega-events",
+   "title": "The world's favourite hosts",
+   "selection": "top 10",
+   "period": "1896-2034"
+  },
+  {
+   "slug": "img-world-2100-top10",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "ranking",
+   "channel": "x, instagram",
+   "indicator": "population-un-wpp",
+   "title": "The world in 2100 — top 10",
+   "period": "2100",
+   "selection": "top 10 in 2100"
+  },
+  {
+   "slug": "img-debt-map",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "map",
+   "channel": "x, instagram",
+   "indicator": "public-debt-gdp-percent",
+   "title": "The weight of debt — map",
+   "period": "2025",
+   "selection": "world"
+  },
+  {
+   "slug": "img-rd-top10",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "ranking",
+   "channel": "x, instagram",
+   "indicator": "rd-expenditure-gdp",
+   "title": "Who invests in research? — top 10",
+   "period": "2023",
+   "selection": "top 10 in 2023"
+  },
+  {
+   "slug": "img-japan-median-age",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "key_figure",
+   "channel": "x, instagram",
+   "indicator": "median-age",
+   "title": "Japan, the oldest large country",
+   "period": "2023",
+   "countries": [
+    "JP"
+   ]
+  },
+  {
+   "slug": "img-women-parliament-top10",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "ranking",
+   "channel": "x, instagram",
+   "indicator": "women-in-parliament",
+   "title": "Women in parliament — top 10",
+   "period": "2025",
+   "selection": "top 10 in 2025"
+  },
+  {
+   "slug": "img-korea-fertility",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "key_figure",
+   "channel": "x, instagram",
+   "indicator": "fertility-rate",
+   "title": "South Korea — fewer than one child per woman",
+   "period": "2024",
+   "countries": [
+    "KR"
+   ]
+  },
+  {
+   "slug": "img-hdi-map",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "map",
+   "channel": "x, instagram",
+   "indicator": "human-development-index",
+   "title": "Human development — map",
+   "period": "2023",
+   "selection": "world"
+  },
+  {
+   "slug": "img-youngest-top10",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "ranking",
+   "channel": "x, instagram",
+   "indicator": "median-age",
+   "title": "The youngest countries — top 10",
+   "period": "2023",
+   "selection": "bottom 10 in 2023 (over 1M people)"
+  },
+  {
+   "slug": "img-internet-map",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "map",
+   "channel": "x, instagram",
+   "indicator": "internet-users",
+   "title": "Who is online? — map",
+   "period": "2024",
+   "selection": "world"
+  },
+  {
+   "slug": "img-renewable-map",
+   "made": "2026-11-14",
+   "kind": "image",
+   "format": "map",
+   "channel": "x, instagram",
+   "indicator": "renewable-energy-share",
+   "title": "Renewable energy — map",
+   "period": "2021",
+   "selection": "world"
+  },
+  {
+   "slug": "vid-population-top6",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "population-un-wpp",
+   "title": "The most populous countries",
+   "period": "1950-2100",
+   "countries": [
+    "IN",
+    "CN",
+    "US",
+    "ID",
+    "PK",
+    "NG"
+   ]
+  },
+  {
+   "slug": "vid-gdp-top5",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "gdp-nominal-usd",
+   "title": "The five largest economies",
+   "period": "1980-2031",
+   "countries": [
+    "US",
+    "CN",
+    "DE",
+    "JP",
+    "IN"
+   ]
+  },
+  {
+   "slug": "vid-fertility-1960-2024",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "fertility-rate",
+   "title": "Fewer and fewer children",
+   "period": "1960-2024",
+   "countries": [
+    "KR",
+    "CN",
+    "IN",
+    "US",
+    "NG"
+   ]
+  },
+  {
+   "slug": "vid-olympics-summer-race",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "bars",
+   "channel": "x, instagram",
+   "indicator": "olympics-summer-medals",
+   "title": "Who wins the Summer Olympics?",
+   "period": "1896-2024",
+   "selection": "top 10"
+  },
+  {
+   "slug": "vid-wealth-200y",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "gdp-per-capita-maddison",
+   "title": "200 years of wealth",
+   "period": "1820-2022",
+   "countries": [
+    "US",
+    "GB",
+    "FR",
+    "JP",
+    "CN"
+   ]
+  },
+  {
+   "slug": "vid-life-expectancy-top6",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "life-expectancy-birth",
+   "title": "Living longer",
+   "period": "1960-2024",
+   "countries": [
+    "IN",
+    "CN",
+    "US",
+    "ID",
+    "PK",
+    "NG"
+   ]
+  }
+ ]
+}
