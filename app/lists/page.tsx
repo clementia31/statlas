@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import PageHeader from '@/components/ui/PageHeader';
+import SectionTabs from '@/components/ui/SectionTabs';
 import Flag from '@/components/ui/Flag';
 import EmptyState from '@/components/ui/EmptyState';
 import { formatListValue, getLists } from '@/lib/lists';
@@ -22,6 +23,7 @@ export default async function ListsPage() {
         title="Sourced rankings"
         description="Rankings beyond country statistics. Every entry carries its source and its status: verified, reported or estimate."
       />
+      <SectionTabs set="rankings" current="/lists" />
       {lists.length === 0 ? (
         <EmptyState title="No lists yet" />
       ) : (

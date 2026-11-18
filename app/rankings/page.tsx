@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import PageHeader from '@/components/ui/PageHeader';
+import SectionTabs from '@/components/ui/SectionTabs';
 import Flag from '@/components/ui/Flag';
 import { getCountryCatalog, getPodiums } from '@/lib/data';
 import { formatValue } from '@/lib/format';
@@ -29,6 +30,7 @@ export default async function RankingsPage() {
         title="World rankings"
         description={`${catalog.length} indicators ranked on the most recent year with broad country coverage.`}
       />
+      <SectionTabs set="rankings" current="/rankings" />
       {Array.from(groups.entries()).map(([g, items]) => (
         <section key={g} className="mb-8">
           <h2 className="text-[12px] uppercase tracking-[0.14em] text-textMuted mb-3">{g}</h2>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import PageHeader from '@/components/ui/PageHeader';
+import SectionTabs from '@/components/ui/SectionTabs';
 import Panel from '@/components/ui/Panel';
 import RadarChart from '@/components/RadarChart';
 import CountrySelector from '@/components/CountrySelector';
@@ -56,6 +57,7 @@ export default async function BenchmarkPage({
         title="Country benchmark"
         description="Where each country stands among all countries, indicator by indicator. 100 means best in the world, 50 means the middle."
       />
+      <SectionTabs set="compare" current="/benchmark" />
 
       <div className="flex flex-col gap-3 mb-5">
         <div className="flex flex-wrap gap-2">

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import PageHeader from '@/components/ui/PageHeader';
+import SectionTabs from '@/components/ui/SectionTabs';
 import Flag from '@/components/ui/Flag';
 import EmptyState from '@/components/ui/EmptyState';
 import { supabase } from '@/lib/supabase';
@@ -36,6 +37,9 @@ export default async function SportPage() {
   if (!catalog.length) {
     return (
       <AppShell active="Sport">
+        <div className="mt-2">
+          <SectionTabs set="rankings" current="/sport" />
+        </div>
         <EmptyState title="The sport section is being loaded" />
       </AppShell>
     );
@@ -62,6 +66,7 @@ export default async function SportPage() {
         title="Who wins?"
         description="World Cups, Olympic medals, Grand Slams, Formula One, the Tour de France — and the satellites in orbit. Every title counted by country, with the full history. Successor states: USSR counted with Russia, East and West Germany with Germany, Yugoslavia with Serbia."
       />
+      <SectionTabs set="rankings" current="/sport" />
       {groups.map((g) => (
         <section key={g.name} className="mb-8">
           <h2 className="text-[12px] uppercase tracking-[0.14em] text-textMuted mb-3">{g.name}</h2>

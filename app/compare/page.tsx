@@ -2,6 +2,7 @@ import OriginalWorks from '@/components/ui/OriginalWorks';
 import Link from 'next/link';
 import AppShell from '@/components/AppShell';
 import PageHeader from '@/components/ui/PageHeader';
+import SectionTabs from '@/components/ui/SectionTabs';
 import Panel from '@/components/ui/Panel';
 import CompareTable from '@/components/CompareTable';
 import CountrySelector from '@/components/CountrySelector';
@@ -67,15 +68,8 @@ export default async function ComparisonsPage({ searchParams }: { searchParams: 
         kicker="Compare"
         title="Compare countries"
         description="Follow several countries over time, or scan every country side by side. Each column uses the latest year with broad coverage for that indicator."
-        actions={
-          <Link
-            href="/benchmark"
-            className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium hover:border-accent"
-          >
-            See as a benchmark →
-          </Link>
-        }
       />
+      <SectionTabs set="compare" current="/compare" />
 
       {chartMeta && (
         <Panel
