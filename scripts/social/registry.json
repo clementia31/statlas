@@ -535,6 +535,23 @@
     "EG",
     "NG"
    ]
+  },
+  {
+   "slug": "vid-democracy-1900-2025",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "electoral-democracy-index",
+   "title": "Democracy, rise and retreat",
+   "period": "1900-2025",
+   "countries": [
+    "US",
+    "DE",
+    "RU",
+    "IN",
+    "TR"
+   ]
   }
  ]
 }
