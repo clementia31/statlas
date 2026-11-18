@@ -552,6 +552,23 @@
     "IN",
     "TR"
    ]
+  },
+  {
+   "slug": "vid-extreme-poverty",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "extreme-poverty",
+   "title": "The fall of extreme poverty",
+   "period": "1981-2022",
+   "countries": [
+    "CN",
+    "IN",
+    "ID",
+    "NG",
+    "BR"
+   ]
   }
  ]
 }
