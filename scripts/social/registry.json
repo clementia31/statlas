@@ -580,6 +580,17 @@
    "title": "Who wins the Tour de France?",
    "period": "1903-2026",
    "selection": "top 10"
+  },
+  {
+   "slug": "vid-ballon-dor-race",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "bars",
+   "channel": "x, instagram",
+   "indicator": "ballon-dor-wins",
+   "title": "Who wins the Ballon d'Or?",
+   "period": "1956-2026",
+   "selection": "top 10"
   }
  ]
 }
