@@ -61,6 +61,8 @@ def render(table, events, title, subtitle, source, out, theme="statlas", top=10,
         x0, x1 = 0.33, 0.86
         # graduations entières
         step = 1 if vmax_s <= 6 else 2 if vmax_s <= 14 else 5
+        if vmax_s > 40:   # grands totaux (médailles…) : pas « rond » donnant 4 à 8 graduations
+            step = next(m * 10 ** e for e in range(1, 7) for m in (1, 2, 5) if vmax_s / (m * 10 ** e) <= 8)
         for g in range(0, int(vmax_s) + 1, step):
             x = x0 + (x1 - x0) * g / vmax_s
             fig.add_artist(Rectangle((x, bot_y - 0.005), 0.0012, top_y - bot_y + 0.01, transform=fig.transFigure, color=T["grid"]))
