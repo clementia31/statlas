@@ -211,7 +211,7 @@ export default async function MetricsPage({ searchParams }: { searchParams: { p?
         )}
       </div>
 
-      <div className="mt-6 grid border-t-2 border-text sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-1 border-t-2 border-text sm:grid-cols-2 lg:grid-cols-4">
         {counted ? (
           <>
             <AutoTile label="Visitors" value={summary?.visitors ?? 0} prev={summary?.prev_visitors ?? 0} counted={live} />
@@ -235,7 +235,7 @@ export default async function MetricsPage({ searchParams }: { searchParams: { p?
 
       {counted && summary && visits && (
         <>
-          <div className="mt-8 grid gap-x-8 gap-y-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+          <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
             <section className="min-w-0">
               <h2 className={h2}>Visitors per {days > 60 ? 'month' : 'day'}</h2>
               {live ? (
@@ -250,7 +250,7 @@ export default async function MetricsPage({ searchParams }: { searchParams: { p?
             </section>
           </div>
 
-          <div className="mt-8 grid gap-x-8 gap-y-8 lg:grid-cols-2">
+          <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-2">
             <section className="min-w-0">
               <h2 className={h2}>Most viewed pages</h2>
               {summary.pages.length === 0 ? (
@@ -307,7 +307,7 @@ export default async function MetricsPage({ searchParams }: { searchParams: { p?
         </>
       )}
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="rounded-xl border border-border bg-panel p-5">
           <h2 className="font-serif text-[22px] font-semibold">Publications · {PROJECTS[project].label}</h2>
           <p className="mt-1 text-[13px] text-textMuted">Counted from the calendar.</p>
@@ -323,7 +323,7 @@ export default async function MetricsPage({ searchParams }: { searchParams: { p?
 
         <section className="rounded-xl border border-border bg-panel p-5">
           <h2 className="font-serif text-[22px] font-semibold">Enter a reading</h2>
-          <form action={addReading} className="mt-4 grid gap-3 sm:grid-cols-2">
+          <form action={addReading} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <input type="hidden" name="project" value={project} />
             <label className="text-[13px] text-textSecondary">Measure
               <select name="metric" className={`mt-1 ${field}`}>{Object.entries(METRICS).filter(([k]) => !counted || MANUAL.includes(k)).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
@@ -360,7 +360,7 @@ export default async function MetricsPage({ searchParams }: { searchParams: { p?
             <h2 className="font-serif text-[22px] font-semibold">Product metrics</h2>
             <span className="text-[13px] text-textMuted">Totals only — no personal data leaves the MyInvesta database</span>
           </div>
-          <div className="mt-4 grid border-t-2 border-text sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 border-t-2 border-text sm:grid-cols-2 lg:grid-cols-4">
             {[['Properties under management', 'units'], ['Active leases', 'leases'], ['Gross rent under management', 'per month'], ['Clients by rent bracket', 'no bracket under five clients']].map(([l, s]) => (
               <div key={l} className="border-r border-border px-4 py-4 first:pl-0">
                 <div className="text-[13px] text-textSecondary">{l}</div>

@@ -86,7 +86,7 @@ export default async function IndicatorsPage({ searchParams }: { searchParams: {
       <Tabs tabs={TABS.map((t) => ({ ...t, href: href(t.key) }))} active={tab} />
 
       {tab === 'overview' && (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {stats.map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-panel px-4 py-3.5">
@@ -154,7 +154,7 @@ export default async function IndicatorsPage({ searchParams }: { searchParams: {
 
       {tab === 'metadata' && (
         <Panel title="About this indicator">
-          <dl className="grid sm:grid-cols-[200px_1fr] gap-x-6 gap-y-3 text-[14px]">
+          <dl className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-x-6 gap-y-3 text-[14px]">
             {[
               ['Name', meta.name],
               ['Definition', meta.definition ?? '—'],

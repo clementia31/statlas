@@ -5,6 +5,12 @@ import { getArchiveArticles, getDomains } from '@/lib/gazette';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Archive — The Statlas Gazette',
+  description: 'Every article of The Statlas Gazette, by year, domain and type.',
+  alternates: { canonical: '/gazette/archive' },
+};
+
 const TYPES = ['analysis', 'data_story', 'brief', 'editorial', 'reference', 'methodology'];
 
 export default async function ArchivePage({

@@ -41,7 +41,7 @@ export default async function PublicationPage({ params, searchParams }: { params
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <section>
           <div className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-textMuted">{p.kind === 'video' ? 'Video' : 'Image'}</div>
           <div className="mt-2 rounded-xl border border-border bg-panel p-3.5">
@@ -80,7 +80,7 @@ export default async function PublicationPage({ params, searchParams }: { params
           <input type="hidden" name="current_status" value={p.status} />
           <div className="rounded-xl border border-border bg-panel p-5">
             <div className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-textMuted">Schedule</div>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className={`${lab} sm:col-span-2`}>Title<input name="title" defaultValue={p.title} className={`mt-1 ${field}`} /></label>
               <label className={lab}>Date<input type="date" name="date" defaultValue={p.scheduled_at ? dayKey(p.scheduled_at) : ''} className={`mt-1 ${field}`} /></label>
               <label className={lab}>Time, Paris<input type="time" name="time" defaultValue={p.scheduled_at ? timeOf(p.scheduled_at) : '12:00'} className={`mt-1 ${field}`} /></label>

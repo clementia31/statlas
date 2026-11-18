@@ -11,8 +11,9 @@ import { formatValue, shortSource } from '@/lib/format';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Benchmark countries — Statlas',
+  title: 'Benchmark countries | Statlas',
   description: 'Compare up to six countries across development and economic indicators on a single radar chart.',
+  alternates: { canonical: '/benchmark' },
 };
 
 export default async function BenchmarkPage({
@@ -116,7 +117,7 @@ export default async function BenchmarkPage({
               </div>
             </div>
             {data.columns.map((c, ci) => (
-              <div key={c.slug} className="grid gap-2 sm:gap-0 sm:grid-cols-[220px_minmax(0,1fr)] items-center border-t border-border py-4">
+              <div key={c.slug} className="grid grid-cols-1 gap-2 sm:gap-0 sm:grid-cols-[220px_minmax(0,1fr)] items-center border-t border-border py-4">
                 <div className="pr-4">
                   <Link href={`/rankings/${c.slug}`} className="font-medium text-text hover:text-accent">
                     {c.label}
@@ -125,7 +126,7 @@ export default async function BenchmarkPage({
                     {shortSource(c.source)} · {c.year}
                   </div>
                 </div>
-                <div className="grid gap-1.5">
+                <div className="grid grid-cols-1 gap-1.5">
                   {countrySlugs.map((s, i) => {
                     const v = data.scores[s]?.[ci];
                     return v == null ? (

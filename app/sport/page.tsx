@@ -9,9 +9,10 @@ import { getYearValues, type IndicatorMeta } from '@/lib/data';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Sport & space — Statlas',
+  title: 'Sport & space — titles, medals and satellites by country | Statlas',
   description:
     'Which countries win the World Cups, Olympic medals, Grand Slams and Formula One titles — and who owns the satellites in orbit. Complete histories, by country.',
+  alternates: { canonical: '/sport' },
 };
 
 // Familles affichées, dans l'ordre ; un indicateur va dans la première famille dont le préfixe correspond
@@ -64,7 +65,7 @@ export default async function SportPage() {
       {groups.map((g) => (
         <section key={g.name} className="mb-8">
           <h2 className="text-[12px] uppercase tracking-[0.14em] text-textMuted mb-3">{g.name}</h2>
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
             {g.items.map((m) => {
               const p = bySlug.get(m.slug);
               return (

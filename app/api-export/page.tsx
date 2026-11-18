@@ -7,8 +7,9 @@ import { unitLabel } from '@/lib/format';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Export & API — Statlas',
+  title: 'Export & API | Statlas',
   description: 'Download every Statlas indicator as CSV, with its source and unit.',
+  alternates: { canonical: '/api-export' },
 };
 
 export default async function ExportPage() {

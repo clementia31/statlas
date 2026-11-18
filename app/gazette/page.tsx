@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'The Statlas Gazette — A quantitative journal of the world',
   description: 'Essays and references on the quantitative social sciences, backed by sourced data.',
+  alternates: { canonical: '/gazette' },
 };
 
 export default async function GazetteHome() {
@@ -29,7 +30,7 @@ export default async function GazetteHome() {
         <Masthead domains={domains} />
 
         {featured ? (
-          <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-0">
+          <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-0">
             <article className="lg:pr-8 lg:border-r lg:border-ink">
               <Kicker>
                 {typeLabel(featured.article_type)}
@@ -139,7 +140,7 @@ export default async function GazetteHome() {
             <p className="mx-auto mt-3 max-w-[900px] font-serif italic text-[16px] leading-[1.9] text-inkSoft">
               {disciplines.map((d, i) => (
                 <span key={d.slug}>
-                  {i > 0 && <span className="mx-1.5 not-italic text-ruleStrong">·</span>}
+                  {i > 0 && <span className="not-italic text-ruleStrong">{' · '}</span>}
                   {d.name}
                 </span>
               ))}

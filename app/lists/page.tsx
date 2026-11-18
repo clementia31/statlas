@@ -8,8 +8,9 @@ import { formatListValue, getLists } from '@/lib/lists';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Statlas Lists — sourced rankings',
+  title: 'Lists — sourced rankings beyond countries | Statlas',
   description: 'Sourced rankings beyond country statistics: the most expensive paintings, and more. Every entry carries its source and its status.',
+  alternates: { canonical: '/lists' },
 };
 
 export default async function ListsPage() {
@@ -24,7 +25,7 @@ export default async function ListsPage() {
       {lists.length === 0 ? (
         <EmptyState title="No lists yet" />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {lists.map((l) => (
             <Link key={l.slug} href={`/lists/${l.slug}`} className="rounded-xl border border-border bg-panel p-6 hover:border-accent transition-colors">
               <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent">{l.category ?? 'List'}</div>

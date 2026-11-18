@@ -5,6 +5,12 @@ import { CompactMasthead, GazettePage } from '@/components/gazette/Gazette';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Dossiers — The Statlas Gazette',
+  description: 'Series of articles of The Statlas Gazette gathered by theme.',
+  alternates: { canonical: '/gazette/dossiers' },
+};
+
 export default async function DossiersPage() {
   const dossiers = await getDossiers();
 

@@ -41,7 +41,7 @@ export default function OrganisationPage() {
       <div className="mx-auto h-6 w-0.5 bg-text" />
       <div className="mx-auto hidden h-0.5 w-2/3 bg-text lg:block" />
 
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {BRANDS.map((b) => (
           <div key={b.name} className="rounded-xl border border-border bg-panel px-5 py-4" style={{ borderTop: `5px solid ${b.color}` }}>
             <div className="text-[11.5px] font-semibold uppercase tracking-[0.14em]" style={{ color: b.color }}>{b.tag}</div>
@@ -70,7 +70,7 @@ export default function OrganisationPage() {
       </div>
       <div className="mx-auto h-6 w-0.5 bg-text" />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {STORES.map((s) => (
           <div key={s.name} className="rounded-xl border border-border bg-panel p-4">
             <div className="flex items-start justify-between gap-2">

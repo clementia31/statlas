@@ -51,7 +51,7 @@ export default async function IdeaPage({ params }: { params: { id: string } }) {
       </div>
       <p className="mt-1 text-[13px] text-textMuted">Noted {when(idea.created_at)}</p>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <section>
           <h2 className="border-b-2 border-text pb-1.5 font-serif text-[22px] font-semibold">Notes and files · {items.length}</h2>
           {items.length === 0 && <p className="mt-3 text-[14px] text-textMuted">Nothing added yet. Use the box below to add notes, links, photos or documents as the subject matures.</p>}
@@ -90,7 +90,7 @@ export default async function IdeaPage({ params }: { params: { id: string } }) {
           <label className="block text-[13px] text-textSecondary">Starting point
             <textarea name="body" defaultValue={idea.body ?? ''} rows={7} className="mt-1 w-full rounded-lg border border-borderStrong bg-panel p-3 text-[16px] leading-relaxed" />
           </label>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block text-[13px] text-textSecondary">Type
               <select name="kind" defaultValue={idea.kind} className={`mt-1 ${field}`}>{Object.entries(IDEA_KINDS).map(([v, o]) => <option key={v} value={v}>{o.label}</option>)}</select>
             </label>

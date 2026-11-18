@@ -27,7 +27,7 @@ export default function IndicatorSelect({ options, value, param = 'indicator' }:
           p.delete('year');
           router.push(`${pathname}?${p.toString()}`);
         }}
-        className="min-w-[240px] max-w-full rounded-lg border border-borderStrong bg-panel h-11 px-3 text-[14px] text-text outline-none focus:border-accent"
+        className="w-full sm:w-auto sm:min-w-[240px] max-w-full rounded-lg border border-borderStrong bg-panel h-11 px-3 text-[14px] text-text outline-none focus:border-accent"
       >
         {Array.from(groups.entries()).map(([g, items]) => (
           <optgroup key={g} label={g}>

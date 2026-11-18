@@ -8,6 +8,11 @@ import { getGlobalSearchResults } from '@/lib/global-search';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Search | Statlas',
+  robots: { index: false, follow: true },
+};
+
 export default async function SearchPage({ searchParams }: { searchParams: { q?: string } }) {
   const query = (searchParams.q ?? '').trim();
   const { countries, indicators, articles } = await getGlobalSearchResults(query);
@@ -32,10 +37,10 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
       {!query && <EmptyState title="What are you looking for?">Try a country (“Japan”), an indicator (“inflation”) or a topic (“demography”).</EmptyState>}
       {query && total === 0 && <EmptyState title="No results">Check the spelling or try a broader term.</EmptyState>}
 
-      <div className="grid gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {countries.length > 0 && (
           <Panel title="Countries">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {countries.map((c) => (
                 <Link key={c.slug} href={`/countries/${c.slug}`} className="flex items-center gap-2.5 rounded-lg border border-border px-3 py-2 text-[14px] text-text hover:border-accent">
                   <Flag iso={c.iso_code} />

@@ -28,7 +28,7 @@ async function getEntity(slug: string) {
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const e = await getEntity(params.slug);
-  if (!e) return { title: 'Country not found — Statlas' };
+  if (!e) return { title: 'Country not found | Statlas' };
   return {
     title: `${e.name_default} — key statistics | Statlas`,
     description: `GDP, population, human development, life expectancy and more for ${e.name_default}, with sources and world rankings.`,
@@ -88,7 +88,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         <Panel title="Key facts" className="lg:col-span-1">
           <dl className="grid grid-cols-[110px_1fr] gap-y-2 text-[14px]">
             {factRows.map(([k, v]) => (

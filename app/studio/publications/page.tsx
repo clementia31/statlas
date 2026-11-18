@@ -63,7 +63,7 @@ export default async function PublicationsPage({ searchParams }: { searchParams:
           {list.length === 0 ? (
             <p className="mt-3 text-[14px] text-textMuted">Nothing here yet.</p>
           ) : (
-            <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{list.map((p) => <Card key={p.id} p={p} />)}</ul>
+            <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">{list.map((p) => <Card key={p.id} p={p} />)}</ul>
           )}
         </section>
       ))}

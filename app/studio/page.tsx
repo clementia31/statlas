@@ -158,7 +158,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: { m
       {unscheduled.length > 0 && (
         <section className="mt-10">
           <h2 className="border-b-2 border-text pb-1.5 font-serif text-[22px] font-semibold">Not scheduled yet · {unscheduled.length}</h2>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {unscheduled.map((p) => <Chip key={p.id} p={p} today={false} />)}
           </div>
         </section>

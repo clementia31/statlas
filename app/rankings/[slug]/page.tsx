@@ -16,7 +16,7 @@ export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const meta = await getIndicatorMeta(params.slug);
-  if (!meta) return { title: 'Ranking not found — Statlas' };
+  if (!meta) return { title: 'Ranking not found | Statlas' };
   return {
     title: `${meta.name} — world ranking ${meta.ref_year} | Statlas`,
     description: `${meta.ref_coverage} countries ranked by ${meta.name} in ${meta.ref_year}. Source: ${meta.source_name}.`,
@@ -72,7 +72,7 @@ export default async function RankingPage({ params, searchParams }: { params: { 
         />
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
         <div className="rounded-xl border border-accent/50 bg-panel p-4">
           <div className="text-[12px] text-textMuted">{meta.higher_is_better === false ? 'Lowest' : 'Highest'} · {year}</div>
           {leader ? (
@@ -103,7 +103,7 @@ export default async function RankingPage({ params, searchParams }: { params: { 
             <h2 className="font-serif text-[18px] font-semibold">World and regions · {year}</h2>
             <p className="text-[12px] text-textMuted">Aggregates published by the {shortSource(meta.source_name)}, not computed by Statlas. Not part of the ranking.</p>
           </div>
-          <dl className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-4">
             {aggregates.map((a) => (
               <div key={a.slug} className={`flex min-w-0 items-baseline justify-between gap-3 border-b border-border py-1.5 ${a.kind === 'world' ? 'font-semibold' : ''}`}>
                 <dt className="min-w-0 truncate text-[13.5px]" title={a.name}>{a.name}</dt>

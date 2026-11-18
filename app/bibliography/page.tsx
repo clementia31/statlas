@@ -3,6 +3,12 @@ import { getAllSources } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Bibliography — every source and its licence | Statlas',
+  description: 'Every source behind Statlas figures, with its publisher, its licence and the indicators it feeds.',
+  alternates: { canonical: '/bibliography' },
+};
+
 export default async function BibliographyPage({
   searchParams,
 }: {

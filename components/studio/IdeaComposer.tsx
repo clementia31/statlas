@@ -85,7 +85,7 @@ export default function IdeaComposer({ ideaId, kinds, projects }: { ideaId?: str
     <form onSubmit={submit} className="rounded-xl border border-border bg-panel p-5">
       <div className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-textMuted">{isNew ? 'Note an idea' : 'Add to this idea'}</div>
       {isNew && (
-        <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px_180px]">
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_180px_180px]">
           <input value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={200} aria-label="Title" placeholder="Title — what is the idea?" className={field} />
           <select value={kind} onChange={(e) => setKind(e.target.value)} aria-label="Type" className={field}>{kinds?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>
           <select value={project} onChange={(e) => setProject(e.target.value)} aria-label="Project" className={field}>{projects?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>

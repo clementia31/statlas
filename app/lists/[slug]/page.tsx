@@ -9,8 +9,12 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const data = await getList(params.slug);
-  if (!data) return { title: 'List not found — Statlas' };
-  return { title: `${data.meta.title} — Statlas Lists`, description: data.meta.subtitle ?? undefined };
+  if (!data) return { title: 'List not found | Statlas' };
+  return {
+    title: `${data.meta.title} — Statlas Lists`,
+    description: data.meta.subtitle ?? undefined,
+    alternates: { canonical: `/lists/${params.slug}` },
+  };
 }
 
 const STATUS_CLS = {
@@ -80,7 +84,7 @@ export default async function ListPage({ params }: { params: { slug: string } })
         </table>
       </div>
 
-      <section className="mt-8 grid gap-6 rounded-xl border border-border bg-panel p-6 md:grid-cols-2 text-[14px] leading-relaxed">
+      <section className="mt-8 grid grid-cols-1 gap-6 rounded-xl border border-border bg-panel p-6 md:grid-cols-2 text-[14px] leading-relaxed">
         <div>
           <div className="text-[12px] font-semibold uppercase tracking-[0.12em] text-textMuted">Method</div>
           <p className="mt-2 text-textSecondary">{meta.method}</p>

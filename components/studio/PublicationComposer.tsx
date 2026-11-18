@@ -65,7 +65,7 @@ export default function PublicationComposer({ projects, formats, networks, initi
   }
 
   return (
-    <form onSubmit={submit} className="mt-4 grid gap-3 sm:grid-cols-2">
+    <form onSubmit={submit} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
       <label className="text-[13px] text-textSecondary sm:col-span-2">Title<input value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={200} className={`mt-1 ${field}`} /></label>
       <label className="text-[13px] text-textSecondary">Project
         <select value={project} onChange={(e) => setProject(e.target.value)} className={`mt-1 ${field}`}>{projects.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>

@@ -8,8 +8,9 @@ import { formatValue } from '@/lib/format';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'World rankings — Statlas',
+  title: 'World rankings — every indicator ranked | Statlas',
   description: 'Every Statlas indicator ranked across countries, with sources and the year of the data.',
+  alternates: { canonical: '/rankings' },
 };
 
 export default async function RankingsPage() {
@@ -31,7 +32,7 @@ export default async function RankingsPage() {
       {Array.from(groups.entries()).map(([g, items]) => (
         <section key={g} className="mb-8">
           <h2 className="text-[12px] uppercase tracking-[0.14em] text-textMuted mb-3">{g}</h2>
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
             {items.map((m) => {
               const podium = podiums.get(m.id) ?? [];
               return (

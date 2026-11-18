@@ -20,6 +20,10 @@ import { formatChange, formatValue } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  alternates: { canonical: '/' },
+};
+
 export default async function OverviewPage({ searchParams }: { searchParams: { indicator?: string; year?: string } }) {
   const catalog = await getCountryCatalog();
   const meta = catalog.find((c) => c.slug === searchParams.indicator) ?? catalog.find((c) => c.slug === DEFAULT_INDICATOR) ?? catalog[0];
@@ -96,7 +100,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
         </div>
       </Panel>
 
-      <div className="grid md:grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {[
           { title: orderLabel[0], items: top },
           { title: orderLabel[1], items: bottom },
@@ -121,7 +125,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
         ))}
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           { href: '/countries', t: 'Country profiles', d: 'Every indicator for every country, with its world rank.' },
           { href: '/rankings', t: 'Rankings', d: 'Who leads and who lags, year by year.' },
