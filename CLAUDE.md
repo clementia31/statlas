@@ -7,6 +7,7 @@
 - **Statlas** : statistiques mondiales sourcées, gratuites. En ligne : https://www.statlasresearch.com
 - **The Gazette** : les articles, dans `/gazette`.
 - Adresses publiques en anglais : `/countries`, `/indicators`, `/map`, `/compare`, `/bibliography`, `/rankings`, `/lists`. Les anciennes adresses françaises (`/pays`, `/indicateurs`, `/carte`, `/comparaisons`, `/bibliographie`) redirigent définitivement (`next.config.mjs`) : ne pas les réutiliser.
+- Page `/about` (About & methodology) : résumé public des règles ci-dessous. Si une règle de données change, mettre la page à jour. Le projet reste anonyme : aucun nom de personne sur le site ; contact et lien X dans `lib/site.ts`. Ne pas écrire « free library » (la gratuité se limite à « free to read and to download ») ni mentionner Taïwan / Hong Kong sur cette page.
 - **Studio** : administration privée dans `/studio` (calendrier, publications, mesures, idées, articles, organisation). Couvre Statlas, Gazette et MyInvesta.
 - Next.js 14 (App Router) + Supabase (projet `pkphpvarzbfqmugsjyom`), déployé par Vercel à chaque envoi sur `main`.
 - Projets voisins, hors de ce dépôt : MyInvesta (dépôt `investa`, base Supabase séparée, données internes) et Finalea (base séparée, personnelle).

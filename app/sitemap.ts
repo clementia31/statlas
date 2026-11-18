@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     supabase.from('lists').select('slug'),
     supabase.from('domains').select('slug'),
   ]);
-  const pages = ['', '/indicators', '/map', '/countries', '/compare', '/rankings', '/sport', '/lists', '/benchmark', '/gazette', '/gazette/archive', '/bibliography', '/api-export'];
+  const pages = ['', '/indicators', '/map', '/countries', '/compare', '/rankings', '/sport', '/lists', '/benchmark', '/gazette', '/gazette/archive', '/bibliography', '/api-export', '/about'];
   return [
     ...pages.map((p) => ({ url: `${BASE}${p}`, changeFrequency: 'weekly' as const })),
     ...catalog.filter((m) => m.ref_year !== null).map((m) => ({ url: `${BASE}/rankings/${m.slug}`, changeFrequency: 'monthly' as const })),

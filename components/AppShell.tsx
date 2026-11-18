@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Nav from './Nav';
+import { CONTACT_EMAIL, X_URL } from '@/lib/site';
 
 export default function AppShell({ active, children, paper = false }: { active: string; children: React.ReactNode; paper?: boolean }) {
   return (
@@ -13,10 +14,12 @@ export default function AppShell({ active, children, paper = false }: { active: 
           <span>
             <span className="font-serif text-[16px] font-semibold text-text">Statlas</span> · Sourced world statistics from the IMF, World Bank, UNDP, OECD and UN.
           </span>
-          <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2">
-            <Link href="/benchmark" className="hover:text-accent">Benchmark</Link>
-            <Link href="/bibliography" className="hover:text-accent">Bibliography</Link>
-            <Link href="/api-export" className="hover:text-accent">Export &amp; API</Link>
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-6">
+            <Link href="/about" className="inline-flex h-11 items-center font-semibold text-text hover:text-accent">About &amp; methodology</Link>
+            <Link href="/bibliography" className="inline-flex h-11 items-center hover:text-accent">Bibliography</Link>
+            <Link href="/api-export" className="inline-flex h-11 items-center hover:text-accent">Export &amp; API</Link>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex h-11 items-center hover:text-accent">Contact</a>
+            <a href={X_URL} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center hover:text-accent">X</a>
           </nav>
         </div>
       </footer>
