@@ -131,11 +131,14 @@ def badge(label, color, ring):
     return np.asarray(im)
 
 
+DECIMALS = 1  # décimales des petites valeurs (--decimals 2 pour un taux comme la fécondité)
+
+
 def fmt(v, unit, integer=False):
     if integer: v = round(v)
     a = abs(v)
     s = f"{v/1e12:.2f}T" if a >= 1e12 else f"{v/1e9:.1f}B" if a >= 1e9 else f"{v/1e6:.1f}M" if a >= 1e6 \
-        else f"{v:,.0f}" if a >= 100 else f"{v:.0f}" if v == round(v) else f"{v:.1f}"
+        else f"{v:,.0f}" if a >= 100 else f"{v:.0f}" if v == round(v) else f"{v:.{DECIMALS}f}"
     if FR: s = s.replace(",", "\u202f").replace(".", ",")
     return f"{unit}{s}" if unit in ("$", "£") or (unit == "€" and not FR) else (f"{s} {unit}" if unit else s)
 
@@ -292,8 +295,10 @@ if __name__ == "__main__":
     p.add_argument("--still", action="store_true", help="aperçu PNG de l'image finale")
     p.add_argument("--fill0", action="store_true", help="avant la première donnée, compter 0 (séries cumulées)")
     p.add_argument("--badges", action="store_true", help="codes libres (villes…) : pastille avec initiale au lieu du drapeau")
+    p.add_argument("--decimals", type=int, default=1, help="décimales des valeurs inférieures à 100")
     p.add_argument("--out", required=True)
     a = p.parse_args()
+    globals()['DECIMALS'] = a.decimals
     r = Race(a)
     if a.still:   # aperçu : image finale seulement
         r.draw(r.y1); r.fig.savefig(a.out, facecolor=r.T["bg"])
