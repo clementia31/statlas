@@ -139,7 +139,7 @@ export default function ChoroplethMap({
           { l: '−', a: 'Zoom out', f: () => setZoom((z) => Math.max(z - 0.5, 1)) },
           { l: '⟲', a: 'Reset zoom', f: () => setZoom(1) },
         ].map((b) => (
-          <button key={b.a} type="button" onClick={b.f} aria-label={b.a} className="w-9 h-9 rounded-md border border-borderStrong bg-panel text-textSecondary hover:text-accent text-sm">
+          <button key={b.a} type="button" onClick={b.f} aria-label={b.a} className="w-11 h-11 rounded-md border border-borderStrong bg-panel text-textSecondary hover:text-accent text-sm">
             {b.l}
           </button>
         ))}

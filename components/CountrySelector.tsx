@@ -39,7 +39,7 @@ export default function CountrySelector({
               <button
                 type="button"
                 onClick={() => router.push(buildHref(selectedSlugs.filter((s) => s !== c.slug)), { scroll: false })}
-                className="w-8 h-8 rounded-full text-[16px] text-textMuted hover:text-accent hover:bg-border"
+                className="w-10 h-10 rounded-full text-[16px] text-textMuted hover:text-accent hover:bg-border"
                 aria-label={`Remove ${c.name}`}
               >
                 ×

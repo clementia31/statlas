@@ -111,7 +111,7 @@ export default async function IndicatorsPage({ searchParams }: { searchParams: {
             </Panel>
           )}
 
-          <Panel title={`Ranking ${year}`} subtitle="Top 10" right={<Link href={href('data')} className="text-[13px] text-accent hover:underline">All countries →</Link>}>
+          <Panel title={`Ranking ${year}`} subtitle="Top 10" right={<Link href={href('data')} className="inline-flex h-11 items-center text-[15px] font-medium text-accent hover:underline">All countries →</Link>}>
             <RankingTable rows={ranked.slice(0, 10)} unit={meta.unit} linkable={!city} />
           </Panel>
           <SourceNote meta={meta} year={year} count={rows.length} />

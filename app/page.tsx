@@ -111,14 +111,14 @@ export default async function OverviewPage({ searchParams }: { searchParams: { i
                 <li key={r.entity_slug} className="flex items-center gap-3 py-2">
                   <span className="w-7 text-right font-mono text-[13px] text-textMuted">{r.rank}</span>
                   <Flag iso={r.iso_code} />
-                  <Link href={`/countries/${r.entity_slug}`} className="flex-1 text-[14px] text-text hover:text-accent truncate">
+                  <Link href={`/countries/${r.entity_slug}`} className="flex-1 py-2.5 text-[15px] text-text hover:text-accent truncate">
                     {r.entity_name}
                   </Link>
                   <span className="font-mono text-[14px] text-text">{formatValue(r.value, meta.unit)}</span>
                 </li>
               ))}
             </ol>
-            <Link href={`/rankings/${meta.slug}?year=${year}`} className="mt-3 inline-block text-[13px] text-accent hover:underline">
+            <Link href={`/rankings/${meta.slug}?year=${year}`} className="mt-1 inline-flex h-11 items-center text-[15px] font-medium text-accent hover:underline">
               Full ranking →
             </Link>
           </Panel>

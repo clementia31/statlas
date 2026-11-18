@@ -121,7 +121,7 @@ export default async function BenchmarkPage({
             {data.columns.map((c, ci) => (
               <div key={c.slug} className="grid grid-cols-1 gap-2 sm:gap-0 sm:grid-cols-[220px_minmax(0,1fr)] items-center border-t border-border py-4">
                 <div className="pr-4">
-                  <Link href={`/rankings/${c.slug}`} className="font-medium text-text hover:text-accent">
+                  <Link href={`/rankings/${c.slug}`} className="inline-block py-2 text-[15px] font-medium text-text hover:text-accent">
                     {c.label}
                   </Link>
                   <div className="text-[12px] text-textMuted">
@@ -172,7 +172,7 @@ export default async function BenchmarkPage({
                 {data.columns.map((c, ci) => (
                   <tr key={c.slug} className="border-b border-border/60">
                     <td className="py-2 pr-2 text-textSecondary">
-                      <Link href={`/rankings/${c.slug}`} className="hover:text-accent">
+                      <Link href={`/rankings/${c.slug}`} className="inline-block py-2.5 text-[15px] hover:text-accent">
                         {c.label}
                       </Link>
                       <span className="block text-[12px] text-textMuted">

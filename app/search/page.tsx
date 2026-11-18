@@ -55,7 +55,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
             <ul className="divide-y divide-border">
               {indicators.map((i) => (
                 <li key={i.slug}>
-                  <Link href={`/indicators?indicator=${i.slug}`} className="block py-2.5 text-[14px] text-text hover:text-accent">
+                  <Link href={`/indicators?indicator=${i.slug}`} className="block py-3 text-[15px] text-text hover:text-accent">
                     {i.name_default}
                   </Link>
                 </li>

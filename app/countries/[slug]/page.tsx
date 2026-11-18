@@ -76,7 +76,7 @@ export default async function CountryPage({ params, searchParams }: { params: { 
 
   return (
     <AppShell active="Countries">
-      <Link href="/countries" className="text-[13px] text-textMuted hover:text-accent">
+      <Link href="/countries" className="inline-flex h-11 items-center text-[15px] text-textMuted hover:text-accent">
         ← All countries
       </Link>
 

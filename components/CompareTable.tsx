@@ -70,7 +70,7 @@ export default function CompareTable({ columns, rows }: { columns: CompareColumn
             {sorted.map((r) => (
               <tr key={r.slug} className="border-b border-border/60 hover:bg-panel2/50">
                 <td className="sticky left-0 bg-bg/95 px-3 py-2">
-                  <Link href={`/countries/${r.slug}`} className="inline-flex items-center gap-2 text-text hover:text-accent">
+                  <Link href={`/countries/${r.slug}`} className="inline-flex min-h-[44px] items-center gap-2 text-[15px] text-text hover:text-accent">
                     <Flag iso={r.iso} />
                     <span className="truncate max-w-[180px]">{r.name}</span>
                   </Link>

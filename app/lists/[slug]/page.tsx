@@ -31,7 +31,7 @@ export default async function ListPage({ params }: { params: { slug: string } })
 
   return (
     <AppShell active="Lists">
-      <Link href="/lists" className="text-[13px] text-textMuted hover:text-accent">
+      <Link href="/lists" className="inline-flex h-11 items-center text-[15px] text-textMuted hover:text-accent">
         ← All lists
       </Link>
       <div className="mt-3">

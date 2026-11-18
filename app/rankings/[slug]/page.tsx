@@ -60,7 +60,7 @@ export default async function RankingPage({ params, searchParams }: { params: { 
   return (
     <AppShell active="Rankings">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(dataset).replace(/</g, '\\u003c') }} />
-      <Link href="/rankings" className="text-[13px] text-textMuted hover:text-accent">
+      <Link href="/rankings" className="inline-flex h-11 items-center text-[15px] text-textMuted hover:text-accent">
         ← All rankings
       </Link>
       <div className="mt-3">

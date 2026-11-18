@@ -35,7 +35,7 @@ export default async function BibliographyPage({
                 <div className="flex items-baseline justify-between mb-1">
                   <div className="font-serif text-lg">
                     {s.url ? (
-                      <a href={s.url} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-block py-2.5 hover:text-accent">
                         {s.name}
                       </a>
                     ) : (
@@ -47,10 +47,10 @@ export default async function BibliographyPage({
                 {s.documents.length > 0 && (
                   <div className="mt-2 flex flex-col gap-1">
                     {s.documents.map((d: any) => (
-                      <div key={d.id} className="text-[13px] text-textSecondary flex justify-between gap-3">
+                      <div key={d.id} className="text-[15px] text-textSecondary flex justify-between gap-3">
                         <span>
                           {d.url ? (
-                            <a href={d.url} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
+                            <a href={d.url} target="_blank" rel="noopener noreferrer" className="inline-block py-2.5 hover:text-accent">
                               {d.title}
                             </a>
                           ) : (
