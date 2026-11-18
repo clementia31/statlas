@@ -518,6 +518,23 @@
    "title": "Who wins the Champions League?",
    "period": "1956-2026",
    "selection": "all 9 countries"
+  },
+  {
+   "slug": "vid-inflation-top5",
+   "made": "2026-11-18",
+   "kind": "video",
+   "format": "lines",
+   "channel": "x, instagram",
+   "indicator": "inflation-rate-cpi",
+   "title": "Where prices run away",
+   "period": "2000-2024",
+   "countries": [
+    "TR",
+    "AR",
+    "IR",
+    "EG",
+    "NG"
+   ]
   }
  ]
 }
