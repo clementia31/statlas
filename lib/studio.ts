@@ -40,12 +40,13 @@ export const FORMATS: Record<string, { label: string; color: string }> = {
 export const NETWORKS: Record<string, string> = { instagram: 'Instagram', x: 'X', gazette: 'Gazette' };
 // Lien de téléchargement : un fichier du stockage privé est servi depuis une autre adresse que le site, où l'attribut
 // « download » du navigateur est ignoré ; on demande donc au stockage lui-même de l'envoyer comme fichier à enregistrer.
-// Un visuel rangé sur un autre de nos sites (ex. myinvesta.fr) passe par /studio/download, qui le renvoie comme fichier à enregistrer.
+// Un visuel rangé sur myinvesta.fr : ce site renvoie le fichier comme téléchargement quand l'adresse porte « ?dl=1 » (réglage dans son vercel.json).
+// Le navigateur va donc le chercher directement là-bas : le fichier enregistré est exactement celui du site.
 export const downloadHref = (url: string, name?: string | null) =>
   /\/storage\/v1\/object\/sign\//.test(url)
     ? `${url}${url.includes('?') ? '&' : '?'}download=${encodeURIComponent(name || 'file')}`
-    : /^https:\/\//.test(url)
-      ? `/studio/download?url=${encodeURIComponent(url)}`
+    : /^https:\/\/(www\.)?myinvesta\.fr\/social\//.test(url)
+      ? `${url}${url.includes('?') ? '&' : '?'}dl=1`
       : url;
 
 export const STATUS: Record<Post['status'], string> = { draft: 'Idea', scheduled: 'Ready', published: 'Published' };
