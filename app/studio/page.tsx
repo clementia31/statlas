@@ -11,12 +11,13 @@ function StatusMark({ s }: { s: Post['status'] }) {
   return <span aria-label="Idea" className="h-2.5 w-2.5 rounded-full border-[1.5px] border-textMuted" />;
 }
 
-function Chip({ p, today }: { p: Post; today: boolean }) {
+// « back » : le mois et le projet affichés, pour que la fiche ramène au même calendrier (et non au calendrier complet).
+function Chip({ p, today, back }: { p: Post; today: boolean; back: string }) {
   const f = FORMATS[p.format ?? 'chart'] ?? FORMATS.chart;
   const nets = p.platforms.filter((x) => x !== 'gazette').map((x) => NETWORKS[x] ?? x);
   return (
     <Link
-      href={`/studio/publications/${p.id}`}
+      href={`/studio/publications/${p.id}${back}`}
       className={`block rounded-md border bg-panel px-2.5 py-2 hover:border-text ${today ? 'border-accent ring-1 ring-accent' : 'border-border'}`}
       style={{ borderLeft: `3px solid ${f.color}` }}
     >
@@ -49,6 +50,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: { m
   const next = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 7);
   const label = first.toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
   const q = (mm: string, pp: string | null) => `/studio?m=${mm}${pp ? `&p=${pp}` : ''}`;
+  const back = `?m=${month}${project ? `&p=${project}` : ''}`;
 
   const byDay = new Map<string, Post[]>();
   for (const p of shown) {
@@ -89,7 +91,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: { m
             </div>
           </div>
           <div className="flex gap-2">
-            <Link href={`/studio/publications/${p.id}`} className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium hover:border-text">Open</Link>
+            <Link href={`/studio/publications/${p.id}${back}`} className="inline-flex h-11 items-center rounded-lg border border-borderStrong bg-panel px-4 text-[14px] font-medium hover:border-text">Open</Link>
             {p.media_url && <a href={downloadHref(p.media_url, p.media_name)} download={p.media_name ?? undefined} className="inline-flex h-11 items-center rounded-lg bg-text px-4 text-[14px] font-semibold text-white hover:opacity-90">↓ Download</a>}
           </div>
         </div>
@@ -130,7 +132,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: { m
                   {isToday ? <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-accent font-semibold text-white">{d}</span> : <span className="px-1.5">{d}</span>}
                 </div>
                 <div className="space-y-1.5">
-                  {items.map((p) => <Chip key={p.id} p={p} today={isToday} />)}
+                  {items.map((p) => <Chip key={p.id} p={p} today={isToday} back={back} />)}
                 </div>
               </div>
             );
@@ -148,7 +150,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: { m
             <li key={d} className={`flex gap-3 border-b border-border py-3 ${k === today ? 'bg-[#EDF2FE] px-2' : ''}`}>
               <div className="w-12 shrink-0 font-mono text-[13px] text-textMuted">{wd}<br /><span className="text-[17px] text-text">{d}</span></div>
               <div className="flex-1 space-y-1.5">
-                {items.length ? items.map((p) => <Chip key={p.id} p={p} today={k === today} />) : <span className="text-[13px] text-textMuted">Nothing planned today.</span>}
+                {items.length ? items.map((p) => <Chip key={p.id} p={p} today={k === today} back={back} />) : <span className="text-[13px] text-textMuted">Nothing planned today.</span>}
               </div>
             </li>
           );
@@ -159,7 +161,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: { m
         <section className="mt-10">
           <h2 className="border-b-2 border-text pb-1.5 font-serif text-[22px] font-semibold">Not scheduled yet · {unscheduled.length}</h2>
           <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {unscheduled.map((p) => <Chip key={p.id} p={p} today={false} />)}
+            {unscheduled.map((p) => <Chip key={p.id} p={p} today={false} back={back} />)}
           </div>
         </section>
       )}

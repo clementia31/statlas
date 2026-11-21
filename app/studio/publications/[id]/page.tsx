@@ -4,7 +4,7 @@ import StudioShell from '@/components/studio/Shell';
 import CopyButton from '@/components/studio/CopyButton';
 import MediaUploader from '@/components/studio/MediaUploader';
 import { savePost, setPublished } from '../../actions';
-import { FORMATS, NETWORKS, PROJECTS, STATUS, dayKey, downloadHref, getPost, timeOf } from '@/lib/studio';
+import { FORMATS, NETWORKS, PROJECTS, STATUS, dayKey, downloadHref, getPost, isProject, timeOf } from '@/lib/studio';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Publication · Studio', robots: { index: false, follow: false } };
@@ -12,15 +12,19 @@ export const metadata = { title: 'Publication · Studio', robots: { index: false
 const field = 'h-11 w-full rounded-lg border border-borderStrong bg-panel px-3 text-[16px]';
 const lab = 'block text-[13px] text-textSecondary';
 
-export default async function PublicationPage({ params, searchParams }: { params: { id: string }; searchParams: { upload?: string } }) {
+export default async function PublicationPage({ params, searchParams }: { params: { id: string }; searchParams: { upload?: string; m?: string; p?: string } }) {
   const p = await getPost(params.id);
   if (!p) notFound();
   const f = FORMATS[p.format ?? 'chart'] ?? FORMATS.chart;
   const file = p.media_name ?? 'media';
   const published = p.status === 'published';
+  // Retour au calendrier d'où l'on vient (mois et projet). Sans cette indication : le mois et le projet de la publication.
+  const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(searchParams.m ?? '') ? searchParams.m! : p.scheduled_at ? dayKey(p.scheduled_at).slice(0, 7) : null;
+  const project = searchParams.m ? (isProject(searchParams.p) ? searchParams.p : null) : p.project;
+  const calendar = `/studio${month ? `?m=${month}${project ? `&p=${project}` : ''}` : project ? `?p=${project}` : ''}`;
   return (
     <StudioShell active="Publications">
-      <Link href="/studio" className="inline-flex h-11 items-center text-[14px] text-textSecondary hover:text-text">← Calendar</Link>
+      <Link href={calendar} className="inline-flex h-11 items-center text-[14px] text-textSecondary hover:text-text">← {project ? `${PROJECTS[project].label} calendar` : 'Calendar'}</Link>
       <div className="text-[11.5px] font-semibold uppercase tracking-[0.16em]" style={{ color: f.color }}>
         {f.label} · {PROJECTS[p.project].label}
       </div>
