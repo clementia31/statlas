@@ -40,8 +40,13 @@ export const FORMATS: Record<string, { label: string; color: string }> = {
 export const NETWORKS: Record<string, string> = { instagram: 'Instagram', x: 'X', gazette: 'Gazette' };
 // Lien de téléchargement : un fichier du stockage privé est servi depuis une autre adresse que le site, où l'attribut
 // « download » du navigateur est ignoré ; on demande donc au stockage lui-même de l'envoyer comme fichier à enregistrer.
+// Un visuel rangé sur un autre de nos sites (ex. myinvesta.fr) passe par /studio/download, qui le renvoie comme fichier à enregistrer.
 export const downloadHref = (url: string, name?: string | null) =>
-  /\/storage\/v1\/object\/sign\//.test(url) ? `${url}${url.includes('?') ? '&' : '?'}download=${encodeURIComponent(name || 'file')}` : url;
+  /\/storage\/v1\/object\/sign\//.test(url)
+    ? `${url}${url.includes('?') ? '&' : '?'}download=${encodeURIComponent(name || 'file')}`
+    : /^https:\/\//.test(url)
+      ? `/studio/download?url=${encodeURIComponent(url)}`
+      : url;
 
 export const STATUS: Record<Post['status'], string> = { draft: 'Idea', scheduled: 'Ready', published: 'Published' };
 
